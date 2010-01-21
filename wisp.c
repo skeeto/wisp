@@ -20,7 +20,7 @@ object_t *setq(object_t *lst)
       printf("error: setq: not a symbol!\n");
       return NULL;
     }
-  set_value(v, car(cdr(lst)));
+  SET(v, car(cdr(lst)));
   return NULL;
 }
 
@@ -32,6 +32,7 @@ int main (int argc, char **argv)
 
   printf("%p\n", c_sym("symbol"));
   printf("%p\n", c_sym("symbol"));
+  printf("%s\n", SYMNAME(c_sym("symbol")));
 
   object_t *c = obj_create (CONS);
   setcar (c, c_int (10));
@@ -41,14 +42,14 @@ int main (int argc, char **argv)
   object_t *str = c_str("hello, world");
   obj_print(str);
   printf("\n");
-  set_value(c_sym ("str"), str);
-  obj_print(get_value(c_sym ("str")));
+  SET(c_sym ("str"), str);
+  obj_print(GET(c_sym ("str")));
   printf("\n");
 
   /* install setq */
   object_t *setqo = obj_create(CFUNC);
   setqo->val = &setq;
-  set_value(c_sym("setq"), setqo);
+  SET(c_sym("setq"), setqo);
   
   object_t *tail = obj_create(CONS);
   setcar (tail, c_int(102));
@@ -56,6 +57,6 @@ int main (int argc, char **argv)
   obj_print(lst);
   printf("\n");
   eval( lst );
-  obj_print(get_value(c_sym("n")));
+  obj_print(GET(c_sym("n")));
   printf("\n");
 }

@@ -14,7 +14,7 @@ void eval (object_t * o)
     }
   object_t *func = car(o);
   if (func->type == SYMBOL)
-    func = get_value (func);
+    func = GET (func);
   if (func->type == CONS)
     {
       if ((car(func))->type != SYMBOL)
