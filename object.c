@@ -9,7 +9,7 @@ static void object_clear (void *o)
 {
   object_t *obj = (object_t *) o;
   obj->type = EMPTY;
-  obj->val = NULL;
+  obj->val = NIL;
 }
 
 void object_init ()
@@ -71,12 +71,6 @@ void obj_destroy (object_t * o)
 
 void obj_print (object_t * o)
 {
-  if (o == NULL)
-    {
-      printf ("nil");
-      return;
-    }
-
   switch (o->type)
     {
     case INT:
@@ -95,10 +89,14 @@ void obj_print (object_t * o)
       printf ("EMPTY");
       break;
     case CONS:
-      cons_print (o);
+      printf ("(");
+      obj_print (car (o));
+      printf (" . ");
+      obj_print (cdr (o));
+      printf (")");
       break;
     case CFUNC:
-      printf("CFUNC(%p)", o->val);
+      printf ("CFUNC(%p)", o->val);
       break;
     default:
       printf ("ERROR");

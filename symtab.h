@@ -15,7 +15,7 @@ void symtab_init ();
 void set_value (object_t * s, object_t * o);
 
 /* Same symbol? */
-int sym_eq(object_t *a, object_t *b);
+int sym_eq (object_t * a, object_t * b);
 
 object_t *c_sym (char *name);
 

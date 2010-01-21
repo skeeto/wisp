@@ -7,9 +7,10 @@
 /* Initilize all the systems. */
 void init ()
 {
-  cons_init ();
+  /* These *must* be called in this order. */
   object_init ();
   symtab_init ();
+  cons_init ();
 }
 
 object_t *setq(object_t *lst)
@@ -18,10 +19,10 @@ object_t *setq(object_t *lst)
   if (v->type != SYMBOL)
     {
       printf("error: setq: not a symbol!\n");
-      return NULL;
+      return NIL;
     }
   SET(v, car(cdr(lst)));
-  return NULL;
+  return NIL;
 }
 
 int main (int argc, char **argv)

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "mem.h"
 #include "object.h"
+#include "symtab.h"
 #include "cons.h"
 
 static mmanager_t *mm;
@@ -9,8 +10,8 @@ static mmanager_t *mm;
 static void cons_clear (void *o)
 {
   cons_t *c = (cons_t *) o;
-  c->car = NULL;
-  c->cdr = NULL;
+  c->car = NIL;
+  c->cdr = NIL;
 }
 
 void cons_init ()
@@ -30,8 +31,8 @@ void cons_destroy (cons_t * o)
 
 object_t *cons (object_t * o, object_t * c)
 {
-  if (c != NULL && c->type != CONS)
-    return NULL;
+  if (c != NIL && c->type != CONS)
+    return NIL;
   object_t *newo = obj_create (CONS);
   cons_t *car = (cons_t *) newo->val;
   car->car = o;
@@ -42,21 +43,21 @@ object_t *cons (object_t * o, object_t * c)
 object_t *cdr (object_t * o)
 {
   if (o->type != CONS)
-    return NULL;
+    return NIL;
   return ((cons_t *) (o->val))->cdr;
 }
 
 object_t *car (object_t * o)
 {
   if (o->type != CONS)
-    return NULL;
+    return NIL;
   return ((cons_t *) (o->val))->car;
 }
 
 object_t *setcar (object_t * o, object_t * car)
 {
   ((cons_t *) o->val)->car = car;
-  return NULL;
+  return NIL;
 }
 
 void cons_print (object_t * o)

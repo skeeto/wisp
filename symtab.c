@@ -6,7 +6,7 @@
 
 static hashtab_t *symbol_table;
 
-object_t *NIL = NULL;
+object_t *NIL;
 
 void symtab_init ()
 {
