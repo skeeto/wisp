@@ -25,3 +25,10 @@ int sym_eq (symbol_t * a, symbol_t * b)
 {
   return strcmp (a->name, b->name) == 0;
 }
+
+object_t *c_sym (char *name)
+{
+  object_t *o = obj_create (SYMBOL);
+  ((symbol_t *) o->val)->name = name;
+  return o;
+}

@@ -17,4 +17,6 @@ void set_value (symbol_t * s, object_t * o);
 /* Same symbol? */
 int sym_eq(symbol_t *a, symbol_t *b);
 
+object_t *c_sym (char *name);
+
 #endif /* SYMTAB_H */

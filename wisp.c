@@ -31,28 +31,28 @@ int main (int argc, char **argv)
   init ();
 
   object_t *c = obj_create (CONS);
-  setcar (c, create_int (10));
-  obj_print (cons (create_symbol ("defun"), cons (create_string ("hello"), c)));
+  setcar (c, c_int (10));
+  obj_print (cons (c_sym ("defun"), cons (c_str ("hello"), c)));
   printf ("\n");
 
-  object_t *str = create_string("hello, world");
+  object_t *str = c_str("hello, world");
   obj_print(str);
   printf("\n");
-  set_value((create_symbol ("str"))->val, str);
-  obj_print(get_value((create_symbol ("str"))->val));
+  set_value((c_sym ("str"))->val, str);
+  obj_print(get_value((c_sym ("str"))->val));
   printf("\n");
 
   /* install setq */
   object_t *setqo = obj_create(CFUNC);
   setqo->val = &setq;
-  set_value(create_symbol("setq")->val, setqo);
+  set_value(c_sym("setq")->val, setqo);
   
   object_t *tail = obj_create(CONS);
-  setcar (tail, create_int(102));
-  object_t *lst = cons(create_symbol("setq"), cons(create_symbol("n"), tail));
+  setcar (tail, c_int(102));
+  object_t *lst = cons(c_sym("setq"), cons(c_sym("n"), tail));
   obj_print(lst);
   printf("\n");
   eval( lst );
-  obj_print(get_value(create_symbol("n")->val));
+  obj_print(get_value(c_sym("n")->val));
   printf("\n");
 }

@@ -43,28 +43,21 @@ object_t *obj_create (type_t type)
   return o;
 }
 
-object_t *create_int (int n)
+object_t *c_int (int n)
 {
   object_t *o = obj_create (INT);
   *((int *) o->val) = n;
   return o;
 }
 
-object_t *create_float (double f)
+object_t *c_float (double f)
 {
   object_t *o = obj_create (FLOAT);
   *((double *) o->val) = f;
   return o;
 }
 
-object_t *create_symbol (char *name)
-{
-  object_t *o = obj_create (SYMBOL);
-  ((symbol_t *) o->val)->name = name;
-  return o;
-}
-
-object_t *create_string (char *str)
+object_t *c_str (char *str)
 {
   object_t *o = obj_create (STRING);
   o->val = (void *) str;

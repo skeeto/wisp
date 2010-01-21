@@ -20,10 +20,9 @@ void obj_print (object_t * o);
 
 /* Object creation */
 object_t *obj_create (type_t type);
-object_t *create_int (int n);
-object_t *create_float (double f);
-object_t *create_symbol (char *name);
-object_t *create_string (char *str);
+object_t *c_int (int n);
+object_t *c_float (double f);
+object_t *c_str (char *str);
 void obj_destroy (object_t * o);
 
 #endif /* OBJECT_H */

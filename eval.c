@@ -5,7 +5,7 @@
 
 void eval (object_t * o)
 {
-  symbol_t *lambda = (create_symbol ("lambda"))->val;
+  symbol_t *lambda = (c_sym ("lambda"))->val;
 
   if (o->type != CONS)
     {
