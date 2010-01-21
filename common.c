@@ -25,3 +25,8 @@ void *xrealloc (void *p, size_t size)
     }
   return np;
 }
+
+void error (char *str)
+{
+  printf ("%s\n", str);
+}

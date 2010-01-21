@@ -8,4 +8,6 @@
 void *xmalloc (size_t size);
 void *xrealloc (void *p, size_t size);
 
+void error(char *str);
+
 #endif /* COMMON_H */

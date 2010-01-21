@@ -5,7 +5,7 @@
 
 void eval (object_t * o)
 {
-  symbol_t *lambda = (c_sym ("lambda"))->val;
+  object_t *lambda = c_sym ("lambda");
 
   if (o->type != CONS)
     {
@@ -14,7 +14,7 @@ void eval (object_t * o)
     }
   object_t *func = car(o);
   if (func->type == SYMBOL)
-    func = get_value (func->val);
+    func = get_value (func);
   if (func->type == CONS)
     {
       if ((car(func))->type != SYMBOL)
@@ -24,7 +24,7 @@ void eval (object_t * o)
 	  printf ("\n");
 	  return;
 	}
-      if (!sym_eq (lambda, (car(func))->val))
+      if (!sym_eq (lambda, car(func)))
 	{
 	  printf ("error: not a function: ");
 	  obj_print (func);
