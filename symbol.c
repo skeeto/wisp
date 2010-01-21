@@ -1,10 +1,14 @@
+#include <string.h>
 #include "symbol.h"
 #include "common.h"
 #include "hashtab.h"
 
-static hashtab_t *symbol_table;
-
-void symbol_init()
+void symbol_init ()
 {
-  symbol_table = ht_init(2048, NULL);
+
+}
+
+int sym_eq (symbol_t * a, symbol_t * b)
+{
+  return strcmp (a->name, b->name) == 0;
 }

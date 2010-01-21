@@ -9,8 +9,8 @@ static mmanager_t *mm;
 static void cons_clear (void *o)
 {
   cons_t *c = (cons_t *) o;
-  c->left = NULL;
-  c->right = NULL;
+  c->car = NULL;
+  c->cdr = NULL;
 }
 
 void cons_init ()
@@ -28,42 +28,42 @@ void cons_destroy (cons_t * o)
   mm_free (mm, (void *) o);
 }
 
-object_t *cons(object_t *o, object_t *c)
+object_t *cons (object_t * o, object_t * c)
 {
   if (c != NULL && c->type != CONS)
     return NULL;
-  object_t *newo = obj_create(CONS);
-  cons_t *car = (cons_t *)newo->val;
-  car->left = o;
-  car->right = c;
+  object_t *newo = obj_create (CONS);
+  cons_t *car = (cons_t *) newo->val;
+  car->car = o;
+  car->cdr = c;
   return newo;
 }
 
-void setleft (object_t * o, object_t * left)
+object_t *cdr (object_t * o)
 {
-  ((cons_t *)o->val)->left = left;
+  if (o->type != CONS)
+    return NULL;
+  return ((cons_t *) (o->val))->cdr;
+}
+
+object_t *car (object_t * o)
+{
+  if (o->type != CONS)
+    return NULL;
+  return ((cons_t *) (o->val))->car;
+}
+
+object_t *setcar (object_t * o, object_t * car)
+{
+  ((cons_t *) o->val)->car = car;
+  return NULL;
 }
 
 void cons_print (object_t * o)
 {
-  cons_t *c = (cons_t *) o->val;
-  printf("(");
-  obj_print(c->left);
-  printf(" . ");
-  if (c->right == NULL)
-    {
-      printf("nil)");
-      return;
-    }
-  if (c->right->type == CONS)
-    {
-      cons_print(c->right);
-      printf(")");
-    }
-  else
-    {
-      printf(" . ");
-      obj_print(c->right);
-      printf(")\n");
-    }
+  printf ("(");
+  obj_print (car (o));
+  printf (" . ");
+  obj_print (cdr (o));
+  printf (")");
 }

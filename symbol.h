@@ -6,10 +6,12 @@
 typedef struct symbol
 {
   char *name;
-  object_t *object;
 } symbol_t;
 
 /* Must be called before any other functions. */
 void symbol_init ();
+
+/* Same symbol? */
+int sym_eq(symbol_t *a, symbol_t *b);
 
 #endif /* SYMBOL_H */

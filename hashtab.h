@@ -69,7 +69,7 @@ void ht_remove (hashtab_t * hashtable, void *key, size_t keylen);
  * allocated. If this happens, the old hashtable will not be altered
  * in any way. The old hashtable is destroyed upon a successful
  * grow. */
-void *ht_grow (hashtab_t * hashtable, size_t new_size);
+hashtab_t *ht_grow (hashtab_t * hashtable, size_t new_size);
 
 /* Free all resources used by the hashtable. */
 void ht_destroy (hashtab_t * hashtable);

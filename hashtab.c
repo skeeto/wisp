@@ -2,23 +2,21 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "common.h"
 #include "hashtab.h"
 
 hashtab_t *ht_init (size_t size, int (*hash_func) (void *, size_t, size_t))
 {
-  hashtab_t *new_ht = (hashtab_t *) malloc (sizeof (hashtab_t));
-
-  new_ht->arr = (hashtab_node_t **) malloc (sizeof (hashtab_node_t *) * size);
-
+  hashtab_t *new_ht = (hashtab_t *) xmalloc (sizeof (hashtab_t));
+  new_ht->arr =
+    (hashtab_node_t **) xmalloc (sizeof (hashtab_node_t *) * size);
   new_ht->size = size;
   new_ht->count = 0;
 
   /* all entries are empty */
   int i = 0;
   for (i = 0; i < (int) size; i++)
-    {
-      new_ht->arr[i] = NULL;
-    }
+    new_ht->arr[i] = NULL;
 
   if (hash_func == NULL)
     new_ht->hash_func = &ht_hash;
@@ -31,26 +29,17 @@ hashtab_t *ht_init (size_t size, int (*hash_func) (void *, size_t, size_t))
 void *ht_search (hashtab_t * hashtable, void *key, size_t keylen)
 {
   int index = ht_hash (key, keylen, hashtable->size);
-
   if (hashtable->arr[index] == NULL)
     return NULL;
 
   hashtab_node_t *last_node = hashtable->arr[index];
   while (last_node != NULL)
     {
-      /* only compare matching keylens */
       if (last_node->keylen == keylen)
-	{
-	  /* compare keys */
-	  if (memcmp (key, last_node->key, keylen) == 0)
-	    {
-	      return last_node->value;
-	    }
-	}
-
+	if (memcmp (key, last_node->key, keylen) == 0)
+	  return last_node->value;
       last_node = last_node->next;
     }
-
   return NULL;
 }
 
@@ -66,55 +55,26 @@ void *ht_insert (hashtab_t * hashtable,
   /* Search for an existing key. */
   while (next_node != NULL)
     {
-      /* only compare matching keylens */
       if (next_node->keylen == keylen)
 	{
-	  /* compare keys */
 	  if (memcmp (key, next_node->key, keylen) == 0)
 	    {
-	      /* this key already exists, replace it */
-	      if (next_node->vallen != vallen)
-		{
-		  /* new value is a different size */
-		  free (next_node->value);
-		  next_node->value = malloc (vallen);
-		  if (next_node->value == NULL)
-		    return NULL;
-		}
-	      memcpy (next_node->value, value, vallen);
+	      next_node->value = value;
 	      next_node->vallen = vallen;
 	      return next_node->value;
 	    }
 	}
-
       last_node = next_node;
       next_node = next_node->next;
     }
 
   /* create a new node */
   hashtab_node_t *new_node;
-  new_node = (hashtab_node_t *) malloc (sizeof (hashtab_node_t));
-  if (new_node == NULL)
-    return NULL;
-
-  /* get some memory for the new node data */
-  new_node->key = malloc (keylen);
-  new_node->value = malloc (vallen);
-  if (new_node->key == NULL || new_node->key == NULL)
-    {
-      free (new_node->key);
-      free (new_node->value);
-      free (new_node);
-      return NULL;
-    }
-
-  /* copy over the value and key */
-  memcpy (new_node->key, key, keylen);
-  memcpy (new_node->value, value, vallen);
+  new_node = (hashtab_node_t *) xmalloc (sizeof (hashtab_node_t));
+  new_node->key = key;
+  new_node->value = value;
   new_node->keylen = keylen;
   new_node->vallen = vallen;
-
-  /* no next node */
   new_node->next = NULL;
 
   /* Tack the new node on the end or right on the table. */
@@ -139,13 +99,8 @@ void ht_remove (hashtab_t * hashtable, void *key, size_t keylen)
     {
       if (next_node->keylen == keylen)
 	{
-	  /* compare keys */
 	  if (memcmp (key, next_node->key, keylen) == 0)
 	    {
-	      /* free node memory */
-	      free (next_node->value);
-	      free (next_node->key);
-
 	      /* adjust the list pointers */
 	      if (last_node != NULL)
 		last_node->next = next_node->next;
@@ -157,35 +112,24 @@ void ht_remove (hashtab_t * hashtable, void *key, size_t keylen)
 	      break;
 	    }
 	}
-
       last_node = next_node;
       next_node = next_node->next;
     }
 }
 
 /* grow the hashtable */
-void *ht_grow (hashtab_t * old_ht, size_t new_size)
+hashtab_t *ht_grow (hashtab_t * old_ht, size_t new_size)
 {
   /* create new hashtable */
   hashtab_t *new_ht = ht_init (new_size, old_ht->hash_func);
   if (new_ht == NULL)
     return NULL;
 
-  void *ret;			/* captures return values */
-
   /* Iterate through the old hashtable. */
   hashtab_iter_t ii;
   ht_iter_init (old_ht, &ii);
   for (; ii.key != NULL; ht_iter_inc (&ii))
-    {
-      ret = ht_insert (new_ht, ii.key, ii.keylen, ii.value, ii.vallen);
-      if (ret == NULL)
-	{
-	  /* Insert failed. Destroy new hashtable and return. */
-	  ht_destroy (new_ht);
-	  return NULL;
-	}
-    }
+    ht_insert (new_ht, ii.key, ii.keylen, ii.value, ii.vallen);
 
   /* Destroy the old hashtable. */
   ht_destroy (old_ht);
@@ -206,14 +150,12 @@ void ht_destroy (hashtab_t * hashtable)
       while (next_node != NULL)
 	{
 	  /* destroy node */
-	  free (next_node->key);
-	  free (next_node->value);
 	  last_node = next_node;
 	  next_node = next_node->next;
 	  free (last_node);
 	}
     }
-  
+
   free (hashtable->arr);
   free (hashtable);
 }

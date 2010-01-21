@@ -7,8 +7,8 @@
 
 typedef struct cons
 {
-  object_t *left;
-  object_t *right;
+  object_t *car;
+  object_t *cdr;
 } cons_t;
 
 /* Must be called before any other functions. */
@@ -18,10 +18,12 @@ void cons_init ();
 cons_t *cons_create ();
 void cons_destroy (cons_t * c);
 
-/* Construct a list */
+/* list operators */
 object_t *cons (object_t * o, object_t * c);
+object_t *cdr (object_t * o);
+object_t *car (object_t * o);
+object_t *setcar (object_t * o, object_t * car);
 
-void setleft (object_t * o, object_t * left);
 
 void cons_print (object_t * o);
 
