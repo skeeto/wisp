@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "symbol.h"
 #include "cons.h"
 #include "symtab.h"
 #include "eval.h"

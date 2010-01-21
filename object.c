@@ -1,7 +1,7 @@
 #include "cons.h"
 #include "common.h"
-#include "symbol.h"
 #include "object.h"
+#include "symtab.h"
 
 static mmanager_t *mm;
 

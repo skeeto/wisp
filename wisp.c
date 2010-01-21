@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "cons.h"
-#include "symbol.h"
 #include "symtab.h"
 #include "common.h"
 #include "eval.h"
@@ -9,7 +8,6 @@
 void init ()
 {
   cons_init ();
-  symbol_init ();
   object_init ();
   symtab_init ();
 }

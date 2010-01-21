@@ -1,8 +1,8 @@
 #include <string.h>
-#include "symbol.h"
 #include "object.h"
 #include "common.h"
 #include "hashtab.h"
+#include "symtab.h"
 
 static hashtab_t *symbol_table;
 
@@ -19,4 +19,9 @@ object_t *get_value (symbol_t * s)
 void set_value (symbol_t * s, object_t * o)
 {
   ht_insert (symbol_table, s->name, strlen (s->name), o, sizeof (object_t *));
+}
+
+int sym_eq (symbol_t * a, symbol_t * b)
+{
+  return strcmp (a->name, b->name) == 0;
 }
