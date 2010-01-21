@@ -39,32 +39,3 @@ object_t *cons (object_t * o, object_t * c)
   car->cdr = c;
   return newo;
 }
-
-object_t *cdr (object_t * o)
-{
-  if (o->type != CONS)
-    return NIL;
-  return ((cons_t *) (o->val))->cdr;
-}
-
-object_t *car (object_t * o)
-{
-  if (o->type != CONS)
-    return NIL;
-  return ((cons_t *) (o->val))->car;
-}
-
-object_t *setcar (object_t * o, object_t * car)
-{
-  ((cons_t *) o->val)->car = car;
-  return NIL;
-}
-
-void cons_print (object_t * o)
-{
-  printf ("(");
-  obj_print (car (o));
-  printf (" . ");
-  obj_print (cdr (o));
-  printf (")");
-}

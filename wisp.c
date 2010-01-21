@@ -15,13 +15,13 @@ void init ()
 
 object_t *setq(object_t *lst)
 {
-  object_t *v = car(lst);
+  object_t *v = CAR(lst);
   if (v->type != SYMBOL)
     {
       printf("error: setq: not a symbol!\n");
       return NIL;
     }
-  SET(v, car(cdr(lst)));
+  SET(v, CAR(CDR(lst)));
   return NIL;
 }
 
@@ -36,7 +36,7 @@ int main (int argc, char **argv)
   printf("%s\n", SYMNAME(c_sym("symbol")));
 
   object_t *c = obj_create (CONS);
-  setcar (c, c_int (10));
+  CAR(c) =  c_int (10);
   obj_print (cons (c_sym ("defun"), cons (c_str ("hello"), c)));
   printf ("\n");
 
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
   SET(c_sym("setq"), setqo);
   
   object_t *tail = obj_create(CONS);
-  setcar (tail, c_int(102));
+  CAR (tail) = c_int(102);
   object_t *lst = cons(c_sym("setq"), cons(c_sym("n"), tail));
   obj_print(lst);
   printf("\n");

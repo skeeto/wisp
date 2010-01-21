@@ -20,11 +20,8 @@ void cons_destroy (cons_t * c);
 
 /* list operators */
 object_t *cons (object_t * o, object_t * c);
-object_t *cdr (object_t * o);
-object_t *car (object_t * o);
-object_t *setcar (object_t * o, object_t * car);
 
-
-void cons_print (object_t * o);
+#define CAR(o) ((cons_t *) (o->val))->car
+#define CDR(o) ((cons_t *) (o->val))->cdr
 
 #endif /* CONS_H */

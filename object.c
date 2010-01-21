@@ -90,9 +90,9 @@ void obj_print (object_t * o)
       break;
     case CONS:
       printf ("(");
-      obj_print (car (o));
+      obj_print (CAR (o));
       printf (" . ");
-      obj_print (cdr (o));
+      obj_print (CDR (o));
       printf (")");
       break;
     case CFUNC:
