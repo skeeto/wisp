@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "cons.h"
+#include "object.h"
 #include "symtab.h"
 #include "eval.h"
 

@@ -1,2 +1,3 @@
 *.o
 wisp
+wisp_tests

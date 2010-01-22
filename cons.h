@@ -2,7 +2,6 @@
 #ifndef CONS_H
 #define CONS_H
 
-#include "mem.h"
 #include "object.h"
 
 typedef struct cons

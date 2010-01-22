@@ -1,7 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <stdio.h>
 #include <stdlib.h>
 
 /* Wrapper for malloc() and realloc(). Will exit() the program on error. */

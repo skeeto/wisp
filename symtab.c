@@ -1,8 +1,8 @@
 #include <string.h>
-#include "object.h"
 #include "common.h"
-#include "hashtab.h"
 #include "symtab.h"
+#include "object.h"
+#include "hashtab.h"
 
 static hashtab_t *symbol_table;
 

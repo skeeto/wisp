@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include "common.h"
 #include "cons.h"
 #include "symtab.h"
-#include "common.h"
+#include "object.h"
 #include "eval.h"
 
 /* Initilize all the systems. */
@@ -31,10 +32,6 @@ int main (int argc, char **argv)
   (void) argc;
   (void) argv;
   init ();
-
-  printf ("%p\n", c_sym ("symbol"));
-  printf ("%p\n", c_sym ("symbol"));
-  printf ("%s\n", SYMNAME (c_sym ("symbol")));
 
   obj_print (cons
 	     (c_sym ("defun"),

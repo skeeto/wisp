@@ -2,7 +2,6 @@
 #define HASHTAB_H
 
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct hashtab_node_t
 {

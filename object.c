@@ -1,7 +1,9 @@
-#include "cons.h"
+#include <stdio.h>
 #include "common.h"
-#include "object.h"
+#include "mem.h"
+#include "cons.h"
 #include "symtab.h"
+#include "object.h"
 
 static mmanager_t *mm;
 

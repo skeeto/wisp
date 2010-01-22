@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "mem.h"
 #include "object.h"
 #include "symtab.h"

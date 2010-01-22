@@ -1,8 +1,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "mem.h"
-
 typedef enum types
 { INT, FLOAT, STRING, SYMBOL, CONS, CFUNC, EMPTY } type_t;
 
