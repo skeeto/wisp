@@ -20,6 +20,7 @@ void obj_print (object_t * o);
 
 /* Object creation */
 object_t *obj_create (type_t type);
+object_t *c_cons (object_t *car, object_t *cdr);
 object_t *c_int (int n);
 object_t *c_float (double f);
 object_t *c_str (char *str);

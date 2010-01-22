@@ -43,6 +43,14 @@ object_t *obj_create (type_t type)
   return o;
 }
 
+object_t *c_cons (object_t *car, object_t *cdr)
+{
+  object_t *o = obj_create (CONS);
+  CAR(o) = car;
+  CDR(o) = cdr;
+  return o;
+}
+
 object_t *c_int (int n)
 {
   object_t *o = obj_create (INT);
