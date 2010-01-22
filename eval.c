@@ -4,50 +4,53 @@
 #include "symtab.h"
 #include "eval.h"
 
-static object_t *lambda;
+object_t *lambda;
 
-void eval_init()
+void eval_init ()
 {
   lambda = c_sym ("lambda");
 }
 
-void eval (object_t * o)
+object_t *eval_list (object_t * lst)
 {
- 
-  if (o->type != CONS)
+  if (lst == NIL)
+    return NIL;
+  return c_cons (eval (CAR (lst)), eval_list (CDR (lst)));
+}
+
+object_t *eval (object_t * o)
+{
+  if (o->type != CONS && o->type != SYMBOL)
+    return o;
+  else if (o->type == SYMBOL)
+    return GET (o);
+
+  /* Find the function. */
+  object_t *f = eval (CAR (o));
+  if (!IS_FUNC (f))
     {
-      obj_print (o);
-      return;
+      printf ("error: not a function: ");
+      obj_print (f);
+      printf ("\n");
     }
-  object_t *func = CAR(o);
-  if (func->type == SYMBOL)
-    func = GET (func);
-  if (func->type == CONS)
+
+
+  if (f->type == CFUNC || f->type == CONS)
     {
-      if ((CAR(func))->type != SYMBOL)
+      object_t *args = eval_list (CDR (o));
+      if (f->type == CFUNC)
 	{
-	  printf ("error: not a function: ");
-	  obj_print (func);
-	  printf ("\n");
-	  return;
-	}
-      if (!sym_eq (lambda, CAR(func)))
-	{
-	  printf ("error: not a function: ");
-	  obj_print (func);
-	  printf ("\n");
-	  return;
+	  object_t *(*cf) (object_t * o) = f->val;
+	  return cf (args);
 	}
       else
 	{
-	  /* lisp code */
-	  /* assign stuff here */
-	  /* recurse */
+	  /* list form */
 	}
     }
-  if (func->type == CFUNC)
+  else
     {
-      object_t *(*f) (object_t * o) = func->val;
-      f (CDR(o));
+      /* special form or macro */
     }
+  return NIL;
 }

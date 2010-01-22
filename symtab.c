@@ -23,6 +23,34 @@ int sym_eq (object_t * a, object_t * b)
   return a == b;
 }
 
+symbol_t *symbol_create ()
+{
+  symbol_t *s = xmalloc (sizeof (symbol_t));
+  s->cnt = 8;
+  s->vals = s->stack = xmalloc (sizeof (object_t *) * s->cnt);
+  return s;
+}
+
+void sympush (object_t * so, object_t * o)
+{
+  symbol_t *s = (symbol_t *) so->val;
+  if (s->vals - s->stack > s->cnt)
+    {
+      size_t n = s->vals - s->stack;
+      s->cnt *= 2;
+      s->stack = xrealloc (s->stack, s->cnt);
+      s->vals = s->stack + n;
+    }
+  s->vals++;
+  *s->vals = o;
+}
+
+void sympop (object_t * so)
+{
+  symbol_t *s = (symbol_t *) so->val;
+  s->vals--;
+}
+
 object_t *c_sym (char *name)
 {
   object_t *o = (object_t *) ht_search (symbol_table, name, strlen (name));

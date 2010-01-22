@@ -13,4 +13,4 @@ wisp_tests.o : wisp_tests.c
 
 .PHONY : clean all test
 clean :
-	$(RM) wisp_tests test.o
+	$(RM) wisp_tests wisp_tests.o

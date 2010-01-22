@@ -27,14 +27,3 @@ void cons_destroy (cons_t * o)
 {
   mm_free (mm, (void *) o);
 }
-
-object_t *cons (object_t * o, object_t * c)
-{
-  if (c != NIL && c->type != CONS)
-    return NIL;
-  object_t *newo = obj_create (CONS);
-  cons_t *car = (cons_t *) newo->val;
-  car->car = o;
-  car->cdr = c;
-  return newo;
-}

@@ -10,7 +10,7 @@ static mmanager_t *mm;
 static void object_clear (void *o)
 {
   object_t *obj = (object_t *) o;
-  obj->type = EMPTY;
+  obj->type = SYMBOL;
   obj->val = NIL;
 }
 
@@ -35,21 +35,20 @@ object_t *obj_create (type_t type)
       o->val = cons_create ();
       break;
     case SYMBOL:
-      o->val = xmalloc (sizeof (symbol_t));
+      o->val = symbol_create ();
       break;
     case STRING:
     case CFUNC:
-    case EMPTY:
       break;
     }
   return o;
 }
 
-object_t *c_cons (object_t *car, object_t *cdr)
+object_t *c_cons (object_t * car, object_t * cdr)
 {
   object_t *o = obj_create (CONS);
-  CAR(o) = car;
-  CDR(o) = cdr;
+  CAR (o) = car;
+  CDR (o) = cdr;
   return o;
 }
 
@@ -74,6 +73,13 @@ object_t *c_str (char *str)
   return o;
 }
 
+object_t *c_cfunc (object_t * (*f) (object_t *))
+{
+  object_t *o = obj_create (CFUNC);
+  o->val = (void *) f;
+  return o;
+}
+
 void obj_destroy (object_t * o)
 {
   mm_free (mm, (void *) o);
@@ -95,9 +101,6 @@ void obj_print (object_t * o)
     case SYMBOL:
       printf ("%s", ((symbol_t *) o->val)->name);
       break;
-    case EMPTY:
-      printf ("EMPTY");
-      break;
     case CONS:
       printf ("(");
       obj_print (CAR (o));
@@ -106,7 +109,7 @@ void obj_print (object_t * o)
       printf (")");
       break;
     case CFUNC:
-      printf ("CFUNC(%p)", o->val);
+      printf ("<CFUNC %p>", o->val);
       break;
     default:
       printf ("ERROR");
