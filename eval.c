@@ -18,6 +18,22 @@ object_t *eval_list (object_t * lst)
   return c_cons (eval (CAR (lst)), eval_list (CDR (lst)));
 }
 
+void assign_args (object_t * vars, object_t * vals)
+{
+  if (vars == NIL)
+    return;
+  sympush (CAR (vars), CAR (vals));
+  assign_args (CDR (vars), CDR (vals));
+}
+
+void unassign_args (object_t * vars)
+{
+  if (vars == NIL)
+    return;
+  sympop (CAR (vars));
+  unassign_args (CDR (vars));
+}
+
 object_t *eval (object_t * o)
 {
   if (o->type != CONS && o->type != SYMBOL)
@@ -34,11 +50,12 @@ object_t *eval (object_t * o)
       printf ("\n");
     }
 
-
   if (f->type == CFUNC || f->type == CONS)
     {
+      /* c function or list function (eval args) */
       object_t *args = eval_list (CDR (o));
       if (f->type == CFUNC)
+	/* c function */
 	{
 	  object_t *(*cf) (object_t * o) = f->val;
 	  return cf (args);
@@ -46,11 +63,34 @@ object_t *eval (object_t * o)
       else
 	{
 	  /* list form */
+	  object_t *vars = CAR (CDR (f));
+	  assign_args (vars, args);
+	  object_t *r = NIL, *p = CDR (CDR (f));
+	  while (p != NIL)
+	    {
+	      r = eval (CAR (p));
+	      p = CDR (p);
+	    }
+	  unassign_args (vars);
+	  return r;
 	}
     }
   else
     {
       /* special form or macro */
+      object_t *args = CDR (o);
+      if (f->type == CMACRO)
+	{
+	  /* c macro */
+	  object_t *(*cf) (object_t * o) = f->val;
+	  return cf (args);
+	}
+      else if (f->type == SPECIAL)
+	{
+	  /* special form */
+	  object_t *(*cf) (object_t * o) = f->val;
+	  return cf (args);
+	}
     }
   return NIL;
 }

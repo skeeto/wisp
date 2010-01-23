@@ -13,6 +13,6 @@ extern object_t *lambda;	/* the lambda symbol */
 
 #define IS_FUNC(o) \
   ((o->type == CONS && CAR(o)->type == SYMBOL && sym_eq(CAR(o), lambda)) \
-   || (o->type == CFUNC))
+   || (o->type == CFUNC) || (o->type == CMACRO) || (o->type == SPECIAL))
 
 #endif /* EVAL_H */

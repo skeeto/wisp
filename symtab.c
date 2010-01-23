@@ -57,10 +57,12 @@ object_t *c_sym (char *name)
   if (o == NULL)
     {
       /* intern this symbol */
+      char *newname = xstrdup (name);
       o = obj_create (SYMBOL);
-      SYMNAME (o) = name;
+      SYMNAME (o) = newname;
       SET (o, NIL);
-      ht_insert (symbol_table, name, strlen (name), o, sizeof (object_t *));
+      ht_insert (symbol_table, newname, strlen (newname), o,
+		 sizeof (object_t *));
     }
   return o;
 }

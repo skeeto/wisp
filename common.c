@@ -26,6 +26,13 @@ void *xrealloc (void *p, size_t size)
   return np;
 }
 
+char *xstrdup (char *str)
+{
+  char *newstr = xmalloc (strlen (str) + 1);
+  strcpy (newstr, str);
+  return newstr;
+}
+
 void error (char *str)
 {
   printf ("%s\n", str);

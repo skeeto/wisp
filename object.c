@@ -39,6 +39,8 @@ object_t *obj_create (type_t type)
       break;
     case STRING:
     case CFUNC:
+    case CMACRO:
+    case SPECIAL:
       break;
     }
   return o;
@@ -69,13 +71,20 @@ object_t *c_float (double f)
 object_t *c_str (char *str)
 {
   object_t *o = obj_create (STRING);
-  o->val = (void *) str;
+  o->val = (void *) xstrdup (str);
   return o;
 }
 
 object_t *c_cfunc (object_t * (*f) (object_t *))
 {
   object_t *o = obj_create (CFUNC);
+  o->val = (void *) f;
+  return o;
+}
+
+object_t *c_cmacro (object_t * (*f) (object_t * o))
+{
+  object_t *o = obj_create (CMACRO);
   o->val = (void *) f;
   return o;
 }
@@ -110,6 +119,12 @@ void obj_print (object_t * o)
       break;
     case CFUNC:
       printf ("<CFUNC %p>", o->val);
+      break;
+    case CMACRO:
+      printf ("<CMACRO %p>", o->val);
+      break;
+    case SPECIAL:
+      printf ("<SPECIAL %p>", o->val);
       break;
     default:
       printf ("ERROR");

@@ -2,7 +2,7 @@
 #define OBJECT_H
 
 typedef enum types
-{ INT, FLOAT, STRING, SYMBOL, CONS, CFUNC } type_t;
+{ INT, FLOAT, STRING, SYMBOL, CONS, CFUNC, CMACRO, SPECIAL } type_t;
 
 typedef struct object
 {
@@ -22,7 +22,8 @@ object_t *c_cons (object_t * car, object_t * cdr);
 object_t *c_int (int n);
 object_t *c_float (double f);
 object_t *c_str (char *str);
-object_t *c_cfunc (object_t *(*f) (object_t * o));
+object_t *c_cfunc (object_t * (*f) (object_t * o));
+object_t *c_cmacro (object_t * (*f) (object_t * o));
 void obj_destroy (object_t * o);
 
 #define OINT(o) *((int *) o->val)
