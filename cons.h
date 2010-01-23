@@ -20,8 +20,8 @@ void cons_destroy (cons_t * c);
 /* list operators */
 object_t *cons (object_t * o, object_t * c);
 
-#define CAR(o) ((cons_t *) (o->val))->car
-#define CDR(o) ((cons_t *) (o->val))->cdr
+#define CAR(o) ((cons_t *) ((o)->val))->car
+#define CDR(o) ((cons_t *) ((o)->val))->cdr
 
 #define LISTP(o) o->type == CONS || o == NIL
 

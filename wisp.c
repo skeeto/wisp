@@ -6,6 +6,7 @@
 /* parser crap */
 extern FILE *yyin;
 int yyparse ();
+void parser_init ();
 
 /* Initilize all the systems. */
 void init ()
@@ -16,6 +17,7 @@ void init ()
   cons_init ();
   eval_init ();
   lisp_init ();
+  parser_init ();
 }
 
 int main (int argc, char **argv)
@@ -23,14 +25,6 @@ int main (int argc, char **argv)
   (void) argc;
   (void) argv;
   init ();
-
-  object_t *lst =
-    c_cons (c_sym ("+"), c_cons (c_int (10), c_cons (c_int (34), NIL)));
-  object_t *sexp = c_cons (c_sym ("+"), c_cons (lst, CDR (lst)));
-  obj_print (sexp);
-  printf ("\n");
-  obj_print (eval (sexp));
-  printf ("\n");
 
   yyin = stdin;
   yyparse();
