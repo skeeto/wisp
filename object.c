@@ -89,6 +89,13 @@ object_t *c_cmacro (object_t * (*f) (object_t * o))
   return o;
 }
 
+object_t *c_special (object_t * (*f) (object_t * o))
+{
+  object_t *o = obj_create (SPECIAL);
+  o->val = (void *) f;
+  return o;
+}
+
 void obj_destroy (object_t * o)
 {
   mm_free (mm, (void *) o);

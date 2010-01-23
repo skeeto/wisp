@@ -18,6 +18,17 @@ object_t *eval_list (object_t * lst)
   return c_cons (eval (CAR (lst)), eval_list (CDR (lst)));
 }
 
+object_t *eval_body (object_t *body)
+{
+  object_t *r = NIL;
+  while (body != NIL)
+    {
+      r = eval (CAR (body));
+      body = CDR (body);
+    }
+  return r;
+}
+
 void assign_args (object_t * vars, object_t * vals)
 {
   if (vars == NIL)
@@ -65,12 +76,7 @@ object_t *eval (object_t * o)
 	  /* list form */
 	  object_t *vars = CAR (CDR (f));
 	  assign_args (vars, args);
-	  object_t *r = NIL, *p = CDR (CDR (f));
-	  while (p != NIL)
-	    {
-	      r = eval (CAR (p));
-	      p = CDR (p);
-	    }
+	  object_t *r = eval_body (CDR (CDR (f)));
 	  unassign_args (vars);
 	  return r;
 	}

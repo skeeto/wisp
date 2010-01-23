@@ -8,6 +8,7 @@ int fileno(FILE *);
 int line_num;			/* line counter */
 %}
 
+%option always-interactive
 %%
 
  /* handle strings (non-numbers) */

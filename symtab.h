@@ -33,5 +33,6 @@ void sympush (object_t * so, object_t * o);
 
 /* Constants */
 extern object_t *NIL;
+extern object_t *T;
 
 #endif /* SYMTAB_H */

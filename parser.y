@@ -9,6 +9,9 @@ int yylex ();
 int yyerror (char *);
 extern int line_num;
 
+int interactive;
+char *prompt = "wisp> ";
+
 int yywrap ()
 {
   return 1;
@@ -45,7 +48,13 @@ input : /* empty */
      | input exp
 ;
 
-exp : sexp   { obj_print (eval (CAR (pop ()))); printf ("\n"); push (); }
+exp : sexp   { object_t *r = eval (CAR (pop ()));
+               if (interactive)
+		 {
+		   obj_print (r);
+		   printf ("\n%s", prompt);
+		 }
+               push (); }
 ;
 
 sexp : atom

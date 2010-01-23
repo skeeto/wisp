@@ -6,7 +6,7 @@
 
 static hashtab_t *symbol_table;
 
-object_t *NIL;
+object_t *NIL, *T;
 
 void symtab_init ()
 {
@@ -15,7 +15,8 @@ void symtab_init ()
   /* set up t and nil constants */
   NIL = c_sym ("nil");
   SET (NIL, NIL);
-  SET (c_sym ("t"), c_sym ("t"));
+  T = c_sym ("t");
+  SET (T, T);
 }
 
 int sym_eq (object_t * a, object_t * b)
