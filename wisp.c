@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include "common.h"
-#include "cons.h"
-#include "symtab.h"
-#include "object.h"
-#include "eval.h"
+#include "wisp.h"
 #include "lisp.h"
 
 /* parser crap */

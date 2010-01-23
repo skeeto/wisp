@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "wisp.h"
 
 /* lex declarations */
 extern FILE *yyin;
@@ -16,14 +17,16 @@ int yywrap ()
 %defines
 
 %union {
-  char *str;
-  int i;
-  double f;
+  object_t *str;
+  object_t *i;
+  object_t *f;
+  object_t *sym;
 }
 
 %token <str> TOK_STR
 %token <i> TOK_INT
 %token <f> TOK_FLOAT
+%token <sym> TOK_SYMBOL
 
 %%
 
@@ -46,6 +49,7 @@ series : sexp series
 atom : TOK_STR            { printf("see STR\n"); }
      | TOK_INT            { printf("see INT\n"); }
      | TOK_FLOAT          { printf("see FLOAT\n"); }
+     | TOK_SYMBOL         { printf("see SYMBOL\n"); }
 ;
 
 %%

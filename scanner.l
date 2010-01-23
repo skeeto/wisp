@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "wisp.h"
 #include "y.tab.h"
 
 int fileno(FILE *);
@@ -10,11 +11,19 @@ int line_num;			/* line counter */
 %%
 
  /* handle strings (non-numbers) */
-\"([^\"\\]*((\\\")|(\\\\))*)*\"        yylval.str = yytext; return TOK_STR;
+\"([^\"\\]*((\\\")|(\\\\))*)*\"       { yylval.str = c_str (yytext);
+                                        return TOK_STR; }
 
  /* handle integers and floats */
--?[0-9]+\.[0-9]+            yylval.f   = strtod(yytext, NULL); return TOK_FLOAT;
--?[0-9]+                    yylval.i   = atoi(yytext); return TOK_INT;
+-?[0-9]+\.[0-9]+            { yylval.f = c_float (strtod (yytext, NULL));
+                                           return TOK_FLOAT; }
+-?[0-9]+                    { yylval.i = c_int (atoi (yytext));
+                                           return TOK_INT; }
+
+ /* symbols */
+[a-zA-Z0-9!@#$%^&*_\-=+:;\'<>/\\|?~]+  {
+                               yylval.sym = c_sym (yytext);
+                                           return TOK_SYMBOL; }
 
  /* ignore comments */
 ;[^\n]*\n                   line_num++;
