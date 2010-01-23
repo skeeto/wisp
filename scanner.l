@@ -25,6 +25,10 @@ int line_num;			/* line counter */
                                yylval.sym = c_sym (yytext);
                                            return TOK_SYMBOL; }
 
+ /* parens */
+\(                          return LP;
+\)                          return RP;
+
  /* ignore comments */
 ;[^\n]*\n                   line_num++;
 

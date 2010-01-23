@@ -27,6 +27,8 @@ int yywrap ()
 %token <i> TOK_INT
 %token <f> TOK_FLOAT
 %token <sym> TOK_SYMBOL
+%token LP
+%token RP
 
 %%
 
@@ -37,9 +39,9 @@ input : /* empty */
 exp : sexp   { printf("SEXP\n"); }
 ;
 
-sexp : atom                   { printf("see atom\n"); }
-     | '(' series ')'         { printf("see (s)\n"); }
-     | '(' sexp '.' sexp ')'  { printf("see (s . s)\n"); }
+sexp : atom                 { printf("see atom\n"); }
+     | lp series rp         { printf("see (s)\n"); }
+     | lp sexp '.' sexp rp  { printf("see (s . s)\n"); }
 ;
 
 series : sexp series
@@ -50,6 +52,12 @@ atom : TOK_STR            { printf("see STR\n"); }
      | TOK_INT            { printf("see INT\n"); }
      | TOK_FLOAT          { printf("see FLOAT\n"); }
      | TOK_SYMBOL         { printf("see SYMBOL\n"); }
+;
+
+lp : LP                   { printf("LP\n"); }
+;
+
+rp : RP                   { printf("RP\n"); }
 ;
 
 %%
