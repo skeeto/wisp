@@ -6,6 +6,10 @@
 #include "eval.h"
 #include "lisp.h"
 
+/* parser crap */
+extern FILE *yyin;
+int yyparse ();
+
 /* Initilize all the systems. */
 void init ()
 {
@@ -17,28 +21,11 @@ void init ()
   lisp_init ();
 }
 
-object_t *setq (object_t * lst)
-{
-  object_t *v = CAR (lst);
-  if (v->type != SYMBOL)
-    {
-      printf ("error: setq: not a symbol!\n");
-      return NIL;
-    }
-  SET (v, CAR (CDR (lst)));
-  return NIL;
-}
-
 int main (int argc, char **argv)
 {
   (void) argc;
   (void) argv;
   init ();
-
-  obj_print (c_cons
-	     (c_sym ("defun"),
-	      c_cons (c_str ("hello"), c_cons (c_int (10), NIL))));
-  printf ("\n");
 
   object_t *lst =
     c_cons (c_sym ("+"), c_cons (c_int (10), c_cons (c_int (34), NIL)));
@@ -47,4 +34,7 @@ int main (int argc, char **argv)
   printf ("\n");
   obj_print (eval (sexp));
   printf ("\n");
+
+  yyin = stdin;
+  yyparse();
 }

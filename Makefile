@@ -4,7 +4,8 @@ all : wisp
 test : all
 	make -C test test
 
-OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o lisp.o
+OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o \
+      lisp.o parser.o scanner.o
 
 wisp : $(OBJ)
 
@@ -17,11 +18,14 @@ mem.o : mem.c mem.h common.h
 lisp.o : lisp.c lisp.h object.h symtab.h cons.h
 common.o : common.c common.h
 
+parser.o : parser.y
+scanner.o : scanner.l
+
 # Hash table
 hashtab.o : hashtab.c hashtab.h
 
 .PHONY : all clean test
 
 clean : 
-	$(RM) $(OBJ) wisp
+	$(RM) $(OBJ) wisp y.tab.h
 	make -C test clean

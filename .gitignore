@@ -1,3 +1,4 @@
 *.o
 wisp
 wisp_tests
+y.tab.h
