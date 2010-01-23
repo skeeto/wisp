@@ -1,16 +1,20 @@
 * Core
  * garbage collection
  * ( . ) parsing
- * lambda eval
- * special forms
  * macro
+ * error handling
+ * number of arguments check
+  * &rest
+  * &optional
+ * undefined variables. all are defined to nil atm
 
 * CFUNC Define
  * maths
- * defun
- * cond/if/and/or
+ * cond/and/or
+ * let
  * file i/o w/ lisp reader/writer
  * string ops
 
 * Lisp Define
  * alist, plist
+ * more ...
