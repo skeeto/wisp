@@ -1,0 +1,16 @@
+* Core
+ * garbage collection
+ * ( . ) parsing
+ * lambda eval
+ * special forms
+ * macro
+
+* CFUNC Define
+ * maths
+ * defun
+ * cond/if/and/or
+ * file i/o w/ lisp reader/writer
+ * string ops
+
+* Lisp Define
+ * alist, plist
