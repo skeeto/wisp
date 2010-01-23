@@ -68,6 +68,11 @@ object_t *lisp_if (object_t * lst)
   return eval_body (CDR (CDR (lst)));
 }
 
+object_t *progn (object_t * lst)
+{
+  return eval_body (lst);
+}
+
 object_t *eq (object_t * lst)
 {
   object_t *a = CAR (lst);
@@ -119,6 +124,20 @@ object_t *nullp (object_t * lst)
   return NIL;
 }
 
+object_t *funcp (object_t *lst)
+{
+  if (IS_FUNC (CAR (lst)))
+    return T;
+  return NIL;
+}
+
+object_t *listp (object_t *lst)
+{
+  if (CAR (lst)->type == CONS || CAR (lst) == NIL)
+    return T;
+  return NIL;
+}
+
 void lisp_init ()
 {
   /* install cfuncs */
@@ -134,4 +153,7 @@ void lisp_init ()
   SET (c_sym ("eql"), c_cfunc (&eql));
   SET (c_sym ("nullp"), c_cfunc (&nullp));
   SET (c_sym ("not"), c_cfunc (&nullp));
+  SET (c_sym ("funcp"), c_cfunc (&funcp));
+  SET (c_sym ("listp"), c_cfunc (&listp));
+  SET (c_sym ("progn"), c_special (&progn));
 }
