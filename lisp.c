@@ -8,9 +8,24 @@
 
 object_t *addition (object_t * lst)
 {
-  if (lst == NIL)
-    return c_int (0);
-  return c_int (OINT (CAR (lst)) + OINT (addition (CDR (lst))));
+  double accum = 0;
+  int intmode = 1;
+
+  object_t *p = lst;
+  while (p != NIL)
+    {
+      if (CAR (p)->type == FLOAT)
+	{
+	  intmode = 0;
+	  accum += OFLOAT (CAR (p));
+	}
+      else if (CAR (p)->type == INT)
+	accum += OINT ( CAR(p));
+      p = CDR (p);
+    }
+  if (intmode)
+    return c_int ((int) accum);
+  return c_float ((double) accum);
 }
 
 object_t *quote (object_t * lst)
@@ -97,7 +112,7 @@ object_t *eql (object_t * lst)
   return NIL;
 }
 
-object_t *nullp(object_t *lst)
+object_t *nullp (object_t * lst)
 {
   if (CAR (lst) == NIL)
     return T;
