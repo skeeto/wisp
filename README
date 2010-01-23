@@ -1,2 +1,60 @@
 This is intended to be a simple lisp implementation as my own little
-experiment.
+experiment. It's a dynamically typed lisp-1 (functions share a
+namespace with variables).
+
+There is no garbage collection or error handling yet. There are lots
+of checks missing. Some useful types are implemented yet, like arrays
+and hashtables. However, the code's here and it's pretty easy to dig
+in. So if you're interested dive in and write it! :-)
+
+At the same time, a lot could still change, cleaning up the codebase.
+
+I don't plan on sticking readline or something on top of the
+interactive prompt. I suggest you use rlwrap with it.
+
+== Contributing ==
+
+All functions and macros should be in lisp form when possible. For
+now, all of these are going into core.wisp.
+
+For functions that need C access, these are currently being placed in
+lisp.c. In the future, if this file gets large it will be broken up.
+
+When I remember to, I run GNU indent on all the code with just the
+-npsl flag. If you do this, your code will match the style.
+
+I've put some stuff I want to get done in the TODO list.
+
+== Writing CFUNCs ==
+
+CFUNCs are C functions that have the following declaration.
+
+object_t *function (object_t *lst);
+
+The single argument will be a cons cell object containing all your
+arguments as a list. For your convenience in accessing this structure
+there are a number of macros available, defined in the various header
+files: CAR, CDR, OINT, OFLOAT, OSTR
+
+Look at the existing functions for example of what to do right now.
+
+The function eval() and eval_body() are available fir further
+evaluation of the structure. This is more useful in special forms than
+anything else.
+
+I don't have an error handling system at the moment, so there's
+nothing to do with that yet. It will eventually throw a symbol or
+something. Don't know yet.
+
+All objects you create should be either freed with obj_destroy or be
+reachable by the return object. This way it will work properly with
+the garbage collector once I get that in place.
+
+Once the function is defined, you can install it in lisp_init() with,
+
+SET (c_sym ("function"), c_cfunc (&function));
+
+If it's a special form or cmacro you will need to adjust
+that. Currently, the only difference between a special form and a
+cmacro is the name. I'm probably doing something wrong, so their
+behaviors may diverge in the future.
