@@ -111,6 +111,78 @@ object_t *divide (object_t * lst)
   return c_float ((double) accum);
 }
 
+object_t *less_than (object_t * lst)
+{
+  object_t *ao = CAR (lst);
+  object_t *bo = CAR (CDR (lst));
+  double a = 0, b = 0;
+  if (ao->type == INT)
+    a = OINT (ao);
+  else if (ao->type == FLOAT)
+    a = OFLOAT (ao);
+  if (bo->type == INT)
+    b = OINT (bo);
+  else if (bo->type == FLOAT)
+    b = OFLOAT (bo);
+  if (a < b)
+    return T;
+  return NIL;
+}
+
+object_t *less_than_or_eq (object_t * lst)
+{
+  object_t *ao = CAR (lst);
+  object_t *bo = CAR (CDR (lst));
+  double a = 0, b = 0;
+  if (ao->type == INT)
+    a = OINT (ao);
+  else if (ao->type == FLOAT)
+    a = OFLOAT (ao);
+  if (bo->type == INT)
+    b = OINT (bo);
+  else if (bo->type == FLOAT)
+    b = OFLOAT (bo);
+  if (a <= b)
+    return T;
+  return NIL;
+}
+
+object_t *greater_than (object_t * lst)
+{
+  object_t *ao = CAR (lst);
+  object_t *bo = CAR (CDR (lst));
+  double a = 0, b = 0;
+  if (ao->type == INT)
+    a = OINT (ao);
+  else if (ao->type == FLOAT)
+    a = OFLOAT (ao);
+  if (bo->type == INT)
+    b = OINT (bo);
+  else if (bo->type == FLOAT)
+    b = OFLOAT (bo);
+  if (a > b)
+    return T;
+  return NIL;
+}
+
+object_t *greater_than_or_eq (object_t * lst)
+{
+  object_t *ao = CAR (lst);
+  object_t *bo = CAR (CDR (lst));
+  double a = 0, b = 0;
+  if (ao->type == INT)
+    a = OINT (ao);
+  else if (ao->type == FLOAT)
+    a = OFLOAT (ao);
+  if (bo->type == INT)
+    b = OINT (bo);
+  else if (bo->type == FLOAT)
+    b = OFLOAT (bo);
+  if (a >= b)
+    return T;
+  return NIL;
+}
+
 /* Various basic stuff */
 
 object_t *quote (object_t * lst)
@@ -177,6 +249,14 @@ object_t *let (object_t * lst)
       sympop (CAR (pair));
       p = CDR (p);
     }
+  return r;
+}
+
+object_t *lisp_while (object_t * lst)
+{
+  object_t *r = NIL, *cond = CAR (lst), *body = CDR (lst);
+  while (eval (cond) != NIL)
+    r = eval_body (body);
   return r;
 }
 
@@ -307,6 +387,10 @@ void lisp_init ()
   SET (c_sym ("*"), c_cfunc (&multiply));
   SET (c_sym ("-"), c_cfunc (&subtract));
   SET (c_sym ("/"), c_cfunc (&divide));
+  SET (c_sym ("<"), c_cfunc (&less_than));
+  SET (c_sym ("<="), c_cfunc (&less_than_or_eq));
+  SET (c_sym (">"), c_cfunc (&greater_than));
+  SET (c_sym (">="), c_cfunc (&greater_than_or_eq));
 
   /* Various */
   SET (c_sym ("quote"), c_cmacro (&quote));
@@ -319,6 +403,7 @@ void lisp_init ()
   SET (c_sym ("not"), c_cfunc (&nullp));
   SET (c_sym ("progn"), c_special (&progn));
   SET (c_sym ("let"), c_special (&let));
+  SET (c_sym ("while"), c_special (&lisp_while));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));
