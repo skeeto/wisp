@@ -64,6 +64,8 @@ object_t *c_sym (char *name)
       SET (o, NIL);
       ht_insert (symbol_table, newname, strlen (newname), o,
 		 sizeof (object_t *));
+      if (name[0] == ':')
+	SET (o, o);
     }
   return o;
 }
