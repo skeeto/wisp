@@ -17,6 +17,7 @@
  * loop detection needed in places
  * use unprocess_string()
  * add quoting synatic sugar to parser
+ * Upgrade string type
 
 * CFUNC Define
  * maths
