@@ -25,6 +25,28 @@ When I remember to, I run GNU indent on all the code with just the
 
 I've put some stuff I want to get done in the TODO list.
 
+== Getting started with internals ==
+
+The object_t struct defined in object.h is all the lisp objects. Cons
+cells, integers, etc. It has a type field, which matches the type_t
+enumeration (also defined there) indicating the object type, and a val
+void pointer pointing to the object data itself.
+
+Almost all of the convenient object creation functions are defined
+here, prefixed with c_. Use these to make objects.
+
+Symbols are interned, so they act like singletons. A given symbol has
+only one instance of itself at any time. The c_sym() function will
+enforce this.
+
+Accessing objects stored in symbols can be done with the SET and GET
+macros.
+
+The nil and t symbols are already interned and are made available as
+the global variables T and NIL. Object pointers, including those in
+cons cells, should initialize/default to NIL rather than NULL. That
+way a NULL pointer will never be dereferenced.
+
 == Writing CFUNCs ==
 
 CFUNCs are C functions that have the following declaration.

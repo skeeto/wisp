@@ -1,12 +1,22 @@
+* Key
+ + import
+ * normal
+ - unimportant
+
+
 * Core
  * garbage collection
- * ( . ) parsing
+ + ( . ) parsing
  * macro
  * error handling
  * number of arguments check
   * &rest
   * &optional
  * undefined variables. all are defined to nil atm
+ * : symbols (eval to self)
+ * hashtable type
+ * array type
+ - arbitrary precision
 
 * CFUNC Define
  * maths
@@ -18,3 +28,10 @@
 * Lisp Define
  * alist, plist
  * more ...
+
+* Documentation
+ * document the defined functions
+ * probably should document the undefined ones too, to plan ahead
+
+* Test suite
+ * add more tests!
