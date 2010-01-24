@@ -12,6 +12,10 @@ At the same time, a lot could still change, cleaning up the codebase.
 I don't plan on sticking readline or something on top of the
 interactive prompt. I suggest you use rlwrap with it.
 
+It would also be useful to add this to your .emacs file,
+
+(add-to-list 'auto-mode-alist '(".wisp\\'" . lisp-interaction-mode))
+
 == Contributing ==
 
 All functions and macros should be in lisp form when possible. For
