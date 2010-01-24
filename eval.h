@@ -9,6 +9,8 @@ void eval_init ();
 
 object_t *eval (object_t * o);
 object_t *eval_body (object_t *body);
+void assign_args (object_t * vars, object_t * vals);
+void unassign_args (object_t * vars);
 
 extern object_t *lambda;	/* the lambda symbol */
 
