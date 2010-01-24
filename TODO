@@ -17,6 +17,10 @@
  * hashtable type
  * array type
  - arbitrary precision
+ * loop detection needed in places
+ * make obj_print nicer
+  * no cons cells
+  * use unprocess_string()
 
 * CFUNC Define
  * maths
