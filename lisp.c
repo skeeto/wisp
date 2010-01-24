@@ -312,6 +312,12 @@ object_t *eql (object_t * lst)
   return NIL;
 }
 
+object_t *lisp_print (object_t * lst)
+{
+  obj_print (CAR (lst), 1);
+  return NIL;
+}
+
 /* Symbol table */
 
 object_t *lisp_set (object_t * lst)
@@ -412,6 +418,7 @@ void lisp_init ()
   SET (c_sym ("let"), c_special (&let));
   SET (c_sym ("while"), c_special (&lisp_while));
   SET (c_sym ("eval"), c_cfunc (&eval_body));
+  SET (c_sym ("print"), c_cfunc (&lisp_print));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));
