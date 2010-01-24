@@ -21,7 +21,8 @@ For functions that need C access, these are currently being placed in
 lisp.c. In the future, if this file gets large it will be broken up.
 
 When I remember to, I run GNU indent on all the code with just the
--npsl flag. If you do this, your code will match the style.
+-npsl flag. If you do this, your code will match the style. Compiled
+code should give no warnings or errors and should conform to C99.
 
 I've put some stuff I want to get done in the TODO list.
 
