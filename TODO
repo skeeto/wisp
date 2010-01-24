@@ -30,6 +30,7 @@
  * more ...
 
 * Documentation
+ * document syntax and behavior
  * document the defined functions
  * probably should document the undefined ones too, to plan ahead
  - doc strings in functions?

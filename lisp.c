@@ -183,7 +183,30 @@ object_t *greater_than_or_eq (object_t * lst)
   return NIL;
 }
 
+object_t *numeq (object_t * lst)
+{
+  object_t *ao = CAR (lst);
+  object_t *bo = CAR (CDR (lst));
+  double a = 0, b = 0;
+  if (ao->type == INT)
+    a = OINT (ao);
+  else if (ao->type == FLOAT)
+    a = OFLOAT (ao);
+  if (bo->type == INT)
+    b = OINT (bo);
+  else if (bo->type == FLOAT)
+    b = OFLOAT (bo);
+  if (a == b)
+    return T;
+  return NIL;
+}
+
 /* Various basic stuff */
+
+object_t *lisp_cons (object_t * lst)
+{
+  return c_cons (CAR (lst), CAR (CDR (lst)));
+}
 
 object_t *quote (object_t * lst)
 {
@@ -403,6 +426,7 @@ void lisp_init ()
   SET (c_sym ("<="), c_cfunc (&less_than_or_eq));
   SET (c_sym (">"), c_cfunc (&greater_than));
   SET (c_sym (">="), c_cfunc (&greater_than_or_eq));
+  SET (c_sym ("="), c_cfunc (&numeq));
 
   /* Various */
   SET (c_sym ("quote"), c_special (&quote));
@@ -419,6 +443,7 @@ void lisp_init ()
   SET (c_sym ("while"), c_special (&lisp_while));
   SET (c_sym ("eval"), c_cfunc (&eval_body));
   SET (c_sym ("print"), c_cfunc (&lisp_print));
+  SET (c_sym ("cons"), c_cfunc (&lisp_cons));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));

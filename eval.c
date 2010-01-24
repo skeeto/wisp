@@ -34,7 +34,10 @@ void assign_args (object_t * vars, object_t * vals)
 {
   if (vars == NIL)
     return;
-  sympush (CAR (vars), CAR (vals));
+  if (vals != NIL)
+    sympush (CAR (vars), CAR (vals));
+  else
+    sympush (CAR (vars), NIL);
   assign_args (CDR (vars), CDR (vals));
 }
 
