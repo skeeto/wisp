@@ -1,3 +1,4 @@
+/* mem.h - generic obstack library */
 #ifndef MEM_H
 #define MEM_H
 

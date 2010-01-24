@@ -1,3 +1,4 @@
+/* objects.h - functions for manipulation of objects */
 #ifndef OBJECT_H
 #define OBJECT_H
 

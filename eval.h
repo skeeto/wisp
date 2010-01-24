@@ -1,3 +1,4 @@
+/* eval.h - list evaluation/execution functions */
 #ifndef EVAL_H
 #define EVAL_H
 

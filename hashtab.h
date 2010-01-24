@@ -1,3 +1,4 @@
+/* hashtab.h - generic hashtable implementation for use anywhere */
 #ifndef HASHTAB_H
 #define HASHTAB_H
 

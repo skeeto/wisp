@@ -1,3 +1,4 @@
+/* common.h - generic functions for use anywhere */
 #ifndef COMMON_H
 #define COMMON_H
 

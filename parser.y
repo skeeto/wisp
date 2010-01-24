@@ -1,3 +1,4 @@
+/* parser.y - parser generator for use with yacc (probably bison) */
 %{
 #include <stdio.h>
 #include "wisp.h"

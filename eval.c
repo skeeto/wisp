@@ -58,7 +58,7 @@ object_t *eval (object_t * o)
   if (!IS_FUNC (f))
     {
       printf ("error: not a function: ");
-      obj_print (CAR (o));
+      obj_print (CAR (o), 1);
       return NIL;
     }
 

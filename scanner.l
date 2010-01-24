@@ -1,3 +1,4 @@
+/* scanner.l - lexer for use with generated parser */
 %{
 #include <stdio.h>
 #include <string.h>

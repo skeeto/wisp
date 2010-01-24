@@ -1,3 +1,4 @@
+/* symtab.h - functions related to symbols and the symbol table */
 #ifndef SYMTAB_H
 #define SYMTAB_H
 

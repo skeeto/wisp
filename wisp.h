@@ -1,3 +1,4 @@
+/* wisp.h - main include for software accessing wisp C API */
 #ifndef WISP_H
 #define WISP_H
 
