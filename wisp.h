@@ -7,5 +7,6 @@
 #include "symtab.h"
 #include "object.h"
 #include "eval.h"
+#include "common.h"
 
 #endif /* LIST_H */

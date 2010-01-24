@@ -117,6 +117,21 @@ object_t *eql (object_t * lst)
   return NIL;
 }
 
+object_t *lisp_set (object_t *lst)
+{
+  /* check for symbol type */
+  SET (CAR (lst), CAR (CDR (lst)));
+  return CAR (CDR (lst));
+}
+
+object_t *lisp_value (object_t *lst)
+{
+  /* check for symbol type */
+  return GET (CAR (lst));
+}
+
+/* Predicates */
+
 object_t *nullp (object_t * lst)
 {
   if (CAR (lst) == NIL)
@@ -138,6 +153,42 @@ object_t *listp (object_t *lst)
   return NIL;
 }
 
+object_t *symbolp (object_t *lst)
+{
+  if (CAR (lst)->type == SYMBOL)
+    return T;
+  return NIL;
+}
+
+object_t *nump (object_t *lst)
+{
+  if (CAR (lst)->type == INT || CAR (lst)->type == FLOAT)
+    return T;
+  return NIL;
+}
+
+object_t *stringp (object_t *lst)
+{
+  if (CAR (lst)->type == STRING)
+    return T;
+  return NIL;
+}
+
+object_t *intp (object_t *lst)
+{
+  if (CAR (lst)->type == INT)
+    return T;
+  return NIL;
+}
+
+object_t *floatp (object_t *lst)
+{
+  if (CAR (lst)->type == FLOAT)
+    return T;
+  return NIL;
+}
+
+/* Installs all of the above functions. */
 void lisp_init ()
 {
   /* install cfuncs */
@@ -153,7 +204,16 @@ void lisp_init ()
   SET (c_sym ("eql"), c_cfunc (&eql));
   SET (c_sym ("nullp"), c_cfunc (&nullp));
   SET (c_sym ("not"), c_cfunc (&nullp));
+  SET (c_sym ("progn"), c_special (&progn));
+  SET (c_sym ("set"), c_cfunc (&lisp_set));
+  SET (c_sym ("value"), c_cfunc (&lisp_value));
+
+  /* Predicates */
   SET (c_sym ("funcp"), c_cfunc (&funcp));
   SET (c_sym ("listp"), c_cfunc (&listp));
-  SET (c_sym ("progn"), c_special (&progn));
+  SET (c_sym ("symbolp"), c_cfunc (&symbolp));
+  SET (c_sym ("stringp"), c_cfunc (&stringp));
+  SET (c_sym ("nump"), c_cfunc (&nump));
+  SET (c_sym ("intp"), c_cfunc (&intp));
+  SET (c_sym ("floatp"), c_cfunc (&floatp));
 }

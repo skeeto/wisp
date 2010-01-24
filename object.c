@@ -71,7 +71,7 @@ object_t *c_float (double f)
 object_t *c_str (char *str)
 {
   object_t *o = obj_create (STRING);
-  o->val = (void *) xstrdup (str);
+  o->val = (void *) str;
   return o;
 }
 

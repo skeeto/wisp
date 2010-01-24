@@ -12,7 +12,7 @@ int line_num;			/* line counter */
 %%
 
  /* handle strings (non-numbers) */
-\"([^\"\\]*((\\\")|(\\\\))*)*\"       { yylval.str = c_str (yytext);
+\"(\\.|[^\"])*\"       { yylval.str = c_str ( process_str (yytext));
                                         return TOK_STR; }
 
  /* handle integers and floats */

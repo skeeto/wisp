@@ -12,6 +12,7 @@ int err_cnt = 0, test_cnt = 0;
 
 void assert (int b, char *msg);
 void symbol_tests ();
+void string_tests ();
 
 void init ()
 {
@@ -28,6 +29,8 @@ int main ()
 
   printf ("Running symbol tests ...\n");
   symbol_tests ();
+  printf ("Running string tests ...\n");
+  string_tests ();
 
   if (err_cnt == 0)
     {
@@ -53,6 +56,14 @@ void assert (int b, char *msg)
     {
       printf ("assert passed: %s\n", msg);
     }
+}
+
+void string_tests ()
+{
+  assert (strcmp (process_str ("\"Hello\\\" there!\""), "Hello\" there!") ==
+	  0, "process_str()");
+  assert (strcmp (unprocess_str ("Hello\" there!"), "\"Hello\\\" there!\"") ==
+	  0, "unprocess_str()");
 }
 
 void symbol_tests ()

@@ -33,6 +33,64 @@ char *xstrdup (char *str)
   return newstr;
 }
 
+char *process_str (char *rawstr)
+{
+  char *str = xstrdup (rawstr + 1);	/* trim leading quote */
+
+  /* Remove backquotes. */
+  char *eq;
+  char *p = str;
+  while ((eq = strchr (p, '\\')) != NULL)
+    {
+      /* replace \ with next character */
+      *eq = *(eq + 1);
+      memmove (eq + 1, eq + 2, strlen (eq) + 1);
+      p = eq + 1;
+    }
+
+  str[strlen (str) - 1] = '\0';	/* remove trailing quote */
+
+  return str;
+}
+
+char *unprocess_str (char *cleanstr)
+{
+  /* Count the quotes and backquotes. */
+  char *p = cleanstr;
+  int cnt = 0;
+  while (*p != '\0')
+    {
+      if (*p == '\\' || *p == '"')
+	cnt++;
+      p++;
+    }
+
+  /* Two extra for quotes and one for each character that needs
+     escaping. */
+  char *str = xmalloc (strlen (cleanstr) + cnt + 2);
+  strcpy (str + 1, cleanstr);
+
+  /* Place backquotes. */
+  char *c = str + 1;
+  while (*c != '\0')
+    {
+      if (*c == '\\' || *c == '"')
+	{
+	  memmove (c + 1, c, strlen (c) + 1);
+	  *c = '\\';
+	  c++;
+	}
+      c++;
+    }
+
+  /* Surrounding quotes. */
+  str[0] = '"';
+  str[strlen (str) + 1] = '\0';
+  str[strlen (str)] = '"';
+
+  return str;
+}
+
 void error (char *str)
 {
   printf ("%s\n", str);
