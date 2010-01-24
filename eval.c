@@ -58,8 +58,8 @@ object_t *eval (object_t * o)
   if (!IS_FUNC (f))
     {
       printf ("error: not a function: ");
-      obj_print (f);
-      printf ("\n");
+      obj_print (CAR (o));
+      return NIL;
     }
 
   if (f->type == CFUNC || (f->type == CONS && sym_eq (CAR (f), lambda)))

@@ -51,8 +51,8 @@ input : /* empty */
 exp : sexp   { object_t *r = eval (CAR (pop ()));
                if (interactive)
 		 {
-		   obj_print (r);
-		   printf ("\n%s", prompt);
+		   obj_print (r, 1);
+		   printf ("%s", prompt);
 		 }
                push (); }
 ;

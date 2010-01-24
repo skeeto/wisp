@@ -14,7 +14,7 @@ typedef struct object
 void object_init ();
 
 /* Print an arbitrary object to stdout */
-void obj_print (object_t * o);
+void obj_print (object_t * o, int newline);
 
 /* Object creation */
 object_t *obj_create (type_t type);

@@ -15,9 +15,7 @@
  * array type
  - arbitrary precision
  * loop detection needed in places
- * make obj_print nicer
-  * no cons cells
-  * use unprocess_string()
+ * use unprocess_string()
  * add quoting synatic sugar to parser
 
 * CFUNC Define

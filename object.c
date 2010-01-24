@@ -93,10 +93,27 @@ void obj_destroy (object_t * o)
   mm_free (mm, (void *) o);
 }
 
-void obj_print (object_t * o)
+void obj_print (object_t * o, int newline)
 {
   switch (o->type)
     {
+    case CONS:
+      printf ("(");
+      object_t *p = o;
+      while (p->type == CONS)
+	{
+	  obj_print (CAR (p), 0);
+	  p = CDR (p);
+	  if (p->type == CONS)
+	    printf (" ");
+	}
+      if (p != NIL)
+	{
+	  printf (" . ");
+	  obj_print (p, 0);
+	}
+      printf (")");
+      break;
     case INT:
       printf ("%d", *((int *) o->val));
       break;
@@ -109,13 +126,6 @@ void obj_print (object_t * o)
     case SYMBOL:
       printf ("%s", ((symbol_t *) o->val)->name);
       break;
-    case CONS:
-      printf ("(");
-      obj_print (CAR (o));
-      printf (" . ");
-      obj_print (CDR (o));
-      printf (")");
-      break;
     case CFUNC:
       printf ("<CFUNC %p>", o->val);
       break;
@@ -125,4 +135,7 @@ void obj_print (object_t * o)
     default:
       printf ("ERROR");
     }
+
+  if (newline)
+    printf ("\n");
 }

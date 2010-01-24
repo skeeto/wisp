@@ -18,7 +18,7 @@ mem.o : mem.c mem.h common.h
 lisp.o : lisp.c lisp.h object.h symtab.h cons.h
 common.o : common.c common.h
 
-parser.o : parser.y
+parser.o : parser.y object.h common.h eval.h
 scanner.o : scanner.l
 
 # Hash table
