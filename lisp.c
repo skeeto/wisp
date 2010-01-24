@@ -202,6 +202,13 @@ object_t *defun (object_t * lst)
   return f;
 }
 
+object_t *defmacro (object_t * lst)
+{
+  object_t *f = c_cons (macro, CDR (lst));
+  SET (CAR (lst), f);
+  return f;
+}
+
 object_t *lisp_cdr (object_t * lst)
 {
   return CDR (CAR (lst));
@@ -297,7 +304,6 @@ object_t *eql (object_t * lst)
 	return T;
       break;
     case CFUNC:
-    case CMACRO:
     case SPECIAL:
       if (a->val == b->val)
 	return T;
@@ -393,9 +399,10 @@ void lisp_init ()
   SET (c_sym (">="), c_cfunc (&greater_than_or_eq));
 
   /* Various */
-  SET (c_sym ("quote"), c_cmacro (&quote));
-  SET (c_sym ("lambda"), c_cmacro (&lambda_f));
-  SET (c_sym ("defun"), c_cmacro (&defun));
+  SET (c_sym ("quote"), c_special (&quote));
+  SET (c_sym ("lambda"), c_special (&lambda_f));
+  SET (c_sym ("defun"), c_special (&defun));
+  SET (c_sym ("defmacro"), c_special (&defmacro));
   SET (c_sym ("car"), c_cfunc (&lisp_car));
   SET (c_sym ("cdr"), c_cfunc (&lisp_cdr));
   SET (c_sym ("list"), c_cfunc (&lisp_list));
@@ -404,6 +411,7 @@ void lisp_init ()
   SET (c_sym ("progn"), c_special (&progn));
   SET (c_sym ("let"), c_special (&let));
   SET (c_sym ("while"), c_special (&lisp_while));
+  SET (c_sym ("eval"), c_special (&eval));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));

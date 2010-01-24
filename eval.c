@@ -4,11 +4,12 @@
 #include "symtab.h"
 #include "eval.h"
 
-object_t *lambda;
+object_t *lambda, *macro;
 
 void eval_init ()
 {
   lambda = c_sym ("lambda");
+  macro = c_sym ("macro");
 }
 
 object_t *eval_list (object_t * lst)
@@ -18,7 +19,7 @@ object_t *eval_list (object_t * lst)
   return c_cons (eval (CAR (lst)), eval_list (CDR (lst)));
 }
 
-object_t *eval_body (object_t *body)
+object_t *eval_body (object_t * body)
 {
   object_t *r = NIL;
   while (body != NIL)
@@ -61,7 +62,7 @@ object_t *eval (object_t * o)
       printf ("\n");
     }
 
-  if (f->type == CFUNC || f->type == CONS)
+  if (f->type == CFUNC || (f->type == CONS && sym_eq (CAR (f), lambda)))
     {
       /* c function or list function (eval args) */
       object_t *args = eval_list (CDR (o));
@@ -85,17 +86,20 @@ object_t *eval (object_t * o)
     {
       /* special form or macro */
       object_t *args = CDR (o);
-      if (f->type == CMACRO)
-	{
-	  /* c macro */
-	  object_t *(*cf) (object_t * o) = f->val;
-	  return cf (args);
-	}
-      else if (f->type == SPECIAL)
+      if (f->type == SPECIAL)
 	{
 	  /* special form */
 	  object_t *(*cf) (object_t * o) = f->val;
 	  return cf (args);
+	}
+      else if (f->type == CONS)
+	{
+	  /* list form macro */
+	  object_t *vars = CAR (CDR (f));
+	  assign_args (vars, args);
+	  object_t *r = eval (eval_body (CDR (CDR (f))));
+	  unassign_args (vars);
+	  return r;
 	}
     }
   return NIL;

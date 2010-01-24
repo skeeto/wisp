@@ -81,7 +81,6 @@ Once the function is defined, you can install it in lisp_init() with,
 
 SET (c_sym ("function"), c_cfunc (&function));
 
-If it's a special form or cmacro you will need to adjust
-that. Currently, the only difference between a special form and a
-cmacro is the name. I'm probably doing something wrong, so their
-behaviors may diverge in the future.
+If it's a special form you will need to adjust that to
+c_special(). Like macros, special forms don't have their arguments
+evaluated first.
