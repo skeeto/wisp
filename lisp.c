@@ -158,6 +158,28 @@ object_t *progn (object_t * lst)
   return eval_body (lst);
 }
 
+object_t *let (object_t * lst)
+{
+  /* TODO: verify proper structure  */
+  object_t *p, *vlist;
+  p = vlist = CAR (lst);
+  while (p != NIL)
+    {
+      object_t *pair = CAR (p);
+      sympush (CAR (pair), eval (CAR (CDR (pair))));
+      p = CDR (p);
+    }
+  object_t *r = eval_body (CDR (lst));
+  p = vlist;
+  while (p != NIL)
+    {
+      object_t *pair = CAR (p);
+      sympop (CAR (pair));
+      p = CDR (p);
+    }
+  return r;
+}
+
 /* Equality */
 
 object_t *eq (object_t * lst)
@@ -208,14 +230,14 @@ object_t *eql (object_t * lst)
 
 object_t *lisp_set (object_t * lst)
 {
-  /* check for symbol type */
+  /* TODO: check for symbol type */
   SET (CAR (lst), CAR (CDR (lst)));
   return CAR (CDR (lst));
 }
 
 object_t *lisp_value (object_t * lst)
 {
-  /* check for symbol type */
+  /* TODO: check for symbol type */
   return GET (CAR (lst));
 }
 
@@ -296,6 +318,7 @@ void lisp_init ()
   SET (c_sym ("if"), c_special (&lisp_if));
   SET (c_sym ("not"), c_cfunc (&nullp));
   SET (c_sym ("progn"), c_special (&progn));
+  SET (c_sym ("let"), c_special (&let));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));
