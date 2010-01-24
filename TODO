@@ -6,7 +6,6 @@
 
 + Core
  * garbage collection
- + ( . ) parsing
  * error handling
  * number of arguments check
   * &rest

@@ -23,8 +23,8 @@ object_t **tip;
 
 static void push ();
 static object_t *pop ();
-static void add_obj (object_t *o);
-
+static void add_obj (object_t * o);
+static object_t *list_to_cons (object_t * lst);
 %}
 %defines
 
@@ -59,7 +59,7 @@ exp : sexp   { object_t *r = eval (CAR (pop ()));
 
 sexp : atom
      | lp series rp         { add_obj (pop ()); }
-     | lp sexp '.' sexp rp  { printf("see (s . s)\n"); }
+     | lp sexp '.' sexp rp  { add_obj (list_to_cons (pop ())); }
 ;
 
 series : sexp series
@@ -83,7 +83,7 @@ rp : RP
 void parser_init ()
 {
   ssize = 32;
-  tip = base = xmalloc (sizeof(object_t *) * ssize * 2);
+  tip = base = xmalloc (sizeof (object_t *) * ssize * 2);
   push ();
 }
 
@@ -93,7 +93,7 @@ static void push ()
   if (tip == base + ssize * 2)
     {
       ssize *= 2;
-      base = xrealloc (base, sizeof(object_t *) * ssize * 2);
+      base = xrealloc (base, sizeof (object_t *) * ssize * 2);
       tip = base + ssize;
     }
   *tip = c_cons (NIL, NIL);
@@ -106,7 +106,12 @@ static object_t *pop ()
   return CDR (*(tip + 2));
 }
 
-static void add_obj (object_t *o)
+static object_t *list_to_cons (object_t * lst)
+{
+  return c_cons (CAR (lst), CAR (CDR (lst)));
+}
+
+static void add_obj (object_t * o)
 {
   CDR (*(tip + 1)) = c_cons (o, NIL);
   *(tip + 1) = CDR (*(tip + 1));
