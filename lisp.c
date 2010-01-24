@@ -411,7 +411,7 @@ void lisp_init ()
   SET (c_sym ("progn"), c_special (&progn));
   SET (c_sym ("let"), c_special (&let));
   SET (c_sym ("while"), c_special (&lisp_while));
-  SET (c_sym ("eval"), c_special (&eval));
+  SET (c_sym ("eval"), c_cfunc (&eval_body));
 
   /* Symbol table */
   SET (c_sym ("set"), c_cfunc (&lisp_set));
