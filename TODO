@@ -4,16 +4,14 @@
  - unimportant
 
 
-* Core
++ Core
  * garbage collection
  + ( . ) parsing
- * macro
  * error handling
  * number of arguments check
   * &rest
   * &optional
  * undefined variables. all are defined to nil atm
- * : symbols (eval to self)
  * hashtable type
  * array type
  - arbitrary precision
@@ -21,11 +19,11 @@
  * make obj_print nicer
   * no cons cells
   * use unprocess_string()
+ * add quoting synatic sugar to parser
 
 * CFUNC Define
  * maths
  * cond/and/or
- * let
  * file i/o w/ lisp reader/writer
  * string ops
 
@@ -40,3 +38,4 @@
 
 * Test suite
  * add more tests!
+ * make lisp-side tests
