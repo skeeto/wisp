@@ -23,7 +23,7 @@ void count_line ();
                                            return TOK_INT; }
 
  /* symbols */
-[a-zA-Z0-9!@#$%^&*_\-=+:;\'<>/\\|?~]+  {
+[a-zA-Z0-9!@#$%^&*_\-=+:;<>/\\|?~]+  {
                                yylval.sym = c_sym (yytext);
                                            return TOK_SYMBOL; }
 

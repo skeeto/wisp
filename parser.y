@@ -71,9 +71,13 @@ exp : sexp   { object_t *sexp = pop ();
                midstate = 0; }
 ;
 
-sexp : atom                 { midstate = 1; }
-     | lp series rp         { add_obj (pop ()); }
-     | lp sexp '.' sexp rp  { add_obj (list_to_cons (pop ())); }
+sexp : atom                       { midstate = 1; }
+     | quote atom                 { midstate = 1; add_obj (pop()); }
+     | lp series rp               { add_obj (pop ()); }
+     | quote lp series rp         { add_obj (pop ()); add_obj (pop()); }
+     | lp sexp '.' sexp rp        { add_obj (list_to_cons (pop ())); }
+     | quote lp sexp '.' sexp rp  { add_obj (pop ());
+                                    add_obj (list_to_cons (pop ())); }
 ;
 
 series : sexp series
@@ -90,6 +94,9 @@ lp : LP                   { push (); midstate = 1; }
 ;
 
 rp : RP
+;
+
+quote : '\''               { push (); add_obj (c_sym ("quote")); }
 ;
 
 %%
