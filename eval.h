@@ -21,4 +21,10 @@ extern object_t *macro;		/* the macro symbol */
     && (sym_eq(CAR(o), lambda) || sym_eq(CAR(o), macro))) \
    || (o->type == CFUNC) || (o->type == SPECIAL))
 
+/* Error handling */
+extern object_t *err_symbol, *err_thrown, *err_attach;
+
+#define THROW(to, ao) err_thrown = to; err_attach = ao; return err_symbol
+#define CHECK(o) if (o == err_symbol) return err_symbol;
+
 #endif /* EVAL_H */

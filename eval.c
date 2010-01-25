@@ -5,11 +5,14 @@
 #include "eval.h"
 
 object_t *lambda, *macro;
+object_t *err_symbol, *err_thrown, *err_attach;
 
 void eval_init ()
 {
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
+  err_symbol = c_sym ("_error");
+  err_thrown = err_attach = NIL;
 }
 
 object_t *eval_list (object_t * lst)

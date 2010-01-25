@@ -424,6 +424,33 @@ object_t *floatp (object_t * lst)
   return NIL;
 }
 
+/* Error handling */
+
+object_t *throw (object_t * lst)
+{
+  THROW (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
+}
+
+object_t *catch (object_t * lst)
+{
+  object_t *csym = eval (CAR (lst));
+  CHECK (csym);
+  object_t *body = CDR (lst);
+  object_t *r = eval_body (body);
+  if (r == err_symbol)
+    {
+      if (csym == err_thrown)
+	{
+	  obj_destroy (csym);
+	  obj_destroy (err_thrown);
+	  return err_attach;
+	}
+      else
+	return err_symbol;
+    }
+  return r;
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -472,4 +499,8 @@ void lisp_init ()
   SSET (c_sym ("nump"), c_cfunc (&nump));
   SSET (c_sym ("intp"), c_cfunc (&intp));
   SSET (c_sym ("floatp"), c_cfunc (&floatp));
+
+  /* Error handling */
+  SSET (c_sym ("throw"), c_cfunc (&throw));
+  SSET (c_sym ("catch"), c_special (&catch));
 }
