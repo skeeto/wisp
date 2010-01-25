@@ -106,8 +106,10 @@ object_t *eval (object_t * o)
 	  /* list form macro */
 	  object_t *vars = CAR (CDR (f));
 	  assign_args (vars, args);
-	  object_t *r = eval (eval_body (CDR (CDR (f))));
+	  object_t *body = eval_body (CDR (CDR (f)));
+	  object_t *r = eval (body);
 	  unassign_args (vars);
+	  obj_destroy (body);
 	  return r;
 	}
     }
