@@ -4,13 +4,12 @@
 void mm_fill_stack (mmanager_t * mm)
 {
   void *p = xmalloc ((mm->size - (mm->stack - mm->base)) * mm->osize);
-  for (; mm->stack < mm->base + mm->size;
-       mm->stack += sizeof (void **), p += mm->osize)
+  for (; mm->stack < mm->base + mm->size; mm->stack++, p += mm->osize)
     {
       mm->clearf (p);
       *(mm->stack) = p;
     }
-  mm->stack -= sizeof (void **);
+  mm->stack--;
 }
 
 void mm_resize_stack (mmanager_t * mm)
@@ -18,7 +17,7 @@ void mm_resize_stack (mmanager_t * mm)
   mm->size *= 2;
   size_t count = mm->stack - mm->base;
   mm->base = xrealloc (mm->base, mm->size);
-  mm->stack = mm->base + count * sizeof (void *);
+  mm->stack = mm->base + count;
 }
 
 mmanager_t *mm_create (size_t osize, void (*clear_func) (void *o))
@@ -43,7 +42,7 @@ void *mm_alloc (mmanager_t * mm)
   if (mm->stack == mm->base)
     mm_fill_stack (mm);
   void *p = *(mm->stack);
-  mm->stack -= sizeof (void **);
+  mm->stack--;
   return p;
 }
 
@@ -51,6 +50,6 @@ void mm_free (mmanager_t * mm, void *o)
 {
   if (mm->stack == mm->base + mm->size)
     mm_resize_stack (mm);
-  mm->stack += sizeof (void **);
+  mm->stack++;
   *(mm->stack) = o;
 }
