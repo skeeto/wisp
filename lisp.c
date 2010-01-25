@@ -271,7 +271,9 @@ object_t *let (object_t * lst)
   while (p != NIL)
     {
       object_t *pair = CAR (p);
-      sympush (CAR (pair), eval (CAR (CDR (pair))));
+      object_t *e = eval (CAR (CDR (pair)));
+      sympush (CAR (pair), e);
+      obj_destroy (e);
       p = CDR (p);
     }
   object_t *r = eval_body (CDR (lst));
@@ -291,6 +293,7 @@ object_t *lisp_while (object_t * lst)
   object_t *condr;
   while ((condr = eval (cond)) != NIL)
     {
+      obj_destroy (r);
       obj_destroy (condr);
       r = eval_body (body);
     }
