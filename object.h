@@ -40,4 +40,7 @@ void obj_destroy (object_t * o);
 
 #define UPREF(o) ((o)->refs++, o)
 
+/* Used for debugging: print string followed by object. */
+#define DB_OP(str, o) printf(str); obj_print(o,1);
+
 #endif /* OBJECT_H */
