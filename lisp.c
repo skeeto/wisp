@@ -210,7 +210,7 @@ object_t *lisp_cons (object_t * lst)
 
 object_t *quote (object_t * lst)
 {
-  return CAR (lst);
+  return UPREF (CAR (lst));
 }
 
 object_t *lambda_f (object_t * lst)
@@ -234,12 +234,12 @@ object_t *defmacro (object_t * lst)
 
 object_t *lisp_cdr (object_t * lst)
 {
-  return CDR (CAR (lst));
+  return UPREF (CDR (CAR (lst)));
 }
 
 object_t *lisp_car (object_t * lst)
 {
-  return CAR (CAR (lst));
+  return UPREF (CAR (CAR (lst)));
 }
 
 object_t *lisp_list (object_t * lst)
