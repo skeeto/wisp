@@ -45,4 +45,5 @@ int main (int argc, char **argv)
   printf ("Happy hacking!\n%s", prompt);
   yyin = stdin;
   yyparse ();
+  printf ("\n");
 }
