@@ -29,6 +29,12 @@ void obj_destroy (object_t * o);
 
 #define OINT(o) *((int *) o->val)
 #define OFLOAT(o) *((double *) o->val)
-#define OSTR(o) (char *) o->val
+#define OSTR(o) ((char *) o->val)
+
+#define INTP(o) (o->type == INT)
+#define FLOATP(o) (o->type == FLOAT)
+#define STRINGP(o) (o->type == STRING)
+#define SYMBOLP(o) (o->type == SYMBOL)
+#define CONSP(o) (o->type == CONS)
 
 #endif /* OBJECT_H */

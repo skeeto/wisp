@@ -16,7 +16,7 @@ void unassign_args (object_t * vars);
 extern object_t *lambda;	/* the lambda symbol */
 extern object_t *macro;		/* the macro symbol */
 
-#define IS_FUNC(o) \
+#define FUNCP(o) \
   ((o->type == CONS && CAR(o)->type == SYMBOL \
     && (sym_eq(CAR(o), lambda) || sym_eq(CAR(o), macro))) \
    || (o->type == CFUNC) || (o->type == SPECIAL))
