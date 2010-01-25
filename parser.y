@@ -50,7 +50,7 @@ static object_t *list_to_cons (object_t * lst);
 
 input : /* empty */
      | input exp
-     | error errrec { yyerrok; }
+     | error errrec { midstate = 0; yyerrok; }
 ;
 
 /* Error recovery */
@@ -154,7 +154,6 @@ static void add_obj (object_t * o)
 void yyerror (char *s)
 {
   printf ("%s:%d: error: %s\n", filename, line_num, s);
-  print_prompt ();
 }
 
 /* Prints a prompt when in interactive mode. */
