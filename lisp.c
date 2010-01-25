@@ -425,48 +425,48 @@ object_t *floatp (object_t * lst)
 void lisp_init ()
 {
   /* Maths */
-  SET (c_sym ("+"), c_cfunc (&addition));
-  SET (c_sym ("*"), c_cfunc (&multiply));
-  SET (c_sym ("-"), c_cfunc (&subtract));
-  SET (c_sym ("/"), c_cfunc (&divide));
-  SET (c_sym ("<"), c_cfunc (&less_than));
-  SET (c_sym ("<="), c_cfunc (&less_than_or_eq));
-  SET (c_sym (">"), c_cfunc (&greater_than));
-  SET (c_sym (">="), c_cfunc (&greater_than_or_eq));
-  SET (c_sym ("="), c_cfunc (&numeq));
+  SSET (c_sym ("+"), c_cfunc (&addition));
+  SSET (c_sym ("*"), c_cfunc (&multiply));
+  SSET (c_sym ("-"), c_cfunc (&subtract));
+  SSET (c_sym ("/"), c_cfunc (&divide));
+  SSET (c_sym ("<"), c_cfunc (&less_than));
+  SSET (c_sym ("<="), c_cfunc (&less_than_or_eq));
+  SSET (c_sym (">"), c_cfunc (&greater_than));
+  SSET (c_sym (">="), c_cfunc (&greater_than_or_eq));
+  SSET (c_sym ("="), c_cfunc (&numeq));
 
   /* Various */
-  SET (c_sym ("quote"), c_special (&quote));
-  SET (c_sym ("lambda"), c_special (&lambda_f));
-  SET (c_sym ("defun"), c_special (&defun));
-  SET (c_sym ("defmacro"), c_special (&defmacro));
-  SET (c_sym ("car"), c_cfunc (&lisp_car));
-  SET (c_sym ("cdr"), c_cfunc (&lisp_cdr));
-  SET (c_sym ("list"), c_cfunc (&lisp_list));
-  SET (c_sym ("if"), c_special (&lisp_if));
-  SET (c_sym ("not"), c_cfunc (&nullp));
-  SET (c_sym ("progn"), c_special (&progn));
-  SET (c_sym ("let"), c_special (&let));
-  SET (c_sym ("while"), c_special (&lisp_while));
-  SET (c_sym ("eval"), c_cfunc (&eval_body));
-  SET (c_sym ("print"), c_cfunc (&lisp_print));
-  SET (c_sym ("cons"), c_cfunc (&lisp_cons));
+  SSET (c_sym ("quote"), c_special (&quote));
+  SSET (c_sym ("lambda"), c_special (&lambda_f));
+  SSET (c_sym ("defun"), c_special (&defun));
+  SSET (c_sym ("defmacro"), c_special (&defmacro));
+  SSET (c_sym ("car"), c_cfunc (&lisp_car));
+  SSET (c_sym ("cdr"), c_cfunc (&lisp_cdr));
+  SSET (c_sym ("list"), c_cfunc (&lisp_list));
+  SSET (c_sym ("if"), c_special (&lisp_if));
+  SSET (c_sym ("not"), c_cfunc (&nullp));
+  SSET (c_sym ("progn"), c_special (&progn));
+  SSET (c_sym ("let"), c_special (&let));
+  SSET (c_sym ("while"), c_special (&lisp_while));
+  SSET (c_sym ("eval"), c_cfunc (&eval_body));
+  SSET (c_sym ("print"), c_cfunc (&lisp_print));
+  SSET (c_sym ("cons"), c_cfunc (&lisp_cons));
 
   /* Symbol table */
-  SET (c_sym ("set"), c_cfunc (&lisp_set));
-  SET (c_sym ("value"), c_cfunc (&lisp_value));
+  SSET (c_sym ("set"), c_cfunc (&lisp_set));
+  SSET (c_sym ("value"), c_cfunc (&lisp_value));
 
   /* Equality */
-  SET (c_sym ("eq"), c_cfunc (&eq));
-  SET (c_sym ("eql"), c_cfunc (&eql));
+  SSET (c_sym ("eq"), c_cfunc (&eq));
+  SSET (c_sym ("eql"), c_cfunc (&eql));
 
   /* Predicates */
-  SET (c_sym ("nullp"), c_cfunc (&nullp));
-  SET (c_sym ("funcp"), c_cfunc (&funcp));
-  SET (c_sym ("listp"), c_cfunc (&listp));
-  SET (c_sym ("symbolp"), c_cfunc (&symbolp));
-  SET (c_sym ("stringp"), c_cfunc (&stringp));
-  SET (c_sym ("nump"), c_cfunc (&nump));
-  SET (c_sym ("intp"), c_cfunc (&intp));
-  SET (c_sym ("floatp"), c_cfunc (&floatp));
+  SSET (c_sym ("nullp"), c_cfunc (&nullp));
+  SSET (c_sym ("funcp"), c_cfunc (&funcp));
+  SSET (c_sym ("listp"), c_cfunc (&listp));
+  SSET (c_sym ("symbolp"), c_cfunc (&symbolp));
+  SSET (c_sym ("stringp"), c_cfunc (&stringp));
+  SSET (c_sym ("nump"), c_cfunc (&nump));
+  SSET (c_sym ("intp"), c_cfunc (&intp));
+  SSET (c_sym ("floatp"), c_cfunc (&floatp));
 }
