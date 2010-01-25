@@ -27,3 +27,15 @@ void cons_destroy (cons_t * o)
 {
   mm_free (mm, (void *) o);
 }
+
+int length (object_t * lst)
+{
+  /* TODO detect loops? */
+  int cnt = 0;
+  while (lst != NIL)
+    {
+      cnt++;
+      lst = CDR (lst);
+    }
+  return cnt;
+}

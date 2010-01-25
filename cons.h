@@ -18,7 +18,7 @@ cons_t *cons_create ();
 void cons_destroy (cons_t * c);
 
 /* list operators */
-object_t *cons (object_t * o, object_t * c);
+int length (object_t * lst);
 
 #define CAR(o) ((cons_t *) ((o)->val))->car
 #define CDR(o) ((cons_t *) ((o)->val))->cdr

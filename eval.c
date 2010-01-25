@@ -7,19 +7,32 @@
 object_t *lambda, *macro;
 object_t *err_symbol, *err_thrown, *err_attach;
 
+/* Commonly used thrown error symbols */
+object_t *void_function, *wrong_number_of_arguments;
+
 void eval_init ()
 {
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
   err_symbol = c_sym ("_error");
   err_thrown = err_attach = NIL;
+  void_function = c_sym ("void-function");
+  wrong_number_of_arguments = c_sym ("wrong-number-of-arguments");
 }
 
 object_t *eval_list (object_t * lst)
 {
   if (lst == NIL)
     return NIL;
-  return c_cons (eval (CAR (lst)), eval_list (CDR (lst)));
+  object_t *car = eval (CAR (lst));
+  CHECK (car);
+  object_t *cdr = eval_list (CDR (lst));
+  if (cdr == err_symbol)
+    {
+      obj_destroy (car);
+      return err_symbol;
+    }
+  return c_cons (car, cdr);
 }
 
 object_t *eval_body (object_t * body)
@@ -29,20 +42,23 @@ object_t *eval_body (object_t * body)
     {
       obj_destroy (r);
       r = eval (CAR (body));
+      CHECK (r);
       body = CDR (body);
     }
   return r;
 }
 
-void assign_args (object_t * vars, object_t * vals)
+object_t *assign_args (object_t * vars, object_t * vals)
 {
-  if (vars == NIL)
-    return;
-  if (vals != NIL)
-    sympush (CAR (vars), CAR (vals));
-  else
-    sympush (CAR (vars), NIL);
-  assign_args (CDR (vars), CDR (vals));
+  if (length (vars) != length (vals))
+    THROW (wrong_number_of_arguments, NIL);
+
+  while (vars != NIL)
+    {
+      sympush (CAR (vars), CAR (vals));
+      vars = CDR (vars);
+      vals = CDR (vals);
+    }
 }
 
 void unassign_args (object_t * vars)
@@ -51,6 +67,20 @@ void unassign_args (object_t * vars)
     return;
   sympop (CAR (vars));
   unassign_args (CDR (vars));
+}
+
+object_t *top_eval (object_t * o)
+{
+  object_t *r = eval (o);
+  if (r == err_symbol)
+    {
+      printf ("Wisp error: ");
+      object_t *c = c_cons (err_thrown, err_attach);
+      obj_print (c, 1);
+      obj_destroy (c);
+      return err_symbol;
+    }
+  return o;
 }
 
 object_t *eval (object_t * o)
@@ -64,10 +94,8 @@ object_t *eval (object_t * o)
   object_t *f = eval (CAR (o));
   if (!FUNCP (f))
     {
-      printf ("error: not a function: ");
-      obj_print (CAR (o), 1);
       obj_destroy (f);
-      return NIL;
+      THROW (void_function, UPREF (CAR (o)));
     }
 
   if (f->type == CFUNC || (f->type == CONS && sym_eq (CAR (f), lambda)))
@@ -86,7 +114,13 @@ object_t *eval (object_t * o)
 	{
 	  /* list form */
 	  object_t *vars = CAR (CDR (f));
-	  assign_args (vars, args);
+	  object_t *assr = assign_args (vars, args);
+	  if (assr == err_symbol)
+	    {
+	      obj_destroy (args);
+	      err_attach = UPREF (CAR (o));
+	      return err_symbol;
+	    }
 	  object_t *r = eval_body (CDR (CDR (f)));
 	  unassign_args (vars);
 	  obj_destroy (args);
@@ -108,7 +142,13 @@ object_t *eval (object_t * o)
 	{
 	  /* list form macro */
 	  object_t *vars = CAR (CDR (f));
-	  assign_args (vars, args);
+	  object_t *assr = assign_args (vars, args);
+	  if (assr == err_symbol)
+	    {
+	      err_attach = UPREF (CAR (o));
+	      obj_destroy (args);
+	      return err_symbol;
+	    }
 	  object_t *body = eval_body (CDR (CDR (f)));
 	  object_t *r = eval (body);
 	  unassign_args (vars);

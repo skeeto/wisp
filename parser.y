@@ -50,7 +50,7 @@ input : /* empty */
 ;
 
 exp : sexp   { object_t *sexp = pop ();
-               object_t *r = eval (CAR (sexp));
+               object_t *r = top_eval (CAR (sexp));
                if (interactive)
 		 {
 		   obj_print (r, 1);
