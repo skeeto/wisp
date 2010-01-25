@@ -5,8 +5,7 @@
 
 
 + Core
- * error handling
- * number of arguments check
+ * special arguments
   * &rest
   * &optional
  * undefined variables. all are defined to nil atm

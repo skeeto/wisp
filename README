@@ -2,10 +2,10 @@ This is intended to be a simple lisp implementation as my own little
 experiment. It's a dynamically typed lisp-1 (functions share a
 namespace with variables). Memmory is managed by reference counting.
 
-There is no error handling yet. There are lots of checks missing. Some
-useful types are implemented yet, like arrays and hashtables. However,
-the code's here and it's pretty easy to dig in. So if you're
-interested dive in and write it! :-)
+There are still lots of checks missing. Some useful types are
+implemented yet, like arrays and hashtables. However, the code's here
+and it's pretty easy to dig in. So if you're interested dive in and
+write it! :-)
 
 At the same time, a lot could still change, cleaning up the codebase.
 
@@ -69,9 +69,21 @@ The function eval() and eval_body() are available fir further
 evaluation of the structure. This is more useful in special forms than
 anything else.
 
-I don't have an error handling system at the moment, so there's
-nothing to do with that yet. It will eventually throw a symbol or
-something. Don't know yet.
+Error handling works by an exception-like system. If there was an
+error, the error symbol is returned, err_symbol. Any time a lisp-space
+function is called (like all the eval functions), you must immediately
+check the return for the error symbol. If it is, clean up and return
+the error symbol too. The CHECK macro is available for when no cleanup
+is needed.
+
+To throw an error, set err_thrown to the object you want to throw;
+generally it will be a symbol. Also set err_attach to the object you
+want to attach at the error message. This can be a string or symbol or
+whatever. The THROW macro makes this easier.
+
+The top_eval function is the final error handler, which prints out the
+error message. It should only be called by the originating
+evaluator. The parser uses this, for example.
 
 Once the function is defined, you can install it in lisp_init() with,
 
