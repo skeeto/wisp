@@ -20,11 +20,6 @@ void symtab_init ()
   SET (T, T);
 }
 
-int sym_eq (object_t * a, object_t * b)
-{
-  return a == b;
-}
-
 symbol_t *symbol_create ()
 {
   symbol_t *s = xmalloc (sizeof (symbol_t));

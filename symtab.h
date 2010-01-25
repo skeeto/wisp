@@ -15,15 +15,11 @@ typedef struct symbol
 /* Must be called before any other symbtab functions are called. */
 void symtab_init ();
 
-void set_value (object_t * s, object_t * o);
-
-/* Same symbol? */
-int sym_eq (object_t * a, object_t * b);
-
+/* Symbol creation */
 symbol_t *symbol_create ();
 object_t *c_sym (char *name);
 
-/* dynamic scoping */
+/* Dynamic scoping */
 void sympop (object_t * so);;
 void sympush (object_t * so, object_t * o);
 
