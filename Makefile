@@ -1,4 +1,4 @@
-CFLAGS = -W -Wall -g -O2 --std=c99
+CFLAGS = -W -Wall -g -O2 --std=c99 -fshort-enums
 
 all : wisp
 test : all

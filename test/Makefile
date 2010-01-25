@@ -1,11 +1,11 @@
-CFLAGS = -W -Wall -g -O2 --std=c99
+CFLAGS = -W -Wall -g -O2 --std=c99 -fshort-enums
 
 all : wisp_tests
 test : all
 	./wisp_tests
 
 OBJ = ../symtab.o ../object.o ../cons.o ../common.o \
-      ../eval.o ../hashtab.o ../mem.o
+      ../eval.o ../hashtab.o ../mem.o ../lisp.o ../parser.o ../scanner.o
 
 wisp_tests : wisp_tests.o $(OBJ)
 
