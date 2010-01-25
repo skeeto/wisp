@@ -6,7 +6,7 @@
 #include "y.tab.h"
 
 int fileno(FILE *);
-int line_num;			/* line counter */
+void count_line ();
 %}
 
 %option always-interactive
@@ -32,10 +32,10 @@ int line_num;			/* line counter */
 \)                          return RP;
 
  /* ignore comments */
-;[^\n]*\n                   line_num++;
+;[^\n]*\n                   count_line ();
 
  /* line counter */
-\n                          line_num++;
+\n                          count_line ();
 
  /* leftover characters */
 [\t\r ]+                    /* ignore whitespace */

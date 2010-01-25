@@ -4,11 +4,8 @@
 #include "lisp.h"
 
 /* parser crap */
-extern FILE *yyin;
-int yyparse ();
 void parser_init ();
-extern int interactive;
-extern char *prompt;
+int parse (FILE *fid, char *name, int interactive);
 
 /* Initilize all the systems. */
 void init ()
@@ -29,21 +26,16 @@ int main (int argc, char **argv)
   init ();
 
   /* Load core lisp code. */
-  interactive = 0;
-  yyin = fopen ("core.wisp", "r");
-  if (yyin == NULL)
+  FILE *core = fopen ("core.wisp", "r");
+  if (core == NULL)
     {
       fprintf (stderr, "error: could not load core lisp.\n");
       exit (EXIT_FAILURE);
     }
-  yyparse ();
-  fclose (yyin);
-  /* yy_flush_buffer(); */
+  parse (core, "core.wisp", 0);
+  fclose (core);
 
   /* Run interaction. */
-  interactive = 1;
-  printf ("Happy hacking!\n%s", prompt);
-  yyin = stdin;
-  yyparse ();
-  printf ("\n");
+  printf ("Happy hacking!\n");
+  parse (stdin, "<stdin>", 1);
 }

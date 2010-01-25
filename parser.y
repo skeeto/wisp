@@ -4,12 +4,14 @@
 #include "wisp.h"
 #include "common.h"
 
-/* lex declarations */
+/* declarations */
 extern FILE *yyin;
 int yylex ();
-int yyerror (char *);
+void yyerror (char *);
+void print_prompt ();
 extern int line_num;
-
+char *filename = "<unknown>";
+int line_num;
 int interactive;
 char *prompt = "wisp> ";
 
@@ -47,6 +49,12 @@ static object_t *list_to_cons (object_t * lst);
 
 input : /* empty */
      | input exp
+     | error errrec { yyerrok; }
+;
+
+/* Error recovery */
+errrec : error
+     | exp
 ;
 
 exp : sexp   { object_t *sexp = pop ();
@@ -54,7 +62,7 @@ exp : sexp   { object_t *sexp = pop ();
                if (interactive)
 		 {
 		   obj_print (r, 1);
-		   printf ("%s", prompt);
+		   print_prompt ();
 		 }
 	       obj_destroy (r);
 	       obj_destroy (sexp);
@@ -91,6 +99,19 @@ void parser_init ()
   push ();
 }
 
+int parse (FILE *fid, char *name, int inter)
+{
+  interactive = inter;
+  filename = name;
+  yyin = fid;
+  print_prompt ();
+  line_num = 1;
+  int r = yyparse ();
+  if (interactive)
+    printf ("\n");
+  return r;
+}
+
 static void push ()
 {
   tip += 2;
@@ -121,8 +142,19 @@ static void add_obj (object_t * o)
   *(tip + 1) = CDR (*(tip + 1));
 }
 
-int yyerror (char *s)
+void yyerror (char *s)
 {
-  printf ("wisp:%d: error: %s\n", line_num, s);
-  return 0;
+  printf ("%s:%d: error: %s\n", filename, line_num, s);
+  print_prompt ();
+}
+
+void print_prompt ()
+{
+  if (interactive)
+    printf ("%s", prompt);
+}
+
+void count_line ()
+{
+  line_num++;
 }
