@@ -11,6 +11,7 @@ static void object_clear (void *o)
 {
   object_t *obj = (object_t *) o;
   obj->type = SYMBOL;
+  obj->refs = 0;
   obj->val = NIL;
 }
 
@@ -23,6 +24,7 @@ object_t *obj_create (type_t type)
 {
   object_t *o = (object_t *) mm_alloc (mm);
   o->type = type;
+  o->refs++;
   switch (type)
     {
     case INT:
@@ -90,6 +92,31 @@ object_t *c_special (object_t * (*f) (object_t * o))
 
 void obj_destroy (object_t * o)
 {
+  if (SYMBOLP (o))
+    return;
+  o->refs--;
+  if (o->refs > 0)
+    return;
+
+  switch (o->type)
+    {
+    case SYMBOL:
+      /* Symbol objects are never destroyed. */
+      return;
+    case FLOAT:
+    case INT:
+    case STRING:
+      free (o->val);
+      break;
+    case CONS:
+      obj_destroy (CAR (o));
+      obj_destroy (CDR (o));
+      cons_destroy (o->val);
+      break;
+    case CFUNC:
+    case SPECIAL:
+      break;
+    }
   mm_free (mm, (void *) o);
 }
 

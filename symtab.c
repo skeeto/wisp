@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "common.h"
 #include "symtab.h"
 #include "object.h"
@@ -12,9 +13,9 @@ void symtab_init ()
 {
   symbol_table = ht_init (2048, NULL);
 
-  /* set up t and nil constants */
+  /* Set up t and nil constants. The SET macro won't work until NIL is set. */
   NIL = c_sym ("nil");
-  SET (NIL, NIL);
+  *((symbol_t *) NIL->val)->vals = NIL;
   T = c_sym ("t");
   SET (T, T);
 }
@@ -44,10 +45,12 @@ void sympush (object_t * so, object_t * o)
     }
   s->vals++;
   *s->vals = o;
+  UPREF (o);
 }
 
 void sympop (object_t * so)
 {
+  obj_destroy (GET (so));
   symbol_t *s = (symbol_t *) so->val;
   s->vals--;
 }
@@ -61,7 +64,7 @@ object_t *c_sym (char *name)
       char *newname = xstrdup (name);
       o = obj_create (SYMBOL);
       SYMNAME (o) = newname;
-      SET (o, NIL);
+      *((symbol_t *) o->val)->vals = NIL;
       ht_insert (symbol_table, newname, strlen (newname), o,
 		 sizeof (object_t *));
       if (name[0] == ':')

@@ -205,7 +205,7 @@ object_t *numeq (object_t * lst)
 
 object_t *lisp_cons (object_t * lst)
 {
-  return c_cons (CAR (lst), CAR (CDR (lst)));
+  return c_cons (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
 }
 
 object_t *quote (object_t * lst)
@@ -215,19 +215,19 @@ object_t *quote (object_t * lst)
 
 object_t *lambda_f (object_t * lst)
 {
-  return c_cons (lambda, lst);
+  return c_cons (lambda, UPREF (lst));
 }
 
 object_t *defun (object_t * lst)
 {
-  object_t *f = c_cons (lambda, CDR (lst));
+  object_t *f = c_cons (lambda, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
 }
 
 object_t *defmacro (object_t * lst)
 {
-  object_t *f = c_cons (macro, CDR (lst));
+  object_t *f = c_cons (macro, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
 }
@@ -251,7 +251,10 @@ object_t *lisp_if (object_t * lst)
 {
   object_t *r = eval (CAR (lst));
   if (r != NIL)
-    return eval (CAR (CDR (lst)));
+    {
+      obj_destroy (r);
+      return eval (CAR (CDR (lst)));
+    }
   return eval_body (CDR (CDR (lst)));
 }
 
@@ -285,8 +288,12 @@ object_t *let (object_t * lst)
 object_t *lisp_while (object_t * lst)
 {
   object_t *r = NIL, *cond = CAR (lst), *body = CDR (lst);
-  while (eval (cond) != NIL)
-    r = eval_body (body);
+  object_t *condr;
+  while ((condr = eval (cond)) != NIL)
+    {
+      obj_destroy (condr);
+      r = eval_body (body);
+    }
   return r;
 }
 
@@ -353,7 +360,7 @@ object_t *lisp_set (object_t * lst)
 object_t *lisp_value (object_t * lst)
 {
   /* TODO: check for symbol type */
-  return GET (CAR (lst));
+  return UPREF (GET (CAR (lst)));
 }
 
 /* Predicates */
@@ -367,7 +374,7 @@ object_t *nullp (object_t * lst)
 
 object_t *funcp (object_t * lst)
 {
-  if (IS_FUNC (CAR (lst)))
+  if (FUNCP (CAR (lst)))
     return T;
   return NIL;
 }

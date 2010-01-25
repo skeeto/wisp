@@ -49,12 +49,15 @@ input : /* empty */
      | input exp
 ;
 
-exp : sexp   { object_t *r = eval (CAR (pop ()));
+exp : sexp   { object_t *sexp = pop ();
+               object_t *r = eval (CAR (sexp));
                if (interactive)
 		 {
 		   obj_print (r, 1);
 		   printf ("%s", prompt);
 		 }
+	       obj_destroy (r);
+	       obj_destroy (sexp);
                push (); }
 ;
 

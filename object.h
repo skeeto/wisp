@@ -8,6 +8,7 @@ typedef enum types
 typedef struct object
 {
   type_t type;
+  short refs;
   void *val;
 } object_t;
 
@@ -36,5 +37,7 @@ void obj_destroy (object_t * o);
 #define STRINGP(o) (o->type == STRING)
 #define SYMBOLP(o) (o->type == SYMBOL)
 #define CONSP(o) (o->type == CONS)
+
+#define UPREF(o) ((o)->refs++, o)
 
 #endif /* OBJECT_H */

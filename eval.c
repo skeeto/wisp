@@ -24,6 +24,7 @@ object_t *eval_body (object_t * body)
   object_t *r = NIL;
   while (body != NIL)
     {
+      obj_destroy (r);
       r = eval (CAR (body));
       body = CDR (body);
     }
@@ -52,16 +53,17 @@ void unassign_args (object_t * vars)
 object_t *eval (object_t * o)
 {
   if (o->type != CONS && o->type != SYMBOL)
-    return o;
+    return UPREF (o);
   else if (o->type == SYMBOL)
-    return GET (o);
+    return UPREF (GET (o));
 
   /* Find the function. */
   object_t *f = eval (CAR (o));
-  if (!IS_FUNC (f))
+  if (!FUNCP (f))
     {
       printf ("error: not a function: ");
       obj_print (CAR (o), 1);
+      obj_destroy (f);
       return NIL;
     }
 
@@ -73,7 +75,9 @@ object_t *eval (object_t * o)
 	/* c function */
 	{
 	  object_t *(*cf) (object_t * o) = f->val;
-	  return cf (args);
+	  object_t *r = cf (args);
+	  obj_destroy (args);
+	  return r;
 	}
       else
 	{
@@ -82,6 +86,7 @@ object_t *eval (object_t * o)
 	  assign_args (vars, args);
 	  object_t *r = eval_body (CDR (CDR (f)));
 	  unassign_args (vars);
+	  obj_destroy (args);
 	  return r;
 	}
     }
@@ -93,7 +98,8 @@ object_t *eval (object_t * o)
 	{
 	  /* special form */
 	  object_t *(*cf) (object_t * o) = f->val;
-	  return cf (args);
+	  object_t *r = cf (args);
+	  return r;
 	}
       else if (f->type == CONS)
 	{

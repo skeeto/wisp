@@ -28,9 +28,10 @@ void sympop (object_t * so);;
 void sympush (object_t * so, object_t * o);
 
 /* Useful macros for accessing the symbol's fields */
-#define SYMNAME(so) ((symbol_t *) so->val)->name
+#define SYMNAME(so) (((symbol_t *) so->val)->name)
 #define GET(so) (*((symbol_t *) so->val)->vals)
-#define SET(so, o) *((symbol_t *) so->val)->vals = o
+#define SET(so, o) (obj_destroy (GET (so)), (void) UPREF (o), \
+		    *((symbol_t *) so->val)->vals = o)
 
 /* Constants */
 extern object_t *NIL;
