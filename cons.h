@@ -23,6 +23,6 @@ object_t *cons (object_t * o, object_t * c);
 #define CAR(o) ((cons_t *) ((o)->val))->car
 #define CDR(o) ((cons_t *) ((o)->val))->cdr
 
-#define LISTP(o) o->type == CONS || o == NIL
+#define LISTP(o) (o->type == CONS || o == NIL)
 
 #endif /* CONS_H */
