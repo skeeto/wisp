@@ -1,12 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "../common.h"
-#include "../cons.h"
-#include "../symtab.h"
-#include "../object.h"
-#include "../eval.h"
-#include "../hashtab.h"
-#include "../mem.h"
+#include "../wisp.h"
 
 int err_cnt = 0, test_cnt = 0;
 
@@ -21,6 +15,7 @@ void init ()
   symtab_init ();
   cons_init ();
   eval_init ();
+  lisp_init ();
 }
 
 int main ()

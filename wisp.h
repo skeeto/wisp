@@ -9,5 +9,6 @@
 #include "object.h"
 #include "eval.h"
 #include "common.h"
+#include "lisp.h"
 
 #endif /* LIST_H */
