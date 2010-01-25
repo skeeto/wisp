@@ -354,7 +354,7 @@ object_t *lisp_set (object_t * lst)
 {
   /* TODO: check for symbol type */
   SET (CAR (lst), CAR (CDR (lst)));
-  return CAR (CDR (lst));
+  return UPREF (CAR (CDR (lst)));
 }
 
 object_t *lisp_value (object_t * lst)
