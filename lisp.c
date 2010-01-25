@@ -244,7 +244,7 @@ object_t *lisp_car (object_t * lst)
 
 object_t *lisp_list (object_t * lst)
 {
-  return lst;
+  return UPREF (lst);
 }
 
 object_t *lisp_if (object_t * lst)
