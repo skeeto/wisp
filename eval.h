@@ -24,8 +24,14 @@ extern object_t *macro;		/* the macro symbol */
 
 /* Error handling */
 extern object_t *err_symbol, *err_thrown, *err_attach;
+extern object_t *void_function, *wrong_number_of_arguments, *wrong_type;
 
-#define THROW(to, ao) err_thrown = to; err_attach = ao; return err_symbol
+#define THROW(to, ao) {err_thrown = to; err_attach = ao; return err_symbol;}
 #define CHECK(o) if ((o) == err_symbol) return err_symbol;
+
+#define REQ(lst, n, so) if (length (lst) != n) \
+                         THROW(wrong_number_of_arguments, so);
+#define REQM(lst, n, so) if (length (lst) < n) \
+                         THROW(wrong_number_of_arguments, so);
 
 #endif /* EVAL_H */

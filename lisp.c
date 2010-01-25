@@ -22,6 +22,8 @@ object_t *addition (object_t * lst)
 	}
       else if (CAR (p)->type == INT)
 	accum += OINT (CAR (p));
+      else
+	THROW (wrong_type, UPREF (CAR (p)));
       p = CDR (p);
     }
   if (intmode)
@@ -44,6 +46,8 @@ object_t *multiply (object_t * lst)
 	}
       else if (CAR (p)->type == INT)
 	accum *= OINT (CAR (p));
+      else
+	THROW (wrong_type, UPREF (CAR (p)));
       p = CDR (p);
     }
   if (intmode)
@@ -74,6 +78,8 @@ object_t *subtract (object_t * lst)
 	}
       else if (CAR (p)->type == INT)
 	accum -= OINT (CAR (p));
+      else
+	THROW (wrong_type, UPREF (CAR (p)));
       p = CDR (p);
     }
   if (intmode)
@@ -104,6 +110,8 @@ object_t *divide (object_t * lst)
 	}
       else if (CAR (p)->type == INT)
 	accum /= OINT (CAR (p));
+      else
+	THROW (wrong_type, UPREF (CAR (p)));
       p = CDR (p);
     }
   if (intmode)
@@ -113,6 +121,7 @@ object_t *divide (object_t * lst)
 
 object_t *less_than (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
   double a = 0, b = 0;
@@ -124,6 +133,8 @@ object_t *less_than (object_t * lst)
     b = OINT (bo);
   else if (bo->type == FLOAT)
     b = OFLOAT (bo);
+  else
+    THROW (wrong_type, UPREF (bo));
   if (a < b)
     return T;
   return NIL;
@@ -131,6 +142,7 @@ object_t *less_than (object_t * lst)
 
 object_t *less_than_or_eq (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("<="));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
   double a = 0, b = 0;
@@ -149,6 +161,7 @@ object_t *less_than_or_eq (object_t * lst)
 
 object_t *greater_than (object_t * lst)
 {
+  REQ (lst, 2, c_sym (">"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
   double a = 0, b = 0;
@@ -167,6 +180,7 @@ object_t *greater_than (object_t * lst)
 
 object_t *greater_than_or_eq (object_t * lst)
 {
+  REQ (lst, 2, c_sym (">="));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
   double a = 0, b = 0;
@@ -185,6 +199,7 @@ object_t *greater_than_or_eq (object_t * lst)
 
 object_t *numeq (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("="));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
   double a = 0, b = 0;
@@ -205,21 +220,25 @@ object_t *numeq (object_t * lst)
 
 object_t *lisp_cons (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("cons"));
   return c_cons (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
 }
 
 object_t *quote (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("quote"));
   return UPREF (CAR (lst));
 }
 
 object_t *lambda_f (object_t * lst)
 {
+  /* TODO: Check structure. */
   return c_cons (lambda, UPREF (lst));
 }
 
 object_t *defun (object_t * lst)
 {
+  /* TODO: Check structure. */
   object_t *f = c_cons (lambda, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
@@ -227,6 +246,7 @@ object_t *defun (object_t * lst)
 
 object_t *defmacro (object_t * lst)
 {
+  /* TODO: Check structure. */
   object_t *f = c_cons (macro, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
@@ -234,11 +254,13 @@ object_t *defmacro (object_t * lst)
 
 object_t *lisp_cdr (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("cdr"));
   return UPREF (CDR (CAR (lst)));
 }
 
 object_t *lisp_car (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("car"));
   return UPREF (CAR (CAR (lst)));
 }
 
@@ -249,6 +271,7 @@ object_t *lisp_list (object_t * lst)
 
 object_t *lisp_if (object_t * lst)
 {
+  /* TODO: Check structure. */
   object_t *r = eval (CAR (lst));
   if (r != NIL)
     {
@@ -289,6 +312,7 @@ object_t *let (object_t * lst)
 
 object_t *lisp_while (object_t * lst)
 {
+  REQM (lst, 1, c_sym ("while"));
   object_t *r = NIL, *cond = CAR (lst), *body = CDR (lst);
   object_t *condr;
   while ((condr = eval (cond)) != NIL)
@@ -304,6 +328,7 @@ object_t *lisp_while (object_t * lst)
 
 object_t *eq (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("eq"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
   if (a == b)
@@ -313,6 +338,7 @@ object_t *eq (object_t * lst)
 
 object_t *eql (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("eql"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
   if (a->type != b->type)
@@ -347,6 +373,7 @@ object_t *eql (object_t * lst)
 
 object_t *lisp_print (object_t * lst)
 {
+  REQ (lst, 2, c_sym ("print"));
   obj_print (CAR (lst), 1);
   return NIL;
 }
@@ -355,14 +382,20 @@ object_t *lisp_print (object_t * lst)
 
 object_t *lisp_set (object_t * lst)
 {
-  /* TODO: check for symbol type */
+  REQ (lst, 2, c_sym ("set"));
+  if (!SYMBOLP (CAR (lst)))
+    THROW (wrong_type, c_cons (c_sym ("set"), CAR (lst)));
+
   SET (CAR (lst), CAR (CDR (lst)));
   return UPREF (CAR (CDR (lst)));
 }
 
 object_t *lisp_value (object_t * lst)
 {
-  /* TODO: check for symbol type */
+  REQ (lst, 1, c_sym ("value"));
+  if (!SYMBOLP (CAR (lst)))
+    THROW (wrong_type, c_cons (c_sym ("value"), CAR (lst)));
+
   return UPREF (GET (CAR (lst)));
 }
 
@@ -370,6 +403,7 @@ object_t *lisp_value (object_t * lst)
 
 object_t *nullp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("nullp"));
   if (CAR (lst) == NIL)
     return T;
   return NIL;
@@ -377,6 +411,7 @@ object_t *nullp (object_t * lst)
 
 object_t *funcp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("funcp"));
   if (FUNCP (CAR (lst)))
     return T;
   return NIL;
@@ -384,6 +419,7 @@ object_t *funcp (object_t * lst)
 
 object_t *listp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("listp"));
   if (CAR (lst)->type == CONS || CAR (lst) == NIL)
     return T;
   return NIL;
@@ -391,6 +427,7 @@ object_t *listp (object_t * lst)
 
 object_t *symbolp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("symbolp"));
   if (CAR (lst)->type == SYMBOL)
     return T;
   return NIL;
@@ -398,6 +435,7 @@ object_t *symbolp (object_t * lst)
 
 object_t *nump (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("nump"));
   if (CAR (lst)->type == INT || CAR (lst)->type == FLOAT)
     return T;
   return NIL;
@@ -405,6 +443,7 @@ object_t *nump (object_t * lst)
 
 object_t *stringp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("stringp"));
   if (CAR (lst)->type == STRING)
     return T;
   return NIL;
@@ -412,6 +451,7 @@ object_t *stringp (object_t * lst)
 
 object_t *intp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("intp"));
   if (CAR (lst)->type == INT)
     return T;
   return NIL;
@@ -419,6 +459,7 @@ object_t *intp (object_t * lst)
 
 object_t *floatp (object_t * lst)
 {
+  REQ (lst, 1, c_sym ("floatp"));
   if (CAR (lst)->type == FLOAT)
     return T;
   return NIL;

@@ -6,9 +6,8 @@
 
 object_t *lambda, *macro;
 object_t *err_symbol, *err_thrown, *err_attach;
-
 /* Commonly used thrown error symbols */
-object_t *void_function, *wrong_number_of_arguments;
+object_t *void_function, *wrong_number_of_arguments, *wrong_type;
 
 void eval_init ()
 {
@@ -18,6 +17,7 @@ void eval_init ()
   err_thrown = err_attach = NIL;
   void_function = c_sym ("void-function");
   wrong_number_of_arguments = c_sym ("wrong-number-of-arguments");
+  wrong_type = c_sym ("wrong-type-argument");
 }
 
 object_t *eval_list (object_t * lst)
@@ -59,6 +59,7 @@ object_t *assign_args (object_t * vars, object_t * vals)
       vars = CDR (vars);
       vals = CDR (vals);
     }
+  return T;
 }
 
 void unassign_args (object_t * vars)
@@ -80,7 +81,7 @@ object_t *top_eval (object_t * o)
       obj_destroy (c);
       return err_symbol;
     }
-  return o;
+  return r;
 }
 
 object_t *eval (object_t * o)
