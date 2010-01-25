@@ -19,7 +19,7 @@ extern object_t *macro;		/* the macro symbol */
 
 #define FUNCP(o) \
   ((o->type == CONS && CAR(o)->type == SYMBOL \
-    && (sym_eq(CAR(o), lambda) || sym_eq(CAR(o), macro))) \
+    && ((CAR(o) == lambda) || (CAR(o) == macro))) \
    || (o->type == CFUNC) || (o->type == SPECIAL))
 
 /* Error handling */

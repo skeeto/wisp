@@ -232,13 +232,15 @@ object_t *quote (object_t * lst)
 
 object_t *lambda_f (object_t * lst)
 {
-  /* TODO: Check structure. */
+  if (!is_func_form (lst))
+    THROW (c_sym ("bad-function-form"), UPREF (lst));
   return c_cons (lambda, UPREF (lst));
 }
 
 object_t *defun (object_t * lst)
 {
-  /* TODO: Check structure. */
+  if (!is_func_form (CDR (lst)))
+    THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (lambda, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
@@ -246,7 +248,8 @@ object_t *defun (object_t * lst)
 
 object_t *defmacro (object_t * lst)
 {
-  /* TODO: Check structure. */
+  if (!is_func_form (CDR (lst)))
+    THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (macro, UPREF (CDR (lst)));
   SET (CAR (lst), f);
   return f;
@@ -271,7 +274,7 @@ object_t *lisp_list (object_t * lst)
 
 object_t *lisp_if (object_t * lst)
 {
-  /* TODO: Check structure. */
+  REQM (lst, 1, wrong_number_of_arguments);
   object_t *r = eval (CAR (lst));
   if (r != NIL)
     {
@@ -288,16 +291,43 @@ object_t *progn (object_t * lst)
 
 object_t *let (object_t * lst)
 {
-  /* TODO: verify proper structure  */
-  object_t *p, *vlist;
+  /* verify structure */
+  if (!LISTP (CAR (lst)))
+    THROW (c_sym ("bad-let-form"), UPREF (lst));
+  object_t *vlist = CAR (lst);
+  while (vlist != NIL)
+    {
+      object_t *p = CAR (vlist);
+      if (!LISTP (p))
+	THROW (c_sym ("bad-let-form"), UPREF (lst));
+      if (!SYMBOLP (CAR (p)))
+	THROW (c_sym ("bad-let-form"), UPREF (lst));
+      vlist = CDR (vlist);
+    }
+
+  object_t *p;
   p = vlist = CAR (lst);
+  int cnt = 0;
   while (p != NIL)
     {
       object_t *pair = CAR (p);
       object_t *e = eval (CAR (CDR (pair)));
+      if (e == err_symbol)
+	{
+	  /* Undo scoping */
+	  p = vlist;
+	  while (cnt)
+	    {
+	      sympop (CAR (CAR (p)));
+	      p = CDR (p);
+	      cnt--;
+	    }
+	  return err_symbol;
+	}
       sympush (CAR (pair), e);
       obj_destroy (e);
       p = CDR (p);
+      cnt++;
     }
   object_t *r = eval_body (CDR (lst));
   p = vlist;

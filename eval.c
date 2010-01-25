@@ -99,7 +99,7 @@ object_t *eval (object_t * o)
       THROW (void_function, UPREF (CAR (o)));
     }
 
-  if (f->type == CFUNC || (f->type == CONS && sym_eq (CAR (f), lambda)))
+  if (f->type == CFUNC || (f->type == CONS && (CAR (f) == lambda)))
     {
       /* c function or list function (eval args) */
       object_t *args = eval_list (CDR (o));

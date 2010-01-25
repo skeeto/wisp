@@ -39,3 +39,21 @@ int length (object_t * lst)
     }
   return cnt;
 }
+
+/* Verifies that list has form of a function. */
+int is_func_form (object_t * lst)
+{
+  if (!LISTP (CAR (lst)))
+    return 0;
+  return is_symbol_list (CAR (lst));
+}
+
+/* Verifies that list is made only of symbols. */
+int is_symbol_list (object_t * lst)
+{
+  if (lst == NIL)
+    return 1;
+  if (!SYMBOLP (CAR (lst)))
+    return 0;
+  return is_symbol_list (CDR (lst));
+}

@@ -19,6 +19,8 @@ void cons_destroy (cons_t * c);
 
 /* list operators */
 int length (object_t * lst);
+int is_func_form (object_t * lst);
+int is_symbol_list (object_t * lst);
 
 #define CAR(o) ((cons_t *) ((o)->val))->car
 #define CDR(o) ((cons_t *) ((o)->val))->cdr
