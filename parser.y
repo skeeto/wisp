@@ -134,8 +134,11 @@ static void push ()
 /* Remove top object from the sexp stack. */
 static object_t *pop ()
 {
+  object_t *r = CDR (*tip);
+  CDR (*tip) = NIL;
+  obj_destroy (*tip);
   tip -= 2;
-  return CDR (*(tip + 2));
+  return r;
 }
 
 /* Convert list to cons pair. */
@@ -154,6 +157,10 @@ static void add_obj (object_t * o)
 void yyerror (char *s)
 {
   printf ("%s:%d: error: %s\n", filename, line_num, s);
+  /* Reset the stack. */
+  while (tip != base)
+    obj_destroy (pop ());
+  push ();
 }
 
 /* Prints a prompt when in interactive mode. */
