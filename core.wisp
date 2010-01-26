@@ -7,7 +7,7 @@
     (1+ (length (cdr lst)))))
 
 (defmacro setq (var val)
-  (list (quote set) (list (quote quote) var) val))
+  (list 'set (list 'quote var) val))
 
 ;; The provided function should be able to accept a single argument
 (defun reduce (f lst)
