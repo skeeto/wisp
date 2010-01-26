@@ -19,6 +19,8 @@
  - closures
  * symbol properties
   * enforce constants
+ * more advanced let binding
+ + eval problem with cons pairs
 
 * CFUNC Define
  * maths
@@ -28,6 +30,8 @@
 
 * Lisp Define
  * alist, plist
+ * map
+ * macroexpand
  * more ...
 
 * Documentation
