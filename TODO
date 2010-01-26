@@ -3,6 +3,9 @@
  * normal
  - unimportant
 
+* Development
+ * start using a real bug tracker
+ * start real docs
 
 + Core
  * special arguments
@@ -14,8 +17,11 @@
  - arbitrary precision
  * loop detection needed in places
  * use unprocess_string()
- * add quoting synatic sugar to parser
+ * advanced quoting
  * Upgrade string type
+ - closures
+ * symbol properties
+  * enforce constants
 
 * CFUNC Define
  * maths
