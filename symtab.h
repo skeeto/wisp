@@ -9,7 +9,7 @@ typedef struct symbol
   char *name;
   object_t **vals;
   object_t **stack;
-  unsigned short cnt;
+  unsigned int cnt;
 } symbol_t;
 
 /* Must be called before any other symbtab functions are called. */

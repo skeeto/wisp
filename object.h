@@ -8,7 +8,7 @@ typedef enum types
 typedef struct object
 {
   type_t type;
-  unsigned short refs;
+  unsigned int refs;
   void *val;
 } object_t;
 
