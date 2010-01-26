@@ -9,7 +9,6 @@
 /* Maths */
 object_t *addition (object_t * lst)
 {
-  REQM (lst, 1, c_sym ("+"));
   double accum = 0;
   int intmode = 1;
   object_t *p = lst;
@@ -33,7 +32,6 @@ object_t *addition (object_t * lst)
 
 object_t *multiply (object_t * lst)
 {
-  REQM (lst, 1, c_sym ("*"));
   double accum = 1;
   int intmode = 1;
   object_t *p = lst;
@@ -57,7 +55,6 @@ object_t *multiply (object_t * lst)
 
 object_t *subtract (object_t * lst)
 {
-  REQM (lst, 1, c_sym ("-"));
   object_t *p = lst;
   double accum = 0;
   int intmode = 1;
@@ -90,7 +87,6 @@ object_t *subtract (object_t * lst)
 
 object_t *divide (object_t * lst)
 {
-  REQM (lst, 1, c_sym ("/"));
   object_t *p = lst;
   double accum = 0;
   int intmode = 1;
