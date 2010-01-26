@@ -14,3 +14,6 @@
   (if (= (length lst) 1)
       (f (car lst))
     (f (car lst) (reduce f (cdr lst)))))
+
+(defun apply (f lst)
+  (eval (cons f lst)))
