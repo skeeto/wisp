@@ -9,11 +9,15 @@ object_t *err_symbol, *err_thrown, *err_attach;
 /* Commonly used thrown error symbols */
 object_t *void_function, *wrong_number_of_arguments, *wrong_type;
 
+/* Stack counting */
+unsigned int stack_depth = 0, max_stack_depth = 20000;
+
 void eval_init ()
 {
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
   err_symbol = c_sym ("_error");
+  SET (err_symbol, err_symbol);
   err_thrown = err_attach = NIL;
   void_function = c_sym ("void-function");
   wrong_number_of_arguments = c_sym ("wrong-number-of-arguments");
@@ -72,6 +76,7 @@ void unassign_args (object_t * vars)
 
 object_t *top_eval (object_t * o)
 {
+  stack_depth = 0;
   object_t *r = eval (o);
   if (r == err_symbol)
     {
@@ -93,22 +98,33 @@ object_t *eval (object_t * o)
 
   /* Find the function. */
   object_t *f = eval (CAR (o));
+  CHECK (f);
   if (!FUNCP (f))
     {
       obj_destroy (f);
       THROW (void_function, UPREF (CAR (o)));
     }
 
+  /* Check the stack */
+  if (++stack_depth >= max_stack_depth)
+    THROW (c_sym ("max-stack-depth"), c_int ((int) stack_depth--));
+
   if (f->type == CFUNC || (f->type == CONS && (CAR (f) == lambda)))
     {
       /* c function or list function (eval args) */
       object_t *args = eval_list (CDR (o));
-      if (f->type == CFUNC)
-	/* c function */
+      if (args == err_symbol)
 	{
+	  stack_depth--;
+	  return err_symbol;
+	}
+      else if (f->type == CFUNC)
+	{
+	  /* c function */
 	  object_t *(*cf) (object_t * o) = f->val;
 	  object_t *r = cf (args);
 	  obj_destroy (args);
+	  stack_depth--;
 	  return r;
 	}
       else
@@ -120,11 +136,13 @@ object_t *eval (object_t * o)
 	    {
 	      obj_destroy (args);
 	      err_attach = UPREF (CAR (o));
+	      stack_depth--;
 	      return err_symbol;
 	    }
 	  object_t *r = eval_body (CDR (CDR (f)));
 	  unassign_args (vars);
 	  obj_destroy (args);
+	  stack_depth--;
 	  return r;
 	}
     }
@@ -137,6 +155,7 @@ object_t *eval (object_t * o)
 	  /* special form */
 	  object_t *(*cf) (object_t * o) = f->val;
 	  object_t *r = cf (args);
+	  stack_depth--;
 	  return r;
 	}
       else if (f->type == CONS)
@@ -148,14 +167,17 @@ object_t *eval (object_t * o)
 	    {
 	      err_attach = UPREF (CAR (o));
 	      obj_destroy (args);
+	      stack_depth--;
 	      return err_symbol;
 	    }
 	  object_t *body = eval_body (CDR (CDR (f)));
 	  object_t *r = eval (body);
 	  unassign_args (vars);
 	  obj_destroy (body);
+	  stack_depth--;
 	  return r;
 	}
     }
+  stack_depth--;
   return NIL;
 }

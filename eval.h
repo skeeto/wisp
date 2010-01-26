@@ -14,6 +14,8 @@ object_t *eval_body (object_t * body);
 object_t *assign_args (object_t * vars, object_t * vals);
 void unassign_args (object_t * vars);
 
+extern unsigned int max_stack_depth;
+
 extern object_t *lambda;	/* the lambda symbol */
 extern object_t *macro;		/* the macro symbol */
 
