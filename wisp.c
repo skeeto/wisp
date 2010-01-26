@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 
   /* parse arguments */
   int c;
-  while ((c = getopt (argc, argv, "ihv")) != -1)
+  while ((c = getopt (argc, argv, "+ihv")) != -1)
     switch (c)
       {
       case 'i':
@@ -108,6 +108,14 @@ int main (int argc, char **argv)
 		   file, strerror (errno));
 	  exit (EXIT_FAILURE);
 	}
+      /* expose argv to wisp program */
+      object_t *args = NIL;
+      while (argc > optind)
+	{
+	  args = c_cons (c_str (argv[argc - 1]), args);
+	  argc--;
+	}
+      SET (c_sym ("ARGS"), args);
       parse (fid, file, 0);
       fclose (fid);
     }
