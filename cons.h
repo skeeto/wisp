@@ -26,5 +26,6 @@ int is_var_list (object_t * lst);
 #define CDR(o) ((cons_t *) ((o)->val))->cdr
 
 #define LISTP(o) (o->type == CONS || o == NIL)
+#define PAIRP(o) (o->type == CONS && !LISTP(CDR(o)))
 
 #endif /* CONS_H */

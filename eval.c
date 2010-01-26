@@ -147,6 +147,8 @@ object_t *eval (object_t * o)
     return UPREF (o);
   else if (o->type == SYMBOL)
     return UPREF (GET (o));
+  else if (PAIRP (o))
+    THROW (c_sym ("eval-dotted-pair"), o);
 
   /* Find the function. */
   object_t *f = eval (CAR (o));

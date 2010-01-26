@@ -20,7 +20,6 @@
  * symbol properties
   * enforce constants
  * more advanced let binding
- + eval problem with cons pairs
 
 * CFUNC Define
  * maths
