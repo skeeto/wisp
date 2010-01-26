@@ -410,7 +410,7 @@ object_t *eql (object_t * lst)
 
 object_t *lisp_print (object_t * lst)
 {
-  REQ (lst, 2, c_sym ("print"));
+  REQ (lst, 1, c_sym ("print"));
   obj_print (CAR (lst), 1);
   return NIL;
 }
