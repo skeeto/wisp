@@ -76,8 +76,8 @@ sexp : atom                       { midstate = 1; }
      | lp series rp               { add_obj (pop ()); }
      | quote lp series rp         { add_obj (pop ()); add_obj (pop()); }
      | lp sexp '.' sexp rp        { add_obj (list_to_cons (pop ())); }
-     | quote lp sexp '.' sexp rp  { add_obj (pop ());
-                                    add_obj (list_to_cons (pop ())); }
+     | quote lp sexp '.' sexp rp  { add_obj (list_to_cons (pop ()));
+                                    add_obj (pop ()); }
 ;
 
 series : sexp series
