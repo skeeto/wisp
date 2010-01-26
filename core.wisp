@@ -16,4 +16,6 @@
     (f (car lst) (reduce f (cdr lst)))))
 
 (defun apply (f lst)
-  (eval (cons f lst)))
+  (if (not (listp lst))
+      (throw 'wrong-type-argument lst)
+    (eval (cons f lst))))
