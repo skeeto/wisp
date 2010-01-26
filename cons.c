@@ -3,6 +3,7 @@
 #include "object.h"
 #include "symtab.h"
 #include "cons.h"
+#include "eval.h"
 
 static mmanager_t *mm;
 
@@ -45,15 +46,32 @@ int is_func_form (object_t * lst)
 {
   if (!LISTP (CAR (lst)))
     return 0;
-  return is_symbol_list (CAR (lst));
+  return is_var_list (CAR (lst));
 }
 
 /* Verifies that list is made only of symbols. */
-int is_symbol_list (object_t * lst)
+int is_var_list (object_t * lst)
 {
-  if (lst == NIL)
-    return 1;
-  if (!SYMBOLP (CAR (lst)))
+  int rest_cnt = -1;
+  while (lst != NIL)
+    {
+      object_t *car = CAR (lst);
+      /* &rest must be the second to last item */
+      if (rest_cnt >= 0)
+	{
+	  rest_cnt--;
+	  if (rest_cnt < 0)
+	    return 0;
+	  if (car == rest)
+	    return 0;
+	}
+      if (!SYMBOLP (car))
+	return 0;
+      if (car == rest)
+	rest_cnt = 1;
+      lst = CDR (lst);
+    }
+  if (rest_cnt == 1)
     return 0;
-  return is_symbol_list (CDR (lst));
+  return 1;
 }

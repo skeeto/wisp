@@ -8,9 +8,6 @@
  * start real docs
 
 + Core
- * special arguments
-  * &rest
-  * &optional
  * undefined variables. all are defined to nil atm
  * hashtable type
  * array type

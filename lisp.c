@@ -245,7 +245,7 @@ object_t *lambda_f (object_t * lst)
 
 object_t *defun (object_t * lst)
 {
-  if (!is_func_form (CDR (lst)))
+  if (!SYMBOLP (CAR (lst)) || !is_func_form (CDR (lst)))
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (lambda, UPREF (CDR (lst)));
   SET (CAR (lst), f);
@@ -254,7 +254,7 @@ object_t *defun (object_t * lst)
 
 object_t *defmacro (object_t * lst)
 {
-  if (!is_func_form (CDR (lst)))
+  if (!SYMBOLP (CAR (lst)) || !is_func_form (CDR (lst)))
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (macro, UPREF (CDR (lst)));
   SET (CAR (lst), f);

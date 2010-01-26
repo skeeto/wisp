@@ -6,6 +6,7 @@
 
 object_t *lambda, *macro;
 object_t *err_symbol, *err_thrown, *err_attach;
+object_t *rest, *optional;
 /* Commonly used thrown error symbols */
 object_t *void_function, *wrong_number_of_arguments, *wrong_type;
 
@@ -14,8 +15,13 @@ unsigned int stack_depth = 0, max_stack_depth = 20000;
 
 void eval_init ()
 {
+  /* regular evaluation symbols */
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
+  rest = c_sym ("&rest");
+  optional = c_sym ("&optional");
+
+  /* error symbols */
   err_symbol = c_sym ("_error");
   SET (err_symbol, err_symbol);
   err_thrown = err_attach = NIL;
@@ -54,14 +60,58 @@ object_t *eval_body (object_t * body)
 
 object_t *assign_args (object_t * vars, object_t * vals)
 {
-  if (length (vars) != length (vals))
-    THROW (wrong_number_of_arguments, NIL);
-
+  int optional_mode = 0;
+  int cnt = 0;
+  object_t *orig_vars = vars;
   while (vars != NIL)
     {
-      sympush (CAR (vars), CAR (vals));
+      object_t *var = CAR (vars);
+      if (var == optional)
+	{
+	  /* Turn on optional mode and continue. */
+	  optional_mode = 1;
+	  vars = CDR (vars);
+	  continue;
+	}
+      if (var == rest)
+	{
+	  /* Assign the rest of the list and finish. */
+	  vars = CDR (vars);
+	  sympush (CAR (vars), vals);
+	  vals = NIL;
+	  break;
+	}
+      else if (!optional_mode && vals == NIL)
+	{
+	  /* TODO: unassign */
+	  while (cnt > 0)
+	    {
+	      sympop (CAR (orig_vars));
+	      orig_vars = CDR (orig_vars);
+	      cnt--;
+	    }
+	  THROW (wrong_number_of_arguments, NIL);
+	}
+      else if (optional_mode && vals == NIL)
+	{
+	  sympush (var, NIL);
+	}
+      else
+	{
+	  object_t *val = CAR (vals);
+	  sympush (var, val);
+	  cnt++;
+	}
       vars = CDR (vars);
-      vals = CDR (vals);
+      if (vals != NIL)
+	vals = CDR (vals);
+    }
+
+  /* vals should be consumed by now */
+  if (vals != NIL)
+    {
+      unassign_args (vars);
+      THROW (wrong_number_of_arguments, NIL);
     }
   return T;
 }
@@ -70,7 +120,9 @@ void unassign_args (object_t * vars)
 {
   if (vars == NIL)
     return;
-  sympop (CAR (vars));
+  object_t *var = CAR (vars);
+  if (var != rest && var != optional)
+    sympop (var);
   unassign_args (CDR (vars));
 }
 
