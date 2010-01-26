@@ -16,7 +16,7 @@ void mm_resize_stack (mmanager_t * mm)
 {
   mm->size *= 2;
   size_t count = mm->stack - mm->base;
-  mm->base = xrealloc (mm->base, mm->size);
+  mm->base = xrealloc (mm->base, mm->size * sizeof (void *));
   mm->stack = mm->base + count;
 }
 
