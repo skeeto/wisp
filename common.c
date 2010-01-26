@@ -33,6 +33,15 @@ char *xstrdup (char *str)
   return newstr;
 }
 
+char *pathcat (char *prefix, char *path)
+{
+  char *str = xmalloc (strlen (prefix) + strlen (path) + 2);
+  strcpy (str, prefix);
+  str[strlen (prefix)] = '/';	/* Extra / don't hurt. */
+  strcpy (str + strlen (prefix) + 1, path);
+  return str;
+}
+
 char *process_str (char *rawstr)
 {
   char *str = xstrdup (rawstr + 1);	/* trim leading quote */

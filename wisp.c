@@ -13,6 +13,7 @@ char *progname;
 int force_interaction = 0;
 int print_help = 0;
 char *core_file = "core.wisp";
+char *root = NULL;
 
 /* parser crap */
 void parser_init ();
@@ -76,11 +77,16 @@ int main (int argc, char **argv)
     print_usage (EXIT_SUCCESS);
 
   /* Load core lisp code. */
+  root = getenv ("WISPROOT");
+  if (root != NULL)
+    core_file = pathcat (root, core_file);
   FILE *core = fopen (core_file, "r");
   if (core == NULL)
     {
       fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
 	       core_file, strerror (errno));
+      if (root == NULL)
+	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
       exit (EXIT_FAILURE);
     }
   parse (core, "core.wisp", 0);

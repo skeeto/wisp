@@ -11,6 +11,9 @@ void *xrealloc (void *p, size_t size);
 /* Define a strdup() since it's not always there. */
 char *xstrdup (char *str);
 
+/* Concatentate path strings. */
+char *pathcat (char *prefix, char *path);
+
 /* Handle strings from the lexer. The returned string is from xmalloc(). */
 char *process_str (char *str);
 
