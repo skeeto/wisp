@@ -9,9 +9,9 @@
 /* Maths */
 object_t *addition (object_t * lst)
 {
+  REQM (lst, 1, c_sym ("+"));
   double accum = 0;
   int intmode = 1;
-
   object_t *p = lst;
   while (p != NIL)
     {
@@ -33,9 +33,9 @@ object_t *addition (object_t * lst)
 
 object_t *multiply (object_t * lst)
 {
+  REQM (lst, 1, c_sym ("*"));
   double accum = 1;
   int intmode = 1;
-
   object_t *p = lst;
   while (p != NIL)
     {
@@ -57,6 +57,7 @@ object_t *multiply (object_t * lst)
 
 object_t *subtract (object_t * lst)
 {
+  REQM (lst, 1, c_sym ("-"));
   object_t *p = lst;
   double accum = 0;
   int intmode = 1;
@@ -89,6 +90,7 @@ object_t *subtract (object_t * lst)
 
 object_t *divide (object_t * lst)
 {
+  REQM (lst, 1, c_sym ("/"));
   object_t *p = lst;
   double accum = 0;
   int intmode = 1;
@@ -207,10 +209,14 @@ object_t *numeq (object_t * lst)
     a = OINT (ao);
   else if (ao->type == FLOAT)
     a = OFLOAT (ao);
+  else
+    THROW (wrong_type, UPREF (ao));
   if (bo->type == INT)
     b = OINT (bo);
   else if (bo->type == FLOAT)
     b = OFLOAT (bo);
+  else
+    THROW (wrong_type, UPREF (bo));
   if (a == b)
     return T;
   return NIL;
@@ -274,8 +280,9 @@ object_t *lisp_list (object_t * lst)
 
 object_t *lisp_if (object_t * lst)
 {
-  REQM (lst, 1, wrong_number_of_arguments);
+  REQM (lst, 2, wrong_number_of_arguments);
   object_t *r = eval (CAR (lst));
+  CHECK (r);
   if (r != NIL)
     {
       obj_destroy (r);
