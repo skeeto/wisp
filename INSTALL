@@ -1,0 +1,8 @@
+You can put the wisp binary anywhere on your system, but it will still
+need to access this source directory to get the definitions it
+needs. You can indicate where this directory is to Wisp with the
+environmental variable WISPROOT. For example,
+
+export WISPROOT=~/src/wisp
+
+That's it for now.

@@ -1,0 +1,535 @@
+Wisp User Guide
+===============
+Christopher Wellons <mosquitopsu@gmail.com>
+:Author Initials: CCW
+
+Wisp is a dialect of the lisp family of programming languages. It is a
+dynamically typed lisp-1 with memory managed by reference
+counting. The interpreter itself is written in C.
+
+Introduction
+-----------
+Wisp is meant to be a lightweight, simple, experimental lisp
+implementation.
+
+This document is not meant to be a general lisp tutorial. Rather, it
+is meant to highlight Wisp's features and its differences from other
+lisps. To fully understand the Wisp programming language, the reader
+should already be familiar with lisp programming. In particular, users
+of Emacs lisp should find Wisp fairly comfortable.
+
+Getting Started
+~~~~~~~~~~~~~~~
+
+Building Wisp
+^^^^^^^^^^^^^
+
+To build Wisp, all you need is a C99 compiler, make, yacc (such as
+Bison), and lex (such as Flex). No external libraries are needed. The
+compiler switches in the Makefiles are geared towards gcc, so if you
+aren't using gcc you may need to adjust the +CFLAGS+ variable. There
+is currently no configuration script. Running +make+ directly will
+compile Wisp.
+
+If you wish to build the documentation, you will also need AsciiDoc.
+
+There are four make targets: +wisp+, +test+, +doc+, +all+. +wisp+ is
+the default target, and +all+ will run all the other targets. To
+verify your build, you can run the +test+ target.
+
+It is possible to build Wisp for Windows, either inside of Cygwin or
+by cross compiling with the MinGW cross-compilation tools. Notice that
+in both instances, yacc and lex get to be run in a unix-like
+environment.
+
+Environment
+^^^^^^^^^^^
+
+After +wisp+ has been built, you will probably want to set the
++WISPROOT+ environmental variable. This tells +wisp+ where to find
+it's defining Wisp sources, which are loaded each time it is run. If
+you intend on running +wisp+ outside of the build directory, you will
+need to set this. Mine looks like this, with a bourne shell,
+
+-----------------
+export WISPROOT=~/src/wisp
+-----------------
+
+Using Wisp
+----------
+
+Wisp Modes
+~~~~~~~~~~
+
+There are two ways to run Wisp: on a Wisp source file or
+interactively. The former allows you to run scripts as standalone
+programs and the latter is good for doing software development.
+
+Interaction Mode
+^^^^^^^^^^^^^^^^
+
+If you run Wisp without any file name arguments, it will run
+interactively providing a prompt. Each s-expression is evaluated after
+it has been entirely entered.
+
+----------
+wisp>
+wisp> (+ 4 6 11)
+21
+wisp>
+----------
+
+Interactive mode can be forced with the +-i+ switch.
+
+There is no readline library supporting this, so it may be cumbersome
+to use interactive mode directly. Two ways to deal with this are with
+rlwrap, or by running it as an inferior lisp in Emacs.
+
+If you're using Emacs, +lisp-interaction-mode+ is very suitable for
+editing Wisp code, so this may be a useful thing to add to your
++.emacs+.
+
+----------
+(add-to-list 'auto-mode-alist '(".wisp\\'" . lisp-interaction-mode))
+----------
+
+Script Mode
+^^^^^^^^^^^
+
+Wisp supports the she-bang line, so you can place one at the top of
+the source file, indicating the path to +wisp+ (assuming +WISPROOT+ is
+set too), and execute the file directly.
+
+--------------
+#!/usr/bin/wisp
+
+(print ARGS)
+--------------
+
+You can also give the file name to +wisp+ on the command line. All
+arguments before the file name go to +wisp+ and all the arguments after
+go to the running Wisp program. These arguments are available as a
+list in the +ARGS+ variable.
+
+The Wisp Language
+~~~~~~~~~~~~~~~~~
+
+Types
+^^^^^
+
+Wisp currently has seven types: integer, floating point, strings,
+symbols, cons cells, CFUNCs, and special forms. The last two can only
+be defined and created in built-in C source code.
+
+All types, except symbols and cons cells, evaluate to
+themselves. Symbols evaluate to the object stored inside and cons
+cells are evaluated as lisp code.
+
+Numbers
++++++++
+
+Integers are just the native integer. Any number without decimal
+places is parsed as an integer. Everything else is a floating point
+number. Only when floating point numbers are involved in a math
+operation (*, /, +, -) will a floating point will be
+returned. Division with integers will result in integer
+division. However, many math functions will always return floating
+point numbers (cos, sin, etc.).
+
+Strings
++++++++
+
+Strings are stored internally as C strings. When parsed, they need to
+be surrounded by quotes, and any internal backslashes or quotes must
+be escaped by a backslash.
+
+Symbols
++++++++
+
+Symbols are strings of characters without quotes, but with more
+limitation. Wisp does not currently support escaping in symbol names,
+and certain characters are not permitted. The specifics are likely to
+change right now, so refer to +scanner.l+ to see the symbol regular
+expression.
+
+Cons cells
+++++++++++
+
+Cons cells are that familiar glue that hold everything together. It
+has two cell, +car+ and +cdr+, which reference one other object
+each. The +car+ and +cdr+ functions will return each cell
+respectively. Wisp functions and macros are not a special type of
+their own, but are just lists made of cons cells.
+
+CFUNCs and special forms
+++++++++++++++++++++++++
+
+CFUNCs and special forms are actually pointers into the C code, which
+allow C space to be exposed to the lisp space. You can't create or
+modify these without modifying the Wisp C source code.
+
+Other types
++++++++++++
+
+Wisp does not yet have arrays/vectors or hashtable types, but it is
+planned for the future. Arbitrary precision and complex numbers are
+also possible in the future.
+
+Syntax
+^^^^^^
+
+Like most lisps, there's not a whole lot of syntax. Anything between
+parenthesis makes a list.
+
+-------------
+(a b c d)
+-------------
+
+This includes other lists,
+
+-------------
+(a b (x y z) c d)
+-------------
+
+However, if you enter this directly it will be evaluated, producing an
+error. To prevent a list from being evaluated, it can be quoted,
+tucked inside the +quote+ function,
+
+-------------
+(quote (a b (x y z) c d))
+-------------
+
+Since this needs to be done a lot, Wisp supports the quoting syntactic
+sugar,
+
+-------------
+'(a b (x y z) c d)
+-------------
+
+This works on individual symbols too,
+
+-------------
+(set 'a "Hello")
+-------------
+
+Wisp does not yet support back quotes and its advanced features used a
+lot by macros.
+
+Comments are done with semicolons,
+
+-------------
+'(a b c)  ; This is a comment
+-------------
+
+Symbols
+^^^^^^^
+
+The symbols +t+ and +nil+ are predefined and evaluate to
+themselves. In conditionals, +nil+ evaluates to false. Anything else
+evaluates to true. +nil+ is also used to end lists. It's the +NULL+
+pointer in lisp space.
+
+-------
+wisp> (cdr '(a))
+nil
+-------
+
+All possible symbols are automatically defined, usually to +nil+, by
+default. This sets Wisp apart from other lisps. All symbols are also
+interned, so there is only one instance of any given symbol.
+
+All symbols with beginning with a colon are defined to
+themselves. This is useful in making property lists.
+
+--------
+wisp> :hello
+:hello
+--------
+
+Functions
+^^^^^^^^^
+
+The +defun+ special form is used to define functions. The syntax is
+the same as Emacs lisp. It will actually produce a +lambda+ anonymous
+function and tuck it away inside the indicated symbol (as well as
+return it). For example,
+
+-------------------------------
+wisp> (defun square (x)
+        (* x x))
+(lambda (x) (* x x))
+wisp> square
+(lambda (x) (* x x))
+wisp> (square 6) 
+36
+-------------------------------
+
+Since Wisp is a lisp-1, +square+ is just a variable containing the
+function. You can look at any function like this. However, CFUNCs and
+special forms will only give you the pointer address,
+
+-------------
+wisp> +
+<CFUNC 0x804c320>
+wisp> defun
+<SPECIAL 0x804bfa0>
+-------------
+
+Functions must always be called with the proper number of arguments
+are an error will occur. To make a function more flexible about this,
+you can use +&optional+ and +&rest+ in your function
+definition. Anything following +&optional+ is optional, and will be
+defined to +nil+ when not provided.
+
+------------------------------------
+wisp> (defun args (a &optional b)
+        b)
+(lambda (a &optional b) b)
+wisp> (args 1)
+nil
+wisp> (args 1 2)
+2
+------------------------------------
+
+When +&rest+ is used, all remaining arguments are assigned to the
+symbol after +&rest+.
+
+----------------------
+wisp> (defun args (a &rest b)
+        b)
+(lambda (a &rest b) b)
+wisp> (args 1 2)
+(2)
+wisp> (args 1 2 3 4)
+(2 3 4)
+----------------------
+
+Anonymous Functions
++++++++++++++++++++
+
+Anonymous functions work just like +defun+, except that they use
++lambda+ and lack a name.
+
+---------------
+(lambda (a b) (+ a b))
+---------------
+
+Non-anonymous functions are really just anonymous functions stuffed
+inside a symbol.
+
+Macros
+^^^^^^
+
+Wisp supports powerful lisp macros. They are defined with
++defmacro+. For example,
+
+-------------
+(defmacro setq (var val)
+  (list 'set (list 'quote var) val))
+-------------
+
+It is treated exactly like a function, except that it's arguments are
+never evaluated and its return value is directly evaluated.
+
+There is no support for non-interned symbols (yet?), so macros may be
+limited in their usefulness.
+
+Error handling
+^^^^^^^^^^^^^^
+
+Error handling works by an exception throwing system. Any object can
+be thrown as any time with the +throw+ function. That object can be
+caught with +catch+ higher up on the stack. If nothing catches the
+thrown object, the stack will unwind all the way and the error shown
+to the user. The attached object will generally be information telling
+the user what was wrong. It could be a string, or the invalid argument
+in the case of a +wrong-argument-type+ error.
+
+Since you can also attach another object to a thrown object, in
+general you will only want to throw symbols. For example, to throw
+your own error,
+
+-----------
+wisp> (defun intinc (n)
+        (if (not (intp n))
+            (throw 'not-an-integer n)
+          (+ 1 n)))
+(lambda (n) (if (not (intp n)) (throw (quote not-an-integer) n) (+ 1 n)))
+wisp> (intinc 10)
+11
+wisp> (intinc 'a)
+Wisp error: (not-an-integer . a)
+wisp> 
+-----------
+
+This can be caught with +catch+, indicating the object you want to
+catch. Catch will return the attached object. The objects must be the
+same lisp object, so it would be wise to use only symbols for this.
+
+-----------
+wisp> (catch 'not-an-integer (intinc 'a))
+a
+-----------
+
+The error catching and throwing the facilities will be improved, but
+will still rely on this basic principle.
+
+Internals
+---------
+
+Objects
+~~~~~~~
+
+The +object_t+ struct defined in +object.h+ is the outer struct for
+every lisp object. It has a +type+ field, which matches the +type_t+
+enumeration (also defined there) indicating the object type, and a
++void val+ pointer pointing to the object data itself, which may be
+another struct.
+
+All of the convenient object creation functions are also declared
+here, prefixed with +c_+. You should almost always use these to make
+objects. This will keep you from making reference counting mistakes.
+
+Symbols
+~~~~~~~
+
+All symbol objects are interned, so they act like singletons. A given
+symbol has only one instance of itself at any time. The +c_sym()+
+function will enforce this.
+
+Accessing objects stored in symbols can be done with the SET and GET
+macros.
+
+The +nil+ and +t+ symbols are already created and are made available
+as the global variables +T+ and +NIL+. All object pointers, including
+those in cons cells, should initialize/default to +NIL+ rather than
++NULL+.
+
+C Functions
+~~~~~~~~~~~
+
+C functions, called CFUNCs, are C functions that are meant to be
+exposed to lisp space. CFUNCs have the following declaration types,
+
+----------
+object_t *function (object_t *lst);
+----------
+
+They accept a single object as an argument and return a single
+argument. The single argument will be a cons cell object containing
+all your arguments as a list. For your convenience in accessing this
+structure there are a number of macros available, defined in the
+various header files: +CAR+, +CDR+, +OINT+, +OFLOAT+, +OSTR+.
+
+It is the responsibility of the CFUNC to make sure the
+number of arguments is correct.
+
+To get an idea of what a CFUNC should look like, take a Look at the
+existing functions in +lisp.c+.
+
+The functions +eval()+ and +eval_body()+ are available for further
+evaluation of objects. This is actually more useful in special forms
+than anything else.
+
+Once the function is defined, you can install it in +lisp_init()+ with
+the "simple set" macro,
+
+-----------------
+SET (c_sym ("function"), c_cfunc (&function));
+-----------------
+
+Special Forms
+~~~~~~~~~~~~~
+
+Special forms are exactly the same as functions, except that their
+arguments arrive unevaluated and they are installed with
++c_special()+. Lisp macros are to lisp functions as special forms are
+to CFUNCs.
+
+-----------------
+SET (c_sym ("if"), c_cfunc (&lisp_if));
+-----------------
+
+Error handling
+~~~~~~~~~~~~~~
+
+A CFUNC must be prepared to deal with error exceptions. If there was
+an error when calling another CFUNC, such as +eval()+, it will return
+the error symbol, stored in +err_symbol+. Note, this isn't the same as
+the object being thrown, which is stored in +err_thrown+. If a CFUNC
+receives this, it must either catch it, or (more likely) immediately
+clean up (i.e. destroy objects) so it can return cleanly, passing the
+error symbol along.
+
+The +CHECK+ macro is available for when no cleanup is needed.
+
+To throw an error, set +err_thrown+ to the object you want to throw,
+and set +err_attach+ to it's attachment; generally the thrown object
+will be a symbol. The +THROW+ macro makes this easy.
+
+The +top_eval()+ function is the final error handler and will catch
+any errors in order to display it. It should only be called by the
+originating evaluator, such as the parser.
+
+Reference Counting
+~~~~~~~~~~~~~~~~~~
+
+Working with reference counting can be tricky, but once you get the
+mental model of what's going on it won't be too bad. Getting this
+wrong will lead to either memory leaks or segmentation faults. Either
+one is a pain to track down, so don't mess it up.
+
+Calling a function and receiving an object is considered an act of
+creation, no matter what. This object _must_ either be destroyed with
++obj_destroy()+ or passed _directly_ as a return value. If passed, a
+CFUNC doesn't need to increase the counter, as both a decrement are
+increment are needed, which cancels out.
+
+Object returners are responsible for increasing the reference
+counter. The +UPREF+ macro is provided for this. If a CFUNC references
+into an s-expression to return it, the counter increase is required.
+
+Be mindful of the order in which you increment and decrement a
+counter. If you decrement the root first, then increment a child
+object in that root, the child object may not exist anymore.
+
+When just passing an object to a function, a CFUNC doesn't need to
+increment the counter. That function is responsible for the new
+references it makes. There is one exception to this:
++c_cons()+. Objects passed to +c_cons()+ need to be incremented,
+unless they come directly from another function.
+
+The reason for this is because this is a common thing to do,
+
+-----------
+c_cons (c_int (100), NIL);
+-----------
+
+The +c_int()+ function already incremented the counter, so it need not
+be incremented again.
+
+If you store a reference to an argument anywhere, you need to increase
+the reference counter for that object. The +SET+ macro does this for
+you (+SSET+ does not).
+
+Because all symbol are interned, they are never destroyed, so if you
+know you are dealing with symbols you don't need to worry about
+reference counts. This applies to the special +NIL+ and +T+ symbols
+too. This is perfectly acceptable,
+
+----------
+return NIL;
+----------
+
+Contributing
+------------
+
+All functions and macros should be in lisp form when possible. This
+makes them much easier and safer to edit. It also makes them more
+accessible and transparent at run time.
+
+I've put some stuff I want to get done in the TODO list.
+
+When I remember to, I run GNU indent on all the code with just the
+-npsl flag. If you do this, your code will match the style. Compiled
+code should give no warnings or errors and should conform to C99.

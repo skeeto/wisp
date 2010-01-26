@@ -5,7 +5,6 @@
 
 * Development
  * start using a real bug tracker
- * start real docs
 
 + Core
  * undefined variables. all are defined to nil atm
@@ -20,6 +19,7 @@
  * symbol properties
   * enforce constants
  * more advanced let binding
+ - symbol aliasing
 
 * CFUNC Define
  * maths
@@ -34,10 +34,10 @@
  * more ...
 
 * Documentation
- * document syntax and behavior
  * document the defined functions
  * probably should document the undefined ones too, to plan ahead
  - doc strings in functions?
+ - man page
 
 * Test suite
  * add more tests!

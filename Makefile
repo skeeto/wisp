@@ -1,8 +1,12 @@
 CFLAGS = -W -Wall -g -O2 --std=c99 -fshort-enums
 
-all : wisp
-test : all
+default : wisp
+
+all : wisp test doc
+test : wisp
 	make -C test test
+doc : 
+	make -C doc
 
 OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o \
       lisp.o parser.o scanner.o
@@ -24,8 +28,9 @@ scanner.o : scanner.l
 # Hash table
 hashtab.o : hashtab.c hashtab.h
 
-.PHONY : all clean test
+.PHONY : all clean test doc
 
 clean : 
 	$(RM) $(OBJ) wisp y.tab.h
 	make -C test clean
+	make -C doc clean
