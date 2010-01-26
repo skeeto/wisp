@@ -12,6 +12,8 @@ void count_line ();
 %option always-interactive
 %%
 
+^#!.+$                      /* ignore shebang-looking things */
+
  /* handle strings (non-numbers) */
 \"(\\.|[^\"])*\"       { yylval.str = c_str ( process_str (yytext));
                                         return TOK_STR; }
