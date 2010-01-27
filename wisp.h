@@ -7,6 +7,7 @@
 #include "cons.h"
 #include "symtab.h"
 #include "object.h"
+#include "str.h"
 #include "eval.h"
 #include "common.h"
 #include "lisp.h"

@@ -45,6 +45,7 @@ void init ()
   object_init ();
   symtab_init ();
   cons_init ();
+  str_init ();
   eval_init ();
   lisp_init ();
   parser_init ();
@@ -112,7 +113,7 @@ int main (int argc, char **argv)
       object_t *args = NIL;
       while (argc > optind)
 	{
-	  args = c_cons (c_str (argv[argc - 1]), args);
+	  args = c_cons (c_strs (argv[argc - 1]), args);
 	  argc--;
 	}
       SET (c_sym ("ARGS"), args);

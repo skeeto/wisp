@@ -5,6 +5,7 @@
 #include "symtab.h"
 #include "common.h"
 #include "eval.h"
+#include "str.h"
 
 /* Maths */
 object_t *addition (object_t * lst)
@@ -392,8 +393,9 @@ object_t *eql (object_t * lst)
 	return T;
       break;
     case STRING:
-      if (strcmp (OSTR (a), OSTR (b)) == 0)
-	return T;
+      if (OSTRLEN (a) == OSTRLEN (b))
+	if (memcmp (OSTR (a), OSTR (b), OSTRLEN (a)) == 0)
+	  return T;
       break;
     case CFUNC:
     case SPECIAL:

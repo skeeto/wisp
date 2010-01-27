@@ -3,6 +3,7 @@
 #include "mem.h"
 #include "cons.h"
 #include "symtab.h"
+#include "str.h"
 #include "object.h"
 
 static mmanager_t *mm;
@@ -40,6 +41,7 @@ object_t *obj_create (type_t type)
       o->val = symbol_create ();
       break;
     case STRING:
+      o->val = str_create ();
     case CFUNC:
     case SPECIAL:
       break;
@@ -66,13 +68,6 @@ object_t *c_float (double f)
 {
   object_t *o = obj_create (FLOAT);
   *((double *) o->val) = f;
-  return o;
-}
-
-object_t *c_str (char *str)
-{
-  object_t *o = obj_create (STRING);
-  o->val = (void *) str;
   return o;
 }
 
@@ -106,7 +101,7 @@ void obj_destroy (object_t * o)
     case FLOAT:
     case INT:
     case STRING:
-      free (o->val);
+      str_destroy (o->val);
       break;
     case CONS:
       obj_destroy (CAR (o));
@@ -148,7 +143,7 @@ void obj_print (object_t * o, int newline)
       printf ("%f", *((double *) o->val));
       break;
     case STRING:
-      printf ("\"%s\"", (char *) o->val);
+      printf ("%s", OSTRP (o));
       break;
     case SYMBOL:
       printf ("%s", ((symbol_t *) o->val)->name);

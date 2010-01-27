@@ -15,7 +15,7 @@ void count_line ();
 ^#!.+$                      /* ignore shebang-looking things */
 
  /* handle strings (non-numbers) */
-\"(\\.|[^\"])*\"       { yylval.str = c_str ( process_str (yytext));
+\"(\\.|[^\"])*\"       { yylval.str = c_strs ( process_str (yytext));
                                         return TOK_STR; }
 
  /* handle integers and floats */

@@ -16,7 +16,7 @@ static void cons_clear (void *o)
 
 void cons_init ()
 {
-  mm = mm_create (sizeof (object_t), &cons_clear);
+  mm = mm_create (sizeof (cons_t), &cons_clear);
 }
 
 cons_t *cons_create ()

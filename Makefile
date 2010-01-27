@@ -9,20 +9,21 @@ doc :
 	make -C doc
 
 OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o \
-      lisp.o parser.o scanner.o
+      lisp.o parser.o scanner.o str.o
 
 wisp : $(OBJ)
 
 wisp.o : wisp.c cons.h object.h common.h symtab.h eval.h
 cons.o : cons.c object.h symtab.h cons.h mem.h
-object.o : object.c object.h common.h mem.h symtab.h cons.h
+object.o : object.c object.h common.h mem.h symtab.h cons.h str.h
 symtab.o : symtab.c symtab.h object.h common.h symtab.h
 eval.o : eval.c eval.h common.h cons.h symtab.h
 mem.o : mem.c mem.h common.h
-lisp.o : lisp.c lisp.h object.h symtab.h cons.h
+lisp.o : lisp.c lisp.h object.h symtab.h cons.h str.h
 common.o : common.c common.h
+str.o : str.c str.h object.h mem.h
 
-parser.o : parser.y object.h common.h eval.h
+parser.o : parser.y object.h common.h eval.h str.h
 scanner.o : scanner.l
 
 # Hash table
