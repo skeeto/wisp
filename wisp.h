@@ -11,5 +11,6 @@
 #include "eval.h"
 #include "common.h"
 #include "lisp.h"
+#include "reader.h"
 
 #endif /* LIST_H */

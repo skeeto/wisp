@@ -2,7 +2,6 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
-#include "common.h"
 #include "wisp.h"
 #include "lisp.h"
 
@@ -14,10 +13,6 @@ int force_interaction = 0;
 int print_help = 0;
 char *core_file = "core.wisp";
 char *root = NULL;
-
-/* parser crap */
-void parser_init ();
-int parse (FILE * fid, char *name, int interactive);
 
 void print_usage (int ret)
 {
@@ -48,7 +43,6 @@ void init ()
   str_init ();
   eval_init ();
   lisp_init ();
-  parser_init ();
 }
 
 int main (int argc, char **argv)
@@ -81,8 +75,8 @@ int main (int argc, char **argv)
   root = getenv ("WISPROOT");
   if (root != NULL)
     core_file = pathcat (root, core_file);
-  FILE *core = fopen (core_file, "r");
-  if (core == NULL)
+  int r = load_file (NULL, core_file, 0);
+  if (!r)
     {
       fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
 	       core_file, strerror (errno));
@@ -90,13 +84,11 @@ int main (int argc, char **argv)
 	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
       exit (EXIT_FAILURE);
     }
-  parse (core, "core.wisp", 0);
-  fclose (core);
 
   if (argc - optind < 1)
     {
       /* Run interaction. */
-      parse (stdin, "<stdin>", 1);
+      load_file (stdin, "<stdin>", 1);
     }
   else
     {
@@ -117,7 +109,7 @@ int main (int argc, char **argv)
 	  argc--;
 	}
       SET (c_sym ("ARGS"), args);
-      parse (fid, file, 0);
+      load_file (fid, file, 0);
       fclose (fid);
     }
 }
