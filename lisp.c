@@ -96,98 +96,57 @@ object_t *less_than (object_t * lst)
   REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
-  double a = 0, b = 0;
-  if (ao->type == INT)
-    a = OINT (ao);
-  else if (ao->type == FLOAT)
-    a = OFLOAT (ao);
-  if (bo->type == INT)
-    b = OINT (bo);
-  else if (bo->type == FLOAT)
-    b = OFLOAT (bo);
-  else
-    THROW (wrong_type, UPREF (bo));
-  if (a < b)
+  if (!NUMP (ao) || !NUMP (bo))
+    THROW (wrong_type, UPREF (ao));
+  if (ONUM (ao) < ONUM (bo))
     return T;
   return NIL;
 }
 
 object_t *less_than_or_eq (object_t * lst)
 {
-  REQ (lst, 2, c_sym ("<="));
+  REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
-  double a = 0, b = 0;
-  if (ao->type == INT)
-    a = OINT (ao);
-  else if (ao->type == FLOAT)
-    a = OFLOAT (ao);
-  if (bo->type == INT)
-    b = OINT (bo);
-  else if (bo->type == FLOAT)
-    b = OFLOAT (bo);
-  if (a <= b)
+  if (!NUMP (ao) || !NUMP (bo))
+    THROW (wrong_type, UPREF (ao));
+  if (ONUM (ao) <= ONUM (bo))
     return T;
   return NIL;
 }
 
 object_t *greater_than (object_t * lst)
 {
-  REQ (lst, 2, c_sym (">"));
+  REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
-  double a = 0, b = 0;
-  if (ao->type == INT)
-    a = OINT (ao);
-  else if (ao->type == FLOAT)
-    a = OFLOAT (ao);
-  if (bo->type == INT)
-    b = OINT (bo);
-  else if (bo->type == FLOAT)
-    b = OFLOAT (bo);
-  if (a > b)
+  if (!NUMP (ao) || !NUMP (bo))
+    THROW (wrong_type, UPREF (ao));
+  if (ONUM (ao) > ONUM (bo))
     return T;
   return NIL;
 }
 
 object_t *greater_than_or_eq (object_t * lst)
 {
-  REQ (lst, 2, c_sym (">="));
+  REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
-  double a = 0, b = 0;
-  if (ao->type == INT)
-    a = OINT (ao);
-  else if (ao->type == FLOAT)
-    a = OFLOAT (ao);
-  if (bo->type == INT)
-    b = OINT (bo);
-  else if (bo->type == FLOAT)
-    b = OFLOAT (bo);
-  if (a >= b)
+  if (!NUMP (ao) || !NUMP (bo))
+    THROW (wrong_type, UPREF (ao));
+  if (ONUM (ao) >= ONUM (bo))
     return T;
   return NIL;
 }
 
 object_t *numeq (object_t * lst)
 {
-  REQ (lst, 2, c_sym ("="));
+  REQ (lst, 2, c_sym ("<"));
   object_t *ao = CAR (lst);
   object_t *bo = CAR (CDR (lst));
-  double a = 0, b = 0;
-  if (ao->type == INT)
-    a = OINT (ao);
-  else if (ao->type == FLOAT)
-    a = OFLOAT (ao);
-  else
+  if (!NUMP (ao) || !NUMP (bo))
     THROW (wrong_type, UPREF (ao));
-  if (bo->type == INT)
-    b = OINT (bo);
-  else if (bo->type == FLOAT)
-    b = OFLOAT (bo);
-  else
-    THROW (wrong_type, UPREF (bo));
-  if (a == b)
+  if (ONUM (ao) == ONUM (bo))
     return T;
   return NIL;
 }
