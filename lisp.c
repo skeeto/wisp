@@ -12,19 +12,14 @@ object_t *addition (object_t * lst)
 {
   double accum = 0;
   int intmode = 1;
-  object_t *p = lst;
-  while (p != NIL)
+  while (lst != NIL)
     {
-      if (CAR (p)->type == FLOAT)
-	{
-	  intmode = 0;
-	  accum += OFLOAT (CAR (p));
-	}
-      else if (CAR (p)->type == INT)
-	accum += OINT (CAR (p));
-      else
-	THROW (wrong_type, UPREF (CAR (p)));
-      p = CDR (p);
+      object_t *n = CAR (lst);
+      if (!NUMP (n))
+	THROW (wrong_type, UPREF (n));
+      accum += ONUM (n);
+      intmode &= INTP (n);
+      lst = CDR (lst);
     }
   if (intmode)
     return c_int ((int) accum);
@@ -35,19 +30,14 @@ object_t *multiply (object_t * lst)
 {
   double accum = 1;
   int intmode = 1;
-  object_t *p = lst;
-  while (p != NIL)
+  while (lst != NIL)
     {
-      if (CAR (p)->type == FLOAT)
-	{
-	  intmode = 0;
-	  accum *= OFLOAT (CAR (p));
-	}
-      else if (CAR (p)->type == INT)
-	accum *= OINT (CAR (p));
-      else
-	THROW (wrong_type, UPREF (CAR (p)));
-      p = CDR (p);
+      object_t *n = CAR (lst);
+      if (!NUMP (n))
+	THROW (wrong_type, UPREF (n));
+      accum *= ONUM (n);
+      intmode &= INTP (n);
+      lst = CDR (lst);
     }
   if (intmode)
     return c_int ((int) accum);
@@ -56,30 +46,22 @@ object_t *multiply (object_t * lst)
 
 object_t *subtract (object_t * lst)
 {
-  object_t *p = lst;
-  double accum = 0;
+  if (!NUMP (CAR (lst)))
+    THROW (wrong_type, UPREF (CAR (lst)));
+  double accum = ONUM (CAR (lst));
   int intmode = 1;
-  if (CAR (p)->type == INT)
-    accum = OINT (CAR (p));
-  else if (CAR (p)->type == FLOAT)
-    {
-      intmode = 0;
-      accum = OFLOAT (CAR (p));
-    }
 
-  p = CDR (p);
-  while (p != NIL)
+  lst = CDR (lst);
+  if (lst == NIL)
+    accum *= -1;
+  while (lst != NIL)
     {
-      if (CAR (p)->type == FLOAT)
-	{
-	  intmode = 0;
-	  accum -= OFLOAT (CAR (p));
-	}
-      else if (CAR (p)->type == INT)
-	accum -= OINT (CAR (p));
-      else
-	THROW (wrong_type, UPREF (CAR (p)));
-      p = CDR (p);
+      object_t *n = CAR (lst);
+      if (!NUMP (n))
+	THROW (wrong_type, UPREF (n));
+      accum -= ONUM (n);
+      intmode &= INTP (n);
+      lst = CDR (lst);
     }
   if (intmode)
     return c_int ((int) accum);
@@ -88,30 +70,21 @@ object_t *subtract (object_t * lst)
 
 object_t *divide (object_t * lst)
 {
-  object_t *p = lst;
-  double accum = 0;
+  REQM (lst, 2, c_sym ("/"));
+  if (!NUMP (CAR (lst)))
+    THROW (wrong_type, UPREF (CAR (lst)));
+  double accum = ONUM (CAR (lst));
   int intmode = 1;
-  if (CAR (p)->type == INT)
-    accum = OINT (CAR (p));
-  else if (CAR (p)->type == FLOAT)
-    {
-      intmode = 0;
-      accum = OFLOAT (CAR (p));
-    }
 
-  p = CDR (p);
-  while (p != NIL)
+  lst = CDR (lst);
+  while (lst != NIL)
     {
-      if (CAR (p)->type == FLOAT)
-	{
-	  intmode = 0;
-	  accum /= OFLOAT (CAR (p));
-	}
-      else if (CAR (p)->type == INT)
-	accum /= OINT (CAR (p));
-      else
-	THROW (wrong_type, UPREF (CAR (p)));
-      p = CDR (p);
+      object_t *n = CAR (lst);
+      if (!NUMP (n))
+	THROW (wrong_type, UPREF (n));
+      accum /= ONUM (n);
+      intmode &= INTP (n);
+      lst = CDR (lst);
     }
   if (intmode)
     return c_int ((int) accum);
@@ -455,7 +428,7 @@ object_t *funcp (object_t * lst)
 object_t *listp (object_t * lst)
 {
   REQ (lst, 1, c_sym ("listp"));
-  if (CAR (lst)->type == CONS || CAR (lst) == NIL)
+  if (LISTP (CAR (lst)))
     return T;
   return NIL;
 }
@@ -463,15 +436,15 @@ object_t *listp (object_t * lst)
 object_t *symbolp (object_t * lst)
 {
   REQ (lst, 1, c_sym ("symbolp"));
-  if (CAR (lst)->type == SYMBOL)
+  if (SYMBOLP (CAR (lst)))
     return T;
   return NIL;
 }
 
-object_t *nump (object_t * lst)
+object_t *numberp (object_t * lst)
 {
-  REQ (lst, 1, c_sym ("nump"));
-  if (CAR (lst)->type == INT || CAR (lst)->type == FLOAT)
+  REQ (lst, 1, c_sym ("numberp"));
+  if (NUMP (CAR (lst)))
     return T;
   return NIL;
 }
@@ -479,15 +452,15 @@ object_t *nump (object_t * lst)
 object_t *stringp (object_t * lst)
 {
   REQ (lst, 1, c_sym ("stringp"));
-  if (CAR (lst)->type == STRING)
+  if (STRINGP (CAR (lst)))
     return T;
   return NIL;
 }
 
-object_t *intp (object_t * lst)
+object_t *integerp (object_t * lst)
 {
-  REQ (lst, 1, c_sym ("intp"));
-  if (CAR (lst)->type == INT)
+  REQ (lst, 1, c_sym ("integerp"));
+  if (INTP (CAR (lst)))
     return T;
   return NIL;
 }
@@ -495,7 +468,7 @@ object_t *intp (object_t * lst)
 object_t *floatp (object_t * lst)
 {
   REQ (lst, 1, c_sym ("floatp"));
-  if (CAR (lst)->type == FLOAT)
+  if (FLOATP (CAR (lst)))
     return T;
   return NIL;
 }
@@ -572,8 +545,8 @@ void lisp_init ()
   SSET (c_sym ("listp"), c_cfunc (&listp));
   SSET (c_sym ("symbolp"), c_cfunc (&symbolp));
   SSET (c_sym ("stringp"), c_cfunc (&stringp));
-  SSET (c_sym ("nump"), c_cfunc (&nump));
-  SSET (c_sym ("intp"), c_cfunc (&intp));
+  SSET (c_sym ("numberp"), c_cfunc (&numberp));
+  SSET (c_sym ("integerp"), c_cfunc (&integerp));
   SSET (c_sym ("floatp"), c_cfunc (&floatp));
 
   /* Error handling */
