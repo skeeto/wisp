@@ -85,7 +85,7 @@ static int reader_getc (reader_t * r)
 }
 
 /* Unread a byte. */
-static int reader_putc (reader_t * r, int c)
+static void reader_putc (reader_t * r, int c)
 {
   r->readbufp++;
   if (r->readbufp == r->readbuf + r->readbuflen)
@@ -210,6 +210,17 @@ static object_t *parse_atom (reader_t * r)
   return c_sym (str);
 }
 
+/* Consume remaining whitespace on line, including linefeed. */
+static void consume_whitespace (reader_t * r)
+{
+  int c;
+  c = reader_getc (r);
+  while (strchr (" \t\r", c) != NULL)
+    c = reader_getc (r);
+  if (c != '\n')
+    reader_putc (r, c);
+}
+
 /* Read a single sexp from the reader. */
 object_t *read_sexp (reader_t * r)
 {
@@ -251,7 +262,7 @@ object_t *read_sexp (reader_t * r)
 	case '"':
 	  buf_read (r, "\"");
 	  add (r, parse_str (r));
-	  reader_getc (r); /* Throw away other quote. */
+	  reader_getc (r);	/* Throw away other quote. */
 	  break;
 
 	  /* numbers and symbols */
@@ -262,6 +273,8 @@ object_t *read_sexp (reader_t * r)
 	  break;
 	}
     }
+  if (!eof)
+    consume_whitespace (r);
 
   /* Check state */
   if (stack_height (r) > 1)
