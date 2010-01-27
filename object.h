@@ -30,8 +30,12 @@ void obj_destroy (object_t * o);
 #define OINT(o) *((int *) o->val)
 #define OFLOAT(o) *((double *) o->val)
 
+/* Get the number as a double. */
+#define ONUM(o) (INTP(o) ? ((double) OINT(o)) : OFLOAT(o))
+
 #define INTP(o) (o->type == INT)
 #define FLOATP(o) (o->type == FLOAT)
+#define NUMP(o) (INTP (o) || FLOATP (o))
 #define STRINGP(o) (o->type == STRING)
 #define SYMBOLP(o) (o->type == SYMBOL)
 #define CONSP(o) (o->type == CONS)
