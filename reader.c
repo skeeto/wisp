@@ -226,28 +226,37 @@ static void consume_whitespace (reader_t * r)
     reader_putc (r, c);
 }
 
-/* Add quote to quote stack. */
-static void add_quote (reader_t * r)
-{
-  r->qstackp++;
-  /* TODO */
-  *(r->qstackp) = 0;
-  push (r);
-  add (r, quote);
-}
-
+/* Increase quote depth */
 static void up_quote (reader_t * r)
 {
   if (*(r->qstackp) >= 0)
     (*(r->qstackp))++;
 }
 
+/* Add quote to quote stack. */
+static void add_quote (reader_t * r)
+{
+  up_quote (r);
+  r->qstackp++;
+  if (r->qstackp == r->qstack + r->qstacklen)
+    {
+      r->qstacklen *= 2;
+      r->qstack = xrealloc (r->qstack, r->qstacklen * sizeof (int));
+      r->qstackp = r->qstack + r->qstacklen / 2;
+    }
+  *(r->qstackp) = 0;
+  push (r);
+  add (r, quote);
+}
+
+/* Decrease quote depth */
 static void down_quote (reader_t * r)
 {
   if (*(r->qstackp) >= 0)
     (*(r->qstackp))--;
 }
 
+/* Check if quote needs to be popped. */
 static void check_quote (reader_t * r)
 {
   if (*(r->qstackp) < 0)
@@ -256,6 +265,8 @@ static void check_quote (reader_t * r)
     {
       add (r, pop (r));
       r->qstackp--;
+      down_quote (r);
+      check_quote (r);
     }
 }
 
