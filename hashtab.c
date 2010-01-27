@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "common.h"
 #include "hashtab.h"
 
@@ -220,14 +221,16 @@ void ht_iter_inc (hashtab_iter_t * ii)
 
 int ht_hash (void *key, size_t keylen, size_t hashtab_size)
 {
-  int sum = 0;
-
-  /* very simple hash function for now */
-  int i;
-  for (i = 0; i < (int) keylen; i++)
+  /* One-at-a-time hash */
+  uint32_t hash, i;
+  for (hash = 0, i = 0; i < keylen; ++i)
     {
-      sum += ((unsigned char *) key)[i] * (i + 1);
+      hash += ((char *) key)[i];
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
     }
-
-  return (sum % (int) hashtab_size);
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+  return (hash % hashtab_size);
 }
