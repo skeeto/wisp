@@ -42,6 +42,7 @@ object_t *obj_create (type_t type)
       break;
     case STRING:
       o->val = str_create ();
+      break;
     case CFUNC:
     case SPECIAL:
       break;
@@ -100,6 +101,8 @@ void obj_destroy (object_t * o)
       return;
     case FLOAT:
     case INT:
+      free (o->val);
+      break;
     case STRING:
       str_destroy (o->val);
       break;
