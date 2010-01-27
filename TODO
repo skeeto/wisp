@@ -12,9 +12,7 @@
  * array type
  - arbitrary precision
  * loop detection needed in places
- * use unprocess_string()
  * advanced quoting
- * Upgrade string type
  - closures
  * symbol properties
   * enforce constants
