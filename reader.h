@@ -24,6 +24,9 @@ typedef struct reader
   int *readbuf;
   int *readbufp;
   size_t readbuflen;
+  int *qstack;
+  int *qstackp;
+  int qstacklen;
 
   /* sexp stack */
   size_t ssize;

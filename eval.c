@@ -4,7 +4,7 @@
 #include "symtab.h"
 #include "eval.h"
 
-object_t *lambda, *macro;
+object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
 object_t *rest, *optional;
 /* Commonly used thrown error symbols */
@@ -18,6 +18,7 @@ void eval_init ()
   /* regular evaluation symbols */
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
+  quote = c_sym ("quote");
   rest = c_sym ("&rest");
   optional = c_sym ("&optional");
 

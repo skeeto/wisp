@@ -159,7 +159,7 @@ object_t *lisp_cons (object_t * lst)
   return c_cons (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
 }
 
-object_t *quote (object_t * lst)
+object_t *lisp_quote (object_t * lst)
 {
   REQ (lst, 1, c_sym ("quote"));
   return UPREF (CAR (lst));
@@ -474,7 +474,7 @@ void lisp_init ()
   SSET (c_sym ("="), c_cfunc (&numeq));
 
   /* Various */
-  SSET (c_sym ("quote"), c_special (&quote));
+  SSET (c_sym ("quote"), c_special (&lisp_quote));
   SSET (c_sym ("lambda"), c_special (&lambda_f));
   SSET (c_sym ("defun"), c_special (&defun));
   SSET (c_sym ("defmacro"), c_special (&defmacro));

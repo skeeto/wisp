@@ -26,6 +26,10 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
   r->readbuflen = 8;
   r->readbufp = r->readbuf = xmalloc (r->readbuflen * sizeof (int));
 
+  r->qstacklen = 4;
+  r->qstackp = r->qstack = xmalloc (r->qstacklen * sizeof (int));
+  *(r->qstackp) = -1;
+
   r->ssize = 32;
   r->tip = r->base = xmalloc (32 * sizeof (object_t *) * 2);
   return r;
@@ -221,6 +225,39 @@ static void consume_whitespace (reader_t * r)
     reader_putc (r, c);
 }
 
+/* Add quote to quote stack. */
+static void add_quote (reader_t * r)
+{
+  r->qstackp++;
+  /* TODO */
+  *(r->qstackp) = 0;
+  push (r);
+  add (r, quote);
+}
+
+static void up_quote (reader_t * r)
+{
+  if (*(r->qstackp) >= 0)
+    (*(r->qstackp))++;
+}
+
+static void down_quote (reader_t * r)
+{
+  if (*(r->qstackp) >= 0)
+    (*(r->qstackp))--;
+}
+
+static void check_quote (reader_t * r)
+{
+  if (*(r->qstackp) < 0)
+    return;
+  if (*(r->qstackp) == 0)
+    {
+      add (r, pop (r));
+      r->qstackp--;
+    }
+}
+
 /* Read a single sexp from the reader. */
 object_t *read_sexp (reader_t * r)
 {
@@ -248,20 +285,24 @@ object_t *read_sexp (reader_t * r)
 	  /* Parenthesis */
 	case '(':
 	  push (r);
+	  up_quote (r);
 	  break;
 	case ')':
 	  add (r, pop (r));
+	  down_quote (r);
+	  check_quote (r);
 	  break;
 
 	  /* Quoting */
 	case '\'':
-	  /* TODO push a quote onto the stack */
+	  add_quote (r);
 	  break;
 
 	  /* strings */
 	case '"':
 	  buf_read (r, "\"");
 	  add (r, parse_str (r));
+	  check_quote (r);
 	  reader_getc (r);	/* Throw away other quote. */
 	  break;
 
@@ -270,6 +311,7 @@ object_t *read_sexp (reader_t * r)
 	  buf_append (r, c);
 	  buf_read (r, " \t\r\n()");
 	  add (r, parse_atom (r));
+	  check_quote (r);
 	  break;
 	}
     }

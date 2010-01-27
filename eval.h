@@ -17,7 +17,7 @@ void unassign_args (object_t * vars);
 extern unsigned int max_stack_depth;
 
 /* Frequently used symbols */
-extern object_t *lambda, *macro, *rest, *optional;
+extern object_t *lambda, *macro, *rest, *optional, *quote;
 
 #define FUNCP(o) \
   ((o->type == CONS && CAR(o)->type == SYMBOL \
