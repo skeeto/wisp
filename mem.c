@@ -52,4 +52,5 @@ void mm_free (mmanager_t * mm, void *o)
     mm_resize_stack (mm);
   mm->stack++;
   *(mm->stack) = o;
+  mm->clearf (o);
 }
