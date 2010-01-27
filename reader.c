@@ -19,6 +19,7 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
   r->interactive = interactive;
   r->prompt = prompt;
   r->linecnt = 1;
+  r->eof = 0;
 
   r->buflen = 1024;
   r->bufp = r->buf = xmalloc (r->buflen + 1);
@@ -263,14 +264,13 @@ object_t *read_sexp (reader_t * r)
 {
   push (r);
   print_prompt (r);
-  int eof = 0;
-  while (!eof && (list_empty (r) || stack_height (r) > 1))
+  while (!r->eof && (list_empty (r) || stack_height (r) > 1))
     {
       int c = reader_getc (r);
       switch (c)
 	{
 	case EOF:
-	  eof = 1;
+	  r->eof = 1;
 	  break;
 
 	  /* Whitespace */
@@ -315,7 +315,7 @@ object_t *read_sexp (reader_t * r)
 	  break;
 	}
     }
-  if (!eof)
+  if (!r->eof)
     consume_whitespace (r);
 
   /* Check state */
@@ -323,7 +323,7 @@ object_t *read_sexp (reader_t * r)
     {
       read_error (r, "premature end of file");
       reset (r);
-      return NIL;
+      return err_symbol;
     }
   if (list_empty (r))
     return NIL;
@@ -342,9 +342,9 @@ int load_file (FILE * fid, char *filename, int interactive)
 	return 0;
     }
   reader_t *r = reader_create (fid, NULL, filename, interactive);
-  object_t *sexp;
-  while ((sexp = read_sexp (r)) != NIL)
+  while (!r->eof)
     {
+      object_t *sexp = read_sexp (r);
       object_t *ret = top_eval (sexp);
       if (r->interactive)
 	obj_print (ret, 1);

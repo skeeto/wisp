@@ -27,6 +27,7 @@ typedef struct reader
   int *qstack;
   int *qstackp;
   int qstacklen;
+  int eof;
 
   /* sexp stack */
   size_t ssize;
