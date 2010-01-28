@@ -217,7 +217,7 @@ static object_t *parse_str (reader_t * r)
 {
   /* process_str? */
   r->bufp = r->buf;
-  return c_strs (r->buf);
+  return c_strs ( xstrdup (r->buf));
 }
 
 /* Turn string in buffer into atom object. */
