@@ -135,7 +135,12 @@ static object_t *pop (reader_t * r)
   if (!r->done && stack_height (r) <= 1)
     {
       read_error (r, "unbalanced parenthesis");
-      return NIL;
+      return err_symbol;
+    }
+  if (!r->done && r->state->dotpair_mode == 1)
+    {
+      read_error (r, "missing cdr object for dotted pair");
+      return err_symbol;
     }
   object_t *p = CDR (r->state->head);
   CDR (r->state->head) = NIL;
@@ -181,10 +186,27 @@ static void print_prompt (reader_t * r)
 /* Push a new object into the current list. */
 static void add (reader_t * r, object_t * o)
 {
-  CDR (r->state->tail) = c_cons (o, NIL);
-  r->state->tail = CDR (r->state->tail);
-  if (r->state->quote_mode)
-    addpop (r);
+  if (r->state->dotpair_mode == 2)
+    {
+      /* CDR already filled. Cannot add more. */
+      read_error (r, "invalid dotted pair syntax - too many objects");
+      return;
+    }
+
+  if (!r->state->dotpair_mode)
+    {
+      CDR (r->state->tail) = c_cons (o, NIL);
+      r->state->tail = CDR (r->state->tail);
+      if (r->state->quote_mode)
+	addpop (r);
+    }
+  else
+    {
+      CDR (r->state->tail) = o;
+      r->state->dotpair_mode = 2;
+      if (r->state->quote_mode)
+	addpop (r);
+    }
 }
 
 /* Pop sexp stack and add it to the new top list. */
@@ -329,7 +351,7 @@ object_t *read_sexp (reader_t * r)
 	  /* Dotted pair */
 	case '.':
 	  nc = reader_getc (r);
-	  if (strchr (" \t\r\n", nc) != NULL)
+	  if (strchr (" \t\r\n()", nc) != NULL)
 	    {
 	      if (r->state->dotpair_mode > 0)
 		read_error (r, "invalid dotted pair syntax");
@@ -338,6 +360,13 @@ object_t *read_sexp (reader_t * r)
 		  r->state->dotpair_mode = 1;
 		  reader_putc (r, nc);
 		}
+	    }
+	  else
+	    {
+	      /* Turn it into a decimal point. */
+	      reader_putc (r, nc);
+	      reader_putc (r, '.');
+	      reader_putc (r, '0');
 	    }
 	  break;
 
@@ -365,7 +394,8 @@ object_t *read_sexp (reader_t * r)
 	case '\'':
 	  push (r);
 	  add (r, quote);
-	  r->state->quote_mode = 1;
+	  if (!r->error)
+	    r->state->quote_mode = 1;
 	  break;
 
 	  /* strings */
@@ -391,7 +421,8 @@ object_t *read_sexp (reader_t * r)
     return err_symbol;
 
   /* Check state */
-  if (stack_height (r) > 1 || r->state->quote_mode)
+  if (stack_height (r) > 1 || r->state->quote_mode
+      || r->state->dotpair_mode == 1)
     {
       read_error (r, "premature end of file");
       return err_symbol;
