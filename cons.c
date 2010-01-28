@@ -29,16 +29,48 @@ void cons_destroy (cons_t * o)
   mm_free (mm, (void *) o);
 }
 
-int length (object_t * lst)
+object_t *req_length (object_t * lst, object_t *thr, int n)
 {
   /* TODO detect loops? */
   int cnt = 0;
-  while (lst != NIL)
+  object_t *p = lst;
+  while (p != NIL)
     {
       cnt++;
-      lst = CDR (lst);
+      p = CDR (p);
+      if (!LISTP (p))
+	{
+	  obj_destroy (thr);
+	  THROW(improper_list, lst);
+	}
+      if (cnt > n)
+	THROW(wrong_number_of_arguments, thr);
     }
-  return cnt;
+  if (cnt != n)
+    THROW(wrong_number_of_arguments, thr);
+  return T;
+}
+
+object_t *reqm_length (object_t * lst, object_t *thr, int n)
+{
+  /* TODO detect loops? */
+  int cnt = 0;
+  object_t *p = lst;
+  while (p != NIL)
+    {
+      cnt++;
+      p = CDR (p);
+      if (!LISTP (p))
+	{
+	  obj_destroy (thr);
+	  THROW(improper_list, lst);
+	}
+      if (cnt >= n)
+	return T;
+    }
+  if (cnt < n)
+    THROW(wrong_number_of_arguments, thr);
+  return T;
 }
 
 /* Verifies that list has form of a function. */
@@ -74,4 +106,14 @@ int is_var_list (object_t * lst)
   if (rest_cnt == 1)
     return 0;
   return 1;
+}
+
+/* Determine if list is proper (ends with NIL) */
+object_t *properlistp (object_t * lst)
+{
+  if (lst == NIL)
+    return T;
+  if (!CONSP (lst))
+    return NIL;
+  return properlistp (CDR (lst));
 }

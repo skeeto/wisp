@@ -9,7 +9,8 @@ object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
 object_t *rest, *optional;
 /* Commonly used thrown error symbols */
-object_t *void_function, *wrong_number_of_arguments, *wrong_type;
+object_t *void_function, *wrong_number_of_arguments, *wrong_type,
+  *improper_list, *improper_list_ending;
 
 /* Stack counting */
 unsigned int stack_depth = 0, max_stack_depth = 20000;
@@ -30,12 +31,16 @@ void eval_init ()
   void_function = c_sym ("void-function");
   wrong_number_of_arguments = c_sym ("wrong-number-of-arguments");
   wrong_type = c_sym ("wrong-type-argument");
+  improper_list = c_sym ("improper-list");
+  improper_list_ending = c_sym ("improper-list-ending");
 }
 
 object_t *eval_list (object_t * lst)
 {
   if (lst == NIL)
     return NIL;
+  if (!CONSP (lst))
+    THROW (improper_list_ending, UPREF (lst));
   object_t *car = eval (CAR (lst));
   CHECK (car);
   object_t *cdr = eval_list (CDR (lst));
@@ -85,7 +90,6 @@ object_t *assign_args (object_t * vars, object_t * vals)
 	}
       else if (!optional_mode && vals == NIL)
 	{
-	  /* TODO: unassign */
 	  while (cnt > 0)
 	    {
 	      sympop (CAR (orig_vars));
@@ -149,8 +153,6 @@ object_t *eval (object_t * o)
     return UPREF (o);
   else if (o->type == SYMBOL)
     return UPREF (GET (o));
-  else if (PAIRP (o))
-    THROW (c_sym ("eval-dotted-pair"), o);
 
   /* Find the function. */
   object_t *f = eval (CAR (o));

@@ -18,7 +18,8 @@ cons_t *cons_create ();
 void cons_destroy (cons_t * c);
 
 /* list operators */
-int length (object_t * lst);
+object_t *req_length (object_t * lst, object_t * thr, int n);
+object_t *reqm_length (object_t * lst, object_t * thr, int n);
 int is_func_form (object_t * lst);
 int is_var_list (object_t * lst);
 
@@ -27,5 +28,8 @@ int is_var_list (object_t * lst);
 
 #define LISTP(o) (o->type == CONS || o == NIL)
 #define PAIRP(o) (o->type == CONS && !LISTP(CDR(o)))
+
+/* Determine if list is proper. */
+object_t *properlistp (object_t * t);
 
 #endif /* CONS_H */

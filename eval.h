@@ -26,14 +26,17 @@ extern object_t *lambda, *macro, *rest, *optional, *quote;
 
 /* Error handling */
 extern object_t *err_symbol, *err_thrown, *err_attach;
-extern object_t *void_function, *wrong_number_of_arguments, *wrong_type;
+extern object_t *void_function, *wrong_number_of_arguments, *wrong_type,
+  *improper_list, *improper_list_ending;
 
 #define THROW(to, ao) {err_thrown = to; err_attach = ao; return err_symbol;}
 #define CHECK(o) if ((o) == err_symbol) return err_symbol;
 
-#define REQ(lst, n, so) if (length (lst) != n) \
-                         THROW(wrong_number_of_arguments, so);
-#define REQM(lst, n, so) if (length (lst) < n) \
-                         THROW(wrong_number_of_arguments, so);
+#define REQ(lst, n, so) if (req_length (lst, so, n) == err_symbol) \
+                          return err_symbol;
+#define REQM(lst, n, so) if (reqm_length (lst, so, n) == err_symbol) \
+                         return err_symbol;
+#define REQPROP(lst) if (properlistp(lst) == NIL) \
+                         THROW (improper_list, lst);
 
 #endif /* EVAL_H */
