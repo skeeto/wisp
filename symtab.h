@@ -7,6 +7,7 @@
 typedef struct symbol
 {
   char *name;
+  char props;
   object_t **vals;
   object_t **stack;
   unsigned int cnt;
@@ -35,5 +36,13 @@ void sympush (object_t * so, object_t * o);
 /* Constants */
 extern object_t *NIL;
 extern object_t *T;
+
+/* symbol properties */
+#define SYM_CONSTANT 1
+#define SYM_INTERNED 2
+
+#define SYMPROPS(o) ((((symbol_t *)(o)->val))->props)
+#define CONSTANTP(o) (SYMPROPS(o) & SYM_CONSTANT)
+#define INTERNP(o) (SYMPROPS(o) & SYM_INTERNED)
 
 #endif /* SYMTAB_H */

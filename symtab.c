@@ -16,13 +16,16 @@ void symtab_init ()
   /* Set up t and nil constants. The SET macro won't work until NIL is set. */
   NIL = c_sym ("nil");
   *((symbol_t *) NIL->val)->vals = NIL;
+  SYMPROPS(NIL) |= SYM_CONSTANT;
   T = c_sym ("t");
+  SYMPROPS(T) |= SYM_CONSTANT;
   SET (T, T);
 }
 
 symbol_t *symbol_create ()
 {
   symbol_t *s = xmalloc (sizeof (symbol_t));
+  s->props = 0;
   s->cnt = 8;
   s->vals = s->stack = xmalloc (sizeof (object_t *) * s->cnt);
   return s;
@@ -66,6 +69,7 @@ void intern (object_t * sym)
 {
   ht_insert (symbol_table, SYMNAME (sym), strlen (SYMNAME (sym)), sym,
 	     sizeof (object_t *));
+  SYMPROPS(sym) |= SYM_INTERNED;
 }
 
 object_t *c_sym (char *name)
