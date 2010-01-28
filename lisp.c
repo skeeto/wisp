@@ -11,17 +11,7 @@
 #include "reader.h"
 #include "number.h"
 
-/* Maths */
-object_t *addition (object_t *lst)
-{
-  object_t *accum = c_int (0);
-  while (lst != NIL)
-    {
-      mpz_add (DINT (accum), DINT (accum), DINT (CAR (lst)));
-      lst = CDR (lst);
-    }
-  return accum;
-}
+void lisp_math_init ();
 
 /* Various basic stuff */
 
@@ -366,7 +356,7 @@ object_t *catch (object_t * lst)
 void lisp_init ()
 {
   /* Maths */
-  SSET (c_sym ("+"), c_cfunc (&addition));
+  lisp_math_init ();
 
   /* Various */
   SSET (c_sym ("quote"), c_special (&lisp_quote));
