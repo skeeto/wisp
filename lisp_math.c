@@ -5,6 +5,9 @@
 typedef enum arith_enum
 { ADD, SUB, MUL, DIV } arith_t;
 
+typedef enum cmp_enum
+{ EQ, LT, LTE, GT, GTE, } cmp_t;
+
 /* Maths */
 object_t *arith (arith_t op, object_t * lst)
 {
@@ -177,39 +180,77 @@ object_t *division (object_t * lst)
   return arith (DIV, lst);
 }
 
-object_t *num_equal (object_t * lst)
+object_t *num_cmp (cmp_t cmp, object_t * lst)
 {
   REQM (lst, 2, c_sym ("="));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
+  int r = 0;
   if (INTP (a) && INTP (b))
-    {
-      if (mpz_cmp (DINT (a), DINT (b)) == 0)
-	return T;
-      else
-	return NIL;
-    }
+    r = mpz_cmp (DINT (a), DINT (b));
   else if (FLOATP (a) && FLOATP (b))
-    {
-      if (mpf_cmp (DFLOAT (a), DFLOAT (b)) == 0)
-	return T;
-      else
-	return NIL;
-    }
+    r = mpf_cmp (DFLOAT (a), DFLOAT (b));
   else if (INTP (a) && FLOATP (b))
     {
+      /* Swap and handle below. */
       object_t *c = b;
       b = a;
       a = c;
     }
-  /* Convert down. */
-  object_t *convf = c_float (0);
-  mpf_set_z (DFLOAT (convf), DINT (b));
-  int r = mpf_cmp (DFLOAT (a), DFLOAT (convf));
-  obj_destroy (convf);
-  if (r == 0)
+  if (FLOATP (a) && INTP (b))
+    {
+      /* Convert down. */
+      object_t *convf = c_float (0);
+      mpf_set_z (DFLOAT (convf), DINT (b));
+      r = mpf_cmp (DFLOAT (a), DFLOAT (convf));
+      obj_destroy (convf);
+    }
+  switch (cmp)
+    {
+    case EQ:
+      r = (0 == r);
+      break;
+    case LT:
+      r = (0 < r);
+      break;
+    case LTE:
+      r = (0 <= r);
+      break;
+    case GT:
+      r = (0 > r);
+      break;
+    case GTE:
+      r = (0 >= r);
+      break;
+    }
+  if (r)
     return T;
   return NIL;
+}
+
+object_t *num_eq (object_t * lst)
+{
+  return num_cmp (EQ, lst);
+}
+
+object_t *num_lt (object_t * lst)
+{
+  return num_cmp (LT, lst);
+}
+
+object_t *num_lte (object_t * lst)
+{
+  return num_cmp (LTE, lst);
+}
+
+object_t *num_gt (object_t * lst)
+{
+  return num_cmp (GT, lst);
+}
+
+object_t *num_gte (object_t * lst)
+{
+  return num_cmp (GTE, lst);
 }
 
 /* Install all the math functions */
@@ -219,5 +260,9 @@ void lisp_math_init ()
   SSET (c_sym ("*"), c_cfunc (&multiplication));
   SSET (c_sym ("-"), c_cfunc (&subtraction));
   SSET (c_sym ("/"), c_cfunc (&division));
-  SSET (c_sym ("="), c_cfunc (&num_equal));
+  SSET (c_sym ("="), c_cfunc (&num_eq));
+  SSET (c_sym ("<"), c_cfunc (&num_lt));
+  SSET (c_sym ("<="), c_cfunc (&num_lte));
+  SSET (c_sym (">"), c_cfunc (&num_gt));
+  SSET (c_sym (">="), c_cfunc (&num_gte));
 }

@@ -11,7 +11,7 @@
 
 char *atom_chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  "0123456789!#$%^&*-_=+|\\/?.~";
+  "0123456789!#$%^&*-_=+|\\/?.~<>";
 char *prompt = "wisp> ";
 
 reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
