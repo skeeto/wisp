@@ -9,6 +9,9 @@
 #include "reader.h"
 #include "number.h"
 
+static void read_error (reader_t * r, char *str);
+static void addpop (reader_t * r);
+
 char *atom_chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   "0123456789!#$%^&*-_=+|\\/?.~<>";
@@ -26,19 +29,17 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
   r->eof = 0;
   r->error = 0;
   r->shebang = -1 + interactive;
+  r->done = 0;
 
+  /* read buffers */
   r->buflen = 1024;
   r->bufp = r->buf = xmalloc (r->buflen + 1);
-
   r->readbuflen = 8;
   r->readbufp = r->readbuf = xmalloc (r->readbuflen * sizeof (int));
 
-  r->qstacklen = 4;
-  r->qstackp = r->qstack = xmalloc (r->qstacklen * sizeof (int));
-  *(r->qstackp) = -1;
-
+  /* state stack */
   r->ssize = 32;
-  r->tip = r->base = xmalloc (32 * sizeof (object_t *) * 2);
+  r->base = r->state = xmalloc (r->ssize * sizeof (rstate_t *));
   return r;
 }
 
@@ -46,7 +47,6 @@ void reader_destroy (reader_t * r)
 {
   free (r->buf);
   free (r->readbuf);
-  free (r->qstack);
   free (r->base);
   free (r);
 }
@@ -107,39 +107,54 @@ static void consume_line (reader_t * r)
     reader_putc (r, c);
 }
 
+/* Return height of sexp stack. */
+static size_t stack_height (reader_t * r)
+{
+  return (r->state - r->base);
+}
+
 /* Push new list onto the sexp stack. */
 static void push (reader_t * r)
 {
-  r->tip += 2;
-  if (r->tip == r->base + r->ssize * 2)
+  r->state++;
+  if (r->state == r->base + r->ssize)
     {
       r->ssize *= 2;
-      r->base = xrealloc (r->base, sizeof (object_t *) * r->ssize * 2);
-      r->tip = r->base + r->ssize;
+      r->base = xrealloc (r->base, sizeof (rstate_t *) * r->ssize);
+      r->state = r->base + r->ssize / 2;
     }
-  *(r->tip) = c_cons (NIL, NIL);
-  *(r->tip + 1) = *(r->tip);
+  /* clear the state */
+  r->state->quote_mode = 0;
+  r->state->dotpair_mode = 0;
+  r->state->head = r->state->tail = c_cons (NIL, NIL);
 }
 
 /* Remove top object from the sexp stack. */
 static object_t *pop (reader_t * r)
 {
-  object_t *p = CDR (*(r->tip));
-  CDR (*(r->tip)) = NIL;
-  obj_destroy (*(r->tip));
-  r->tip -= 2;
+  if (!r->done && stack_height (r) <= 1)
+    {
+      read_error (r, "unbalanced parenthesis");
+      return NIL;
+    }
+  object_t *p = CDR (r->state->head);
+  CDR (r->state->head) = NIL;
+  obj_destroy (r->state->head);
+  r->state--;
   return p;
 }
 
 /* Remove top object from the sexp stack. */
 static void reset (reader_t * r)
 {
-  while (r->tip != r->base)
+  r->done = 1;
+  while (r->state != r->base)
     obj_destroy (pop (r));
-  r->qstackp = r->qstack;
-  *(r->qstackp) = -1;
+  r->state->quote_mode = 0;
+  r->state->dotpair_mode = 0;
   r->bufp = r->buf;
   r->readbufp = r->readbuf;
+  r->done = 0;
 }
 
 /* Print an error message. */
@@ -151,16 +166,10 @@ static void read_error (reader_t * r, char *str)
   r->error = 1;
 }
 
-/* Return height of sexp stack. */
-static size_t stack_height (reader_t * r)
-{
-  return (r->tip - r->base) / 2;
-}
-
 /* Determine if top list is empty. */
 static int list_empty (reader_t * r)
 {
-  return CDR (*(r->tip)) == NIL;
+  return CDR (r->state->head) == NIL;
 }
 
 static void print_prompt (reader_t * r)
@@ -172,8 +181,18 @@ static void print_prompt (reader_t * r)
 /* Push a new object into the current list. */
 static void add (reader_t * r, object_t * o)
 {
-  CDR (*(r->tip + 1)) = c_cons (o, NIL);
-  *(r->tip + 1) = CDR (*(r->tip + 1));
+  CDR (r->state->tail) = c_cons (o, NIL);
+  r->state->tail = CDR (r->state->tail);
+  if (r->state->quote_mode)
+    addpop (r);
+}
+
+/* Pop sexp stack and add it to the new top list. */
+static void addpop (reader_t * r)
+{
+  object_t *o = pop (r);
+  if (!r->error)
+    add (r, o);
 }
 
 /* Append character to buffer. */
@@ -231,7 +250,8 @@ static object_t *parse_atom (reader_t * r)
   char *end;
 
   /* Detect integer */
-  strtol (str, &end, 10);
+  int i = strtol (str, &end, 10);
+  (void) i;
   if (end != str && *end == '\0')
     {
       r->bufp = r->buf;
@@ -239,7 +259,8 @@ static object_t *parse_atom (reader_t * r)
     }
 
   /* Detect float */
-  strtod (str, &end);
+  int d = strtod (str, &end);
+  (void) d;
   if (end != str && *end == '\0')
     {
       r->bufp = r->buf;
@@ -262,61 +283,6 @@ static object_t *parse_atom (reader_t * r)
     }
   r->bufp = r->buf;
   return c_sym (r->buf);
-}
-
-/* Increase quote depth */
-static void up_quote (reader_t * r)
-{
-  if (*(r->qstackp) >= 0)
-    (*(r->qstackp))++;
-}
-
-/* Add quote to quote stack. */
-static void add_quote (reader_t * r)
-{
-  up_quote (r);
-  r->qstackp++;
-  if (r->qstackp == r->qstack + r->qstacklen)
-    {
-      r->qstacklen *= 2;
-      r->qstack = xrealloc (r->qstack, r->qstacklen * sizeof (int));
-      r->qstackp = r->qstack + r->qstacklen / 2;
-    }
-  *(r->qstackp) = 0;
-  push (r);
-  add (r, quote);
-}
-
-/* Decrease quote depth */
-static void down_quote (reader_t * r)
-{
-  if (*(r->qstackp) >= 0)
-    (*(r->qstackp))--;
-}
-
-/* Height of qstack */
-static int qstack_height (reader_t * r)
-{
-  return r->qstackp - r->qstack;
-}
-
-/* Check if quote needs to be popped. */
-static void check_quote (reader_t * r)
-{
-  if (*(r->qstackp) < 0)
-    return;
-  if (*(r->qstackp) == 0)
-    {
-      if (stack_height (r) <= 1)
-	read_error (r, "unbalanced parenthesis");
-      else
-	{
-	  add (r, pop (r));
-	  r->qstackp--;
-	  down_quote (r);
-	  check_quote (r);
-	}
-    }
 }
 
 /* Read a single sexp from the reader. */
@@ -342,12 +308,13 @@ object_t *read_sexp (reader_t * r)
 	}
     }
 
+  r->done = 0;
   r->error = 0;
   push (r);
   print_prompt (r);
   while (!r->eof && !r->error && (list_empty (r) || stack_height (r) > 1))
     {
-      int c = reader_getc (r);
+      int nc, c = reader_getc (r);
       switch (c)
 	{
 	case EOF:
@@ -357,6 +324,21 @@ object_t *read_sexp (reader_t * r)
 	  /* Comments */
 	case ';':
 	  consume_line (r);
+	  break;
+
+	  /* Dotted pair */
+	case '.':
+	  nc = reader_getc (r);
+	  if (strchr (" \t\r\n", nc) != NULL)
+	    {
+	      if (r->state->dotpair_mode > 0)
+		read_error (r, "invalid dotted pair syntax");
+	      else
+		{
+		  r->state->dotpair_mode = 1;
+		  reader_putc (r, nc);
+		}
+	    }
 	  break;
 
 	  /* Whitespace */
@@ -371,29 +353,25 @@ object_t *read_sexp (reader_t * r)
 	  /* Parenthesis */
 	case '(':
 	  push (r);
-	  up_quote (r);
 	  break;
 	case ')':
-	  if (stack_height (r) <= 1 || *(r->qstackp) == 0)
+	  if (r->state->quote_mode)
 	    read_error (r, "unbalanced parenthesis");
 	  else
-	    {
-	      add (r, pop (r));
-	      down_quote (r);
-	      check_quote (r);
-	    }
+	    addpop (r);
 	  break;
 
 	  /* Quoting */
 	case '\'':
-	  add_quote (r);
+	  push (r);
+	  add (r, quote);
+	  r->state->quote_mode = 1;
 	  break;
 
 	  /* strings */
 	case '"':
 	  buf_read (r, "\"");
 	  add (r, parse_str (r));
-	  check_quote (r);
 	  reader_getc (r);	/* Throw away other quote. */
 	  break;
 
@@ -403,10 +381,7 @@ object_t *read_sexp (reader_t * r)
 	  buf_read (r, " \t\r\n();");
 	  object_t *o = parse_atom (r);
 	  if (!r->error)
-	    {
-	      add (r, o);
-	      check_quote (r);
-	    }
+	    add (r, o);
 	  break;
 	}
     }
@@ -416,7 +391,7 @@ object_t *read_sexp (reader_t * r)
     return err_symbol;
 
   /* Check state */
-  if (stack_height (r) > 1 || qstack_height (r) > 1)
+  if (stack_height (r) > 1 || r->state->quote_mode)
     {
       read_error (r, "premature end of file");
       return err_symbol;
@@ -424,6 +399,7 @@ object_t *read_sexp (reader_t * r)
   if (list_empty (r))
     return NIL;
 
+  r->done = 1;
   object_t *wrap = pop (r);
   object_t *sexp = UPREF (CAR (wrap));
   obj_destroy (wrap);

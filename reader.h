@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include "object.h"
 
+/* stack-dependant reader state */
+typedef struct reader_state
+{
+  object_t *head;
+  object_t *tail;
+  int quote_mode, dotpair_mode;
+} rstate_t;
+
+/* the reader object */
 typedef struct reader
 {
   /* source */
@@ -15,26 +24,25 @@ typedef struct reader
   int interactive;
   char *prompt;
 
-  /* reader state */
+  /** reader state **/
   unsigned int linecnt;
   char *strp;
-  char *buf;
-  char *bufp;
-  size_t buflen;
-  int *readbuf;
-  int *readbufp;
-  size_t readbuflen;
-  int *qstack;
-  int *qstackp;
-  int qstacklen;
-  int eof;
-  int error;
-  int shebang;
 
-  /* sexp stack */
+  /* atom read buffer */
+  char *buf, *bufp;
+  size_t buflen;
+
+  /* read buffer */
+  int *readbuf, *readbufp;
+  size_t readbuflen;
+
+  /* indicators */
+  int eof, error, shebang, done;
+
+  /* state stack */
   size_t ssize;
-  object_t **base;
-  object_t **tip;
+  rstate_t *base;
+  rstate_t *state;
 } reader_t;
 
 /* Create a new reader object, passing either a string or file handle
