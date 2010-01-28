@@ -4,19 +4,19 @@ Christopher Wellons <mosquitopsu@gmail.com>
 :Author Initials: CCW
 
 Wisp is a dialect of the lisp family of programming languages. It is a
-dynamically typed lisp-1 with memory managed by reference
-counting. The interpreter itself is written in C.
+dynamically typed lisp-1 with arbitrary precision numbers and memory
+managed by reference counting. The interpreter itself is written in C.
 
 Introduction
 -----------
 Wisp is meant to be a lightweight, simple, experimental lisp
 implementation.
 
-This document is not meant to be a general lisp tutorial. Rather, it
-is meant to highlight Wisp's features and its differences from other
-lisps. To fully understand the Wisp programming language, the reader
-should already be familiar with lisp programming. In particular, users
-of Emacs lisp should find Wisp fairly comfortable.
+This document is not a general lisp tutorial. Rather, it is meant to
+highlight Wisp's features and its differences from other lisps. To
+fully understand the Wisp programming language, the reader should
+already be familiar with lisp programming. In particular, users of
+Emacs lisp should find Wisp fairly comfortable.
 
 Getting Started
 ~~~~~~~~~~~~~~~
@@ -24,11 +24,11 @@ Getting Started
 Building Wisp
 ^^^^^^^^^^^^^
 
-To build Wisp, all you need is a C99 compiler and make. No external
-libraries are needed yet. The compiler switches in the Makefiles are
-geared towards gcc, so if you aren't using gcc you may need to adjust
-the +CFLAGS+ variable. There is currently no configuration
-script. Running +make+ directly will compile Wisp.
+To build Wisp, all you need is a C99 compiler, make, and the GNU
+Multiple Precision library (GMP). The compiler switches in the
+Makefiles are geared towards gcc, so if you aren't using gcc you may
+need to adjust the +CFLAGS+ variable. There is currently no
+configuration script. Running +make+ directly will compile Wisp.
 
 If you wish to build the documentation, you will also need AsciiDoc.
 
@@ -36,8 +36,8 @@ There are four make targets: +wisp+, +test+, +doc+, +all+. +wisp+ is
 the default target, and +all+ will run all the other targets. To
 verify your build, you can run the +test+ target.
 
-It is possible to build Wisp for Windows, either inside of Cygwin or
-by cross compiling with the MinGW cross-compilation tools.
+Compiling stuff on Windows is so difficult, you're on your own for
+that.
 
 Environment
 ^^^^^^^^^^^
@@ -78,8 +78,8 @@ wisp>
 
 Interactive mode can be forced with the +-i+ switch.
 
-There is no readline library supporting this, so it may be cumbersome
-to use interactive mode directly. Two ways to deal with this are with
+TIP: Wisp doesn't use a readline library, so it may be cumbersome to
+use interactive mode directly. Two ways to deal with this are with
 rlwrap, or by running it as an inferior lisp in Emacs.
 
 If you're using Emacs, +lisp-interaction-mode+ is very suitable for
@@ -125,29 +125,31 @@ cells are evaluated as lisp code.
 Numbers
 +++++++
 
-Integers are just the native integer. Any number without decimal
-places is parsed as an integer. Everything else is a floating point
-number. Only when floating point numbers are involved in a math
-operation (*, /, +, -) will a floating point will be
-returned. Division with integers will result in integer
-division. However, many math functions will always return floating
-point numbers (cos, sin, etc.).
+Integers are GMP arbitrary precision integers. The parser detects
+integers with +strtol+, so it must look like an integer to this C
+function.
+
+Floating-point numbers are GMP floating-point numbers, with variable
+mantissa precision.
+
+Only when floating point numbers are involved in a math operation (*,
+/, +, -) will a floating point will be returned. Division with
+integers will result in integer division. However, many math functions
+will always return floating point numbers (cos, sin, etc.).
 
 Strings
 +++++++
 
-Strings are stored internally as C strings. When parsed, they need to
-be surrounded by quotes, and any internal backslashes or quotes must
-be escaped by a backslash.
+Strings are stored internally as byte arrays, which are _not_
+nul-terminated. When parsed, they need to be surrounded by quotes, and
+any internal backslashes or quotes must be escaped by a backslash.
 
 Symbols
 +++++++
 
 Symbols are strings of characters without quotes, but with more
-limitation. Wisp does not currently support escaping in symbol names,
-and certain characters are not permitted. The specifics are likely to
-change right now, so refer to +scanner.l+ to see the symbol regular
-expression.
+limitation. The list of permitted characters in symbol names can be
+found in +reader.h+.
 
 Cons cells
 ++++++++++
@@ -169,8 +171,7 @@ Other types
 +++++++++++
 
 Wisp does not yet have arrays/vectors or hashtable types, but it is
-planned for the future. Arbitrary precision and complex numbers are
-also possible in the future.
+planned for the future.
 
 Syntax
 ^^^^^^
