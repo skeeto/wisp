@@ -5,7 +5,7 @@ test : all
 	./wisp_tests
 
 OBJ = ../symtab.o ../object.o ../cons.o ../common.o \
-      ../eval.o ../hashtab.o ../mem.o ../lisp.o ../parser.o ../scanner.o
+      ../eval.o ../hashtab.o ../mem.o ../lisp.o ../reader.o ../str.o
 
 wisp_tests : wisp_tests.o $(OBJ)
 
