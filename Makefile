@@ -10,7 +10,7 @@ doc :
 	make -C doc
 
 OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o \
-      lisp.o str.o reader.o number.o lisp_math.o
+      lisp.o str.o reader.o number.o lisp_math.o vector.o
 
 wisp : $(OBJ)
 
@@ -26,6 +26,7 @@ common.o : common.c common.h
 str.o : str.c str.h object.h mem.h
 reader.o : reader.c reader.h object.h eval.h number.h
 number.o : number.c number.h object.h
+vector.o : vector.c vector.h object.h mem.h
 
 # Hash table
 hashtab.o : hashtab.c hashtab.h

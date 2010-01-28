@@ -193,6 +193,9 @@ object_t *eql (object_t * lst)
 	if (memcmp (OSTR (a), OSTR (b), OSTRLEN (a)) == 0)
 	  return T;
       break;
+    case VECTOR:
+      return T;
+      break;
     case CFUNC:
     case SPECIAL:
       if (a->val == b->val)

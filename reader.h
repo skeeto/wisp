@@ -9,7 +9,7 @@ typedef struct reader_state
 {
   object_t *head;
   object_t *tail;
-  int quote_mode, dotpair_mode;
+  int quote_mode, dotpair_mode, vector_mode;
 } rstate_t;
 
 /* the reader object */

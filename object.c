@@ -7,6 +7,7 @@
 #include "str.h"
 #include "object.h"
 #include "number.h"
+#include "vector.h"
 
 static mmanager_t *mm;
 
@@ -44,6 +45,9 @@ object_t *obj_create (type_t type)
       break;
     case STRING:
       o->val = str_create ();
+      break;
+    case VECTOR:
+      o->val = vector_create ();
       break;
     case CFUNC:
     case SPECIAL:
@@ -107,6 +111,9 @@ void obj_destroy (object_t * o)
       obj_destroy (CDR (o));
       cons_destroy (o->val);
       break;
+    case VECTOR:
+      vector_destroy (o->val);
+      break;
     case CFUNC:
     case SPECIAL:
       break;
@@ -146,6 +153,9 @@ void obj_print (object_t * o, int newline)
       break;
     case SYMBOL:
       printf ("%s", ((symbol_t *) o->val)->name);
+      break;
+    case VECTOR:
+      vec_print (o);
       break;
     case CFUNC:
       printf ("<CFUNC %p>", o->val);

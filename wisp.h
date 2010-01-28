@@ -13,5 +13,6 @@
 #include "lisp.h"
 #include "reader.h"
 #include "number.h"
+#include "vector.h"
 
 #endif /* LIST_H */

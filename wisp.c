@@ -43,6 +43,7 @@ void init ()
   str_init ();
   eval_init ();
   lisp_init ();
+  vector_init ();
 }
 
 int main (int argc, char **argv)

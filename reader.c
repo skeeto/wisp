@@ -8,6 +8,7 @@
 #include "str.h"
 #include "reader.h"
 #include "number.h"
+#include "vector.h"
 
 static void read_error (reader_t * r, char *str);
 static void addpop (reader_t * r);
@@ -39,7 +40,7 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
 
   /* state stack */
   r->ssize = 32;
-  r->base = r->state = xmalloc (r->ssize * sizeof (rstate_t *));
+  r->base = r->state = xmalloc (r->ssize * sizeof (rstate_t));
   return r;
 }
 
@@ -126,6 +127,7 @@ static void push (reader_t * r)
   /* clear the state */
   r->state->quote_mode = 0;
   r->state->dotpair_mode = 0;
+  r->state->vector_mode = 0;
   r->state->head = r->state->tail = c_cons (NIL, NIL);
 }
 
@@ -145,6 +147,13 @@ static object_t *pop (reader_t * r)
   object_t *p = CDR (r->state->head);
   CDR (r->state->head) = NIL;
   obj_destroy (r->state->head);
+  if (r->state->vector_mode)
+    {
+      r->state--;
+      object_t *v = list2vector (p);
+      obj_destroy (p);
+      return v;
+    }
   r->state--;
   return p;
 }
@@ -155,8 +164,6 @@ static void reset (reader_t * r)
   r->done = 1;
   while (r->state != r->base)
     obj_destroy (pop (r));
-  r->state->quote_mode = 0;
-  r->state->dotpair_mode = 0;
   r->bufp = r->buf;
   r->readbufp = r->readbuf;
   r->done = 0;
@@ -355,6 +362,8 @@ object_t *read_sexp (reader_t * r)
 	    {
 	      if (r->state->dotpair_mode > 0)
 		read_error (r, "invalid dotted pair syntax");
+	      else if (r->state->vector_mode > 0)
+		read_error (r, "dotted pair not allowed in vector");
 	      else
 		{
 		  r->state->dotpair_mode = 1;
@@ -386,6 +395,22 @@ object_t *read_sexp (reader_t * r)
 	case ')':
 	  if (r->state->quote_mode)
 	    read_error (r, "unbalanced parenthesis");
+	  else if (r->state->vector_mode)
+	    read_error (r, "unbalanced brackets");
+	  else
+	    addpop (r);
+	  break;
+
+	  /* Vectors */
+	case '[':
+	  push (r);
+	  r->state->vector_mode = 1;
+	  break;
+	case ']':
+	  if (r->state->quote_mode)
+	    read_error (r, "unbalanced parenthesis");
+	  else if (!r->state->vector_mode)
+	    read_error (r, "unbalanced brackets");
 	  else
 	    addpop (r);
 	  break;
@@ -408,7 +433,7 @@ object_t *read_sexp (reader_t * r)
 	  /* numbers and symbols */
 	default:
 	  buf_append (r, c);
-	  buf_read (r, " \t\r\n();");
+	  buf_read (r, " \t\r\n()[];");
 	  object_t *o = parse_atom (r);
 	  if (!r->error)
 	    add (r, o);

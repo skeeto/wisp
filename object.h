@@ -3,7 +3,7 @@
 #define OBJECT_H
 
 typedef enum types
-{ INT, FLOAT, STRING, SYMBOL, CONS, CFUNC, SPECIAL } type_t;
+{ INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL } type_t;
 
 typedef struct object
 {
