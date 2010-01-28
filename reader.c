@@ -97,7 +97,7 @@ static void consume_whitespace (reader_t * r)
 static void consume_line (reader_t * r)
 {
   int c = reader_getc (r);
-  while (c != '\n')
+  while (c != '\n' && c != EOF)
     c = reader_getc (r);
   if (c != '\n')
     reader_putc (r, c);
