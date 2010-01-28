@@ -8,6 +8,9 @@
 #include "str.h"
 #include "reader.h"
 
+char *atom_chars =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  "0123456789!#$%^&*-_=+|\\/?.;~";
 char *prompt = "wisp> ";
 
 reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
@@ -82,8 +85,7 @@ static void reader_putc (reader_t * r, int c)
 /* Consume remaining whitespace on line, including linefeed. */
 static void consume_whitespace (reader_t * r)
 {
-  int c;
-  c = reader_getc (r);
+  int c = reader_getc (r);
   while (strchr (" \t\r", c) != NULL)
     c = reader_getc (r);
   if (c != '\n')
@@ -120,6 +122,7 @@ static void reset (reader_t * r)
   while (r->tip != r->base)
     obj_destroy (pop (r));
   r->qstackp = r->qstack;
+  *(r->qstackp) = -1;
   r->bufp = r->buf;
   r->readbufp = r->readbuf;
 }
@@ -128,8 +131,8 @@ static void reset (reader_t * r)
 static void read_error (reader_t * r, char *str)
 {
   fprintf (stderr, "%s:%d: %s\n", r->name, r->linecnt, str);
-  reset (r);
   consume_whitespace (r);
+  reset (r);
   r->error = 1;
 }
 
@@ -228,9 +231,22 @@ static object_t *parse_atom (reader_t * r)
       return c_float (f);
     }
 
-  /* Must be a symbol then */
+  /* Might be a symbol then */
+  char *p = r->buf;
+  while (p <= r->bufp)
+    {
+      if (strchr (atom_chars, *p) == NULL)
+	{
+	  char *errstr = xstrdup ("invalid symbol character: X");
+	  errstr[strlen (errstr) - 1] = *p;
+	  read_error (r, errstr);
+	  free (errstr);
+	  return NIL;
+	}
+      p++;
+    }
   r->bufp = r->buf;
-  return c_sym (str);
+  return c_sym (r->buf);
 }
 
 /* Increase quote depth */
@@ -345,8 +361,12 @@ object_t *read_sexp (reader_t * r)
 	default:
 	  buf_append (r, c);
 	  buf_read (r, " \t\r\n()");
-	  add (r, parse_atom (r));
-	  check_quote (r);
+	  object_t *o = parse_atom (r);
+	  if (!r->error)
+	    {
+	      add (r, o);
+	      check_quote (r);
+	    }
 	  break;
 	}
     }
