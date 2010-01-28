@@ -231,19 +231,19 @@ static object_t *parse_atom (reader_t * r)
   char *end;
 
   /* Detect integer */
-  int i = strtol (str, &end, 10);
+  strtol (str, &end, 10);
   if (end != str && *end == '\0')
     {
       r->bufp = r->buf;
-      return c_int (i);
+      return c_ints (str);
     }
 
   /* Detect float */
-  double f = strtod (str, &end);
+  strtod (str, &end);
   if (end != str && *end == '\0')
     {
       r->bufp = r->buf;
-      return c_float (f);
+      return c_floats (str);
     }
 
   /* Might be a symbol then */
