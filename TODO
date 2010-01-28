@@ -10,8 +10,6 @@
  * array type
  * loop detection needed in places
  * advanced quoting
- * symbol properties
-  * enforce constants
  * more advanced let binding
  * interrupt catching
  - hashtable type
