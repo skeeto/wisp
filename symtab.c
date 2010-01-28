@@ -50,20 +50,31 @@ void sympop (object_t * so)
   s->vals--;
 }
 
+object_t *c_usym (char *name)
+{
+  object_t *o;
+  char *newname = xstrdup (name);
+  o = obj_create (SYMBOL);
+  SYMNAME (o) = newname;
+  *((symbol_t *) o->val)->vals = NIL;
+  if (name[0] == ':')
+    SET (o, o);
+  return o;
+}
+
+void intern (object_t * sym)
+{
+  ht_insert (symbol_table, SYMNAME (sym), strlen (SYMNAME (sym)), sym,
+	     sizeof (object_t *));
+}
+
 object_t *c_sym (char *name)
 {
   object_t *o = (object_t *) ht_search (symbol_table, name, strlen (name));
   if (o == NULL)
     {
-      /* intern this symbol */
-      char *newname = xstrdup (name);
-      o = obj_create (SYMBOL);
-      SYMNAME (o) = newname;
-      *((symbol_t *) o->val)->vals = NIL;
-      ht_insert (symbol_table, newname, strlen (newname), o,
-		 sizeof (object_t *));
-      if (name[0] == ':')
-	SET (o, o);
+      o = c_usym (name);
+      intern (o);
     }
   return o;
 }

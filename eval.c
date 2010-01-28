@@ -24,7 +24,7 @@ void eval_init ()
   optional = c_sym ("&optional");
 
   /* error symbols */
-  err_symbol = c_sym ("_error");
+  err_symbol = c_usym ("wisp-error");
   SET (err_symbol, err_symbol);
   err_thrown = err_attach = NIL;
   void_function = c_sym ("void-function");

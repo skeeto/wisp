@@ -17,7 +17,9 @@ void symtab_init ();
 
 /* Symbol creation */
 symbol_t *symbol_create ();
-object_t *c_sym (char *name);
+object_t *c_sym (char *name);	/* Interned symbol. */
+object_t *c_usym (char *name);	/* Uinterned symbol. */
+void intern (object_t * sym);
 
 /* Dynamic scoping */
 void sympop (object_t * so);;

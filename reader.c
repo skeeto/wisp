@@ -446,7 +446,7 @@ int load_file (FILE * fid, char *filename, int interactive)
       if (sexp != err_symbol)
 	{
 	  object_t *ret = top_eval (sexp);
-	  if (r->interactive)
+	  if (r->interactive && ret != err_symbol)
 	    obj_print (ret, 1);
 	  obj_destroy (ret);
 	}
