@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "object.h"
 #include "cons.h"
 #include "symtab.h"
 #include "common.h"
 #include "eval.h"
 #include "str.h"
+#include "reader.h"
 
 /* Maths */
 object_t *addition (object_t * lst)
@@ -432,6 +434,21 @@ object_t *floatp (object_t * lst)
   return NIL;
 }
 
+/* Input/Output */
+
+object_t *lisp_load (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("load"));
+  object_t *str = CAR (lst);
+  if (!STRINGP (str))
+    THROW (wrong_type, UPREF (str));
+  char *filename = OSTR (str);
+  int r = load_file (NULL, filename, 0);
+  if (!r)
+    THROW (c_sym ("load-file-error"), UPREF (str));
+  return T;
+}
+
 /* Error handling */
 
 object_t *throw (object_t * lst)
@@ -507,6 +524,9 @@ void lisp_init ()
   SSET (c_sym ("numberp"), c_cfunc (&numberp));
   SSET (c_sym ("integerp"), c_cfunc (&integerp));
   SSET (c_sym ("floatp"), c_cfunc (&floatp));
+
+  /* Input/Output */
+  SSET (c_sym ("load"), c_cfunc (&lisp_load));
 
   /* Error handling */
   SSET (c_sym ("throw"), c_cfunc (&throw));
