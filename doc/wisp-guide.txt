@@ -24,12 +24,11 @@ Getting Started
 Building Wisp
 ^^^^^^^^^^^^^
 
-To build Wisp, all you need is a C99 compiler, make, yacc (such as
-Bison), and lex (such as Flex). No external libraries are needed. The
-compiler switches in the Makefiles are geared towards gcc, so if you
-aren't using gcc you may need to adjust the +CFLAGS+ variable. There
-is currently no configuration script. Running +make+ directly will
-compile Wisp.
+To build Wisp, all you need is a C99 compiler and make. No external
+libraries are needed yet. The compiler switches in the Makefiles are
+geared towards gcc, so if you aren't using gcc you may need to adjust
+the +CFLAGS+ variable. There is currently no configuration
+script. Running +make+ directly will compile Wisp.
 
 If you wish to build the documentation, you will also need AsciiDoc.
 
@@ -38,9 +37,7 @@ the default target, and +all+ will run all the other targets. To
 verify your build, you can run the +test+ target.
 
 It is possible to build Wisp for Windows, either inside of Cygwin or
-by cross compiling with the MinGW cross-compilation tools. Notice that
-in both instances, yacc and lex get to be run in a unix-like
-environment.
+by cross compiling with the MinGW cross-compilation tools.
 
 Environment
 ^^^^^^^^^^^
