@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <gmp.h>
 #include "object.h"
 #include "cons.h"
 #include "symtab.h"
@@ -8,149 +9,18 @@
 #include "eval.h"
 #include "str.h"
 #include "reader.h"
+#include "number.h"
 
 /* Maths */
-object_t *addition (object_t * lst)
+object_t *addition (object_t *lst)
 {
-  double accum = 0;
-  int intmode = 1;
+  object_t *accum = c_int (0);
   while (lst != NIL)
     {
-      object_t *n = CAR (lst);
-      if (!NUMP (n))
-	THROW (wrong_type, UPREF (n));
-      accum += ONUM (n);
-      intmode &= INTP (n);
+      mpz_add (DINT (accum), DINT (accum), DINT (CAR (lst)));
       lst = CDR (lst);
     }
-  if (intmode)
-    return c_int ((int) accum);
-  return c_float ((double) accum);
-}
-
-object_t *multiply (object_t * lst)
-{
-  double accum = 1;
-  int intmode = 1;
-  while (lst != NIL)
-    {
-      object_t *n = CAR (lst);
-      if (!NUMP (n))
-	THROW (wrong_type, UPREF (n));
-      accum *= ONUM (n);
-      intmode &= INTP (n);
-      lst = CDR (lst);
-    }
-  if (intmode)
-    return c_int ((int) accum);
-  return c_float ((double) accum);
-}
-
-object_t *subtract (object_t * lst)
-{
-  if (!NUMP (CAR (lst)))
-    THROW (wrong_type, UPREF (CAR (lst)));
-  double accum = ONUM (CAR (lst));
-  int intmode = 1;
-
-  lst = CDR (lst);
-  if (lst == NIL)
-    accum *= -1;
-  while (lst != NIL)
-    {
-      object_t *n = CAR (lst);
-      if (!NUMP (n))
-	THROW (wrong_type, UPREF (n));
-      accum -= ONUM (n);
-      intmode &= INTP (n);
-      lst = CDR (lst);
-    }
-  if (intmode)
-    return c_int ((int) accum);
-  return c_float ((double) accum);
-}
-
-object_t *divide (object_t * lst)
-{
-  REQM (lst, 2, c_sym ("/"));
-  if (!NUMP (CAR (lst)))
-    THROW (wrong_type, UPREF (CAR (lst)));
-  double accum = ONUM (CAR (lst));
-  int intmode = 1;
-
-  lst = CDR (lst);
-  while (lst != NIL)
-    {
-      object_t *n = CAR (lst);
-      if (!NUMP (n))
-	THROW (wrong_type, UPREF (n));
-      accum /= ONUM (n);
-      intmode &= INTP (n);
-      lst = CDR (lst);
-    }
-  if (intmode)
-    return c_int ((int) accum);
-  return c_float ((double) accum);
-}
-
-object_t *less_than (object_t * lst)
-{
-  REQ (lst, 2, c_sym ("<"));
-  object_t *ao = CAR (lst);
-  object_t *bo = CAR (CDR (lst));
-  if (!NUMP (ao) || !NUMP (bo))
-    THROW (wrong_type, UPREF (ao));
-  if (ONUM (ao) < ONUM (bo))
-    return T;
-  return NIL;
-}
-
-object_t *less_than_or_eq (object_t * lst)
-{
-  REQ (lst, 2, c_sym ("<"));
-  object_t *ao = CAR (lst);
-  object_t *bo = CAR (CDR (lst));
-  if (!NUMP (ao) || !NUMP (bo))
-    THROW (wrong_type, UPREF (ao));
-  if (ONUM (ao) <= ONUM (bo))
-    return T;
-  return NIL;
-}
-
-object_t *greater_than (object_t * lst)
-{
-  REQ (lst, 2, c_sym ("<"));
-  object_t *ao = CAR (lst);
-  object_t *bo = CAR (CDR (lst));
-  if (!NUMP (ao) || !NUMP (bo))
-    THROW (wrong_type, UPREF (ao));
-  if (ONUM (ao) > ONUM (bo))
-    return T;
-  return NIL;
-}
-
-object_t *greater_than_or_eq (object_t * lst)
-{
-  REQ (lst, 2, c_sym ("<"));
-  object_t *ao = CAR (lst);
-  object_t *bo = CAR (CDR (lst));
-  if (!NUMP (ao) || !NUMP (bo))
-    THROW (wrong_type, UPREF (ao));
-  if (ONUM (ao) >= ONUM (bo))
-    return T;
-  return NIL;
-}
-
-object_t *numeq (object_t * lst)
-{
-  REQ (lst, 2, c_sym ("<"));
-  object_t *ao = CAR (lst);
-  object_t *bo = CAR (CDR (lst));
-  if (!NUMP (ao) || !NUMP (bo))
-    THROW (wrong_type, UPREF (ao));
-  if (ONUM (ao) == ONUM (bo))
-    return T;
-  return NIL;
+  return accum;
 }
 
 /* Various basic stuff */
@@ -497,14 +367,6 @@ void lisp_init ()
 {
   /* Maths */
   SSET (c_sym ("+"), c_cfunc (&addition));
-  SSET (c_sym ("*"), c_cfunc (&multiply));
-  SSET (c_sym ("-"), c_cfunc (&subtract));
-  SSET (c_sym ("/"), c_cfunc (&divide));
-  SSET (c_sym ("<"), c_cfunc (&less_than));
-  SSET (c_sym ("<="), c_cfunc (&less_than_or_eq));
-  SSET (c_sym (">"), c_cfunc (&greater_than));
-  SSET (c_sym (">="), c_cfunc (&greater_than_or_eq));
-  SSET (c_sym ("="), c_cfunc (&numeq));
 
   /* Various */
   SSET (c_sym ("quote"), c_special (&lisp_quote));

@@ -7,17 +7,18 @@
  * start using a real bug tracker
 
 + Core
- * undefined variables. all are defined to nil atm
- * hashtable type
  * array type
- - arbitrary precision
  * loop detection needed in places
  * advanced quoting
- - closures
  * symbol properties
   * enforce constants
  * more advanced let binding
+ * interrupt catching
+ - hashtable type
+ - arbitrary precision
+ - closures
  - symbol aliasing
+ - undefined variables. all are defined to nil atm
 
 * CFUNC Define
  * maths

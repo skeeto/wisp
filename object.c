@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <gmp.h>
 #include "common.h"
 #include "mem.h"
 #include "cons.h"
 #include "symtab.h"
 #include "str.h"
 #include "object.h"
+#include "number.h"
 
 static mmanager_t *mm;
 
@@ -29,10 +31,10 @@ object_t *obj_create (type_t type)
   switch (type)
     {
     case INT:
-      o->val = xmalloc (sizeof (int));
+      o->val = xmalloc (sizeof (mpz_t));
       break;
     case FLOAT:
-      o->val = xmalloc (sizeof (double));
+      o->val = xmalloc (sizeof (mpf_t));
       break;
     case CONS:
       o->val = cons_create ();
@@ -58,20 +60,6 @@ object_t *c_cons (object_t * car, object_t * cdr)
   return o;
 }
 
-object_t *c_int (int n)
-{
-  object_t *o = obj_create (INT);
-  *((int *) o->val) = n;
-  return o;
-}
-
-object_t *c_float (double f)
-{
-  object_t *o = obj_create (FLOAT);
-  *((double *) o->val) = f;
-  return o;
-}
-
 object_t *c_cfunc (object_t * (*f) (object_t *))
 {
   object_t *o = obj_create (CFUNC);
@@ -94,13 +82,21 @@ void obj_destroy (object_t * o)
   if (o->refs > 0)
     return;
 
+  mpz_t *z;
+  mpf_t *f;
   switch (o->type)
     {
     case SYMBOL:
       /* Symbol objects are never destroyed. */
       return;
     case FLOAT:
+      f = OFLOAT (o);
+      mpf_clear (*f);
+      free (o->val);
+      break;
     case INT:
+      z = OINT (o);
+      mpz_clear (*z);
       free (o->val);
       break;
     case STRING:
@@ -140,10 +136,10 @@ void obj_print (object_t * o, int newline)
       printf (")");
       break;
     case INT:
-      printf ("%d", *((int *) o->val));
+      gmp_printf ("%Zd", OINT (o));
       break;
     case FLOAT:
-      printf ("%f", *((double *) o->val));
+      gmp_printf ("%Ff", OFLOAT (o));
       break;
     case STRING:
       printf ("%s", OSTRP (o));

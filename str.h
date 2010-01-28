@@ -28,4 +28,4 @@ object_t *str_cat (object_t *ao, object_t *bo);
 #define OSTRLEN(o) (((str_t *) (o)->val)->len)
 #define OSTRP(o) (str_genp (o), ((str_t *) (o)->val)->print)
 
-#endif
+#endif /* STR_H */

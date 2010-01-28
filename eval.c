@@ -3,6 +3,7 @@
 #include "object.h"
 #include "symtab.h"
 #include "eval.h"
+#include "number.h"
 
 object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
@@ -162,7 +163,7 @@ object_t *eval (object_t * o)
 
   /* Check the stack */
   if (++stack_depth >= max_stack_depth)
-    THROW (c_sym ("max-stack-depth"), c_int ((int) stack_depth--));
+    THROW (c_sym ("max-stack-depth"), c_int (stack_depth--));
 
   if (f->type == CFUNC || (f->type == CONS && (CAR (f) == lambda)))
     {

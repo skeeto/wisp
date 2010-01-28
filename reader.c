@@ -7,6 +7,7 @@
 #include "eval.h"
 #include "str.h"
 #include "reader.h"
+#include "number.h"
 
 char *atom_chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
