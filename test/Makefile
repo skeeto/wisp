@@ -5,8 +5,9 @@ all : wisp_tests
 test : all
 	./wisp_tests
 
-OBJ = ../symtab.o ../object.o ../cons.o ../common.o \
-      ../eval.o ../hashtab.o ../mem.o ../lisp.o ../reader.o ../str.o
+OBJ = ../symtab.o ../object.o ../cons.o ../common.o ../number.o \
+      ../lisp_math.o ../eval.o ../hashtab.o ../mem.o ../lisp.o \
+      ../reader.o ../str.o
 
 wisp_tests : wisp_tests.o $(OBJ)
 
