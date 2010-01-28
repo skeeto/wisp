@@ -11,7 +11,9 @@
 #include "reader.h"
 #include "number.h"
 
+/* From lisp_math.c */
 void lisp_math_init ();
+object_t *num_eq (object_t * lst);
 
 /* Various basic stuff */
 
@@ -174,12 +176,8 @@ object_t *eql (object_t * lst)
   switch (a->type)
     {
     case INT:
-      if (OINT (a) == OINT (b))
-	return T;
-      break;
     case FLOAT:
-      if (OFLOAT (a) == OFLOAT (b))
-	return T;
+      return num_eq (lst);
       break;
     case SYMBOL:
     case CONS:
