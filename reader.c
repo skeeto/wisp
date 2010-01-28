@@ -15,11 +15,12 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
   reader_t *r = xmalloc (sizeof (reader_t));
   r->fid = fid;
   r->strp = r->str = str;
-  r->name = name;
+  r->name = name ? name : "unknown";
   r->interactive = interactive;
   r->prompt = prompt;
   r->linecnt = 1;
   r->eof = 0;
+  r->error = 0;
 
   r->buflen = 1024;
   r->bufp = r->buf = xmalloc (r->buflen + 1);
@@ -40,30 +41,6 @@ void reader_destroy (reader_t * r)
 {
   free (r->base);
   free (r);
-}
-
-/* Print an error message. */
-static void read_error (reader_t * r, char *str)
-{
-  fprintf (stderr, "read error:%d: %s\n", r->linecnt, str);
-}
-
-/* Return height of sexp stack. */
-static size_t stack_height (reader_t * r)
-{
-  return (r->tip - r->base) / 2;
-}
-
-/* Determine if top list is empty. */
-static int list_empty (reader_t * r)
-{
-  return CDR (*(r->tip)) == NIL;
-}
-
-static void print_prompt (reader_t * r)
-{
-  if (r->interactive && stack_height (r) <= 1)
-    printf ("%s", r->prompt);
 }
 
 /* Read mext character in the stream. */
@@ -102,6 +79,17 @@ static void reader_putc (reader_t * r, int c)
   *(r->readbufp) = c;
 }
 
+/* Consume remaining whitespace on line, including linefeed. */
+static void consume_whitespace (reader_t * r)
+{
+  int c;
+  c = reader_getc (r);
+  while (strchr (" \t\r", c) != NULL)
+    c = reader_getc (r);
+  if (c != '\n')
+    reader_putc (r, c);
+}
+
 /* Push new list onto the sexp stack. */
 static void push (reader_t * r)
 {
@@ -126,18 +114,48 @@ static object_t *pop (reader_t * r)
   return p;
 }
 
-/* Push a new object into the current list. */
-static void add (reader_t * r, object_t * o)
-{
-  CDR (*(r->tip + 1)) = c_cons (o, NIL);
-  *(r->tip + 1) = CDR (*(r->tip + 1));
-}
-
 /* Remove top object from the sexp stack. */
 static void reset (reader_t * r)
 {
   while (r->tip != r->base)
     obj_destroy (pop (r));
+  r->qstackp = r->qstack;
+  r->bufp = r->buf;
+  r->readbufp = r->readbuf;
+}
+
+/* Print an error message. */
+static void read_error (reader_t * r, char *str)
+{
+  fprintf (stderr, "%s:%d: %s\n", r->name, r->linecnt, str);
+  reset (r);
+  consume_whitespace (r);
+  r->error = 1;
+}
+
+/* Return height of sexp stack. */
+static size_t stack_height (reader_t * r)
+{
+  return (r->tip - r->base) / 2;
+}
+
+/* Determine if top list is empty. */
+static int list_empty (reader_t * r)
+{
+  return CDR (*(r->tip)) == NIL;
+}
+
+static void print_prompt (reader_t * r)
+{
+  if (r->interactive && stack_height (r) == 1)
+    printf ("%s", r->prompt);
+}
+
+/* Push a new object into the current list. */
+static void add (reader_t * r, object_t * o)
+{
+  CDR (*(r->tip + 1)) = c_cons (o, NIL);
+  *(r->tip + 1) = CDR (*(r->tip + 1));
 }
 
 /* Append character to buffer. */
@@ -215,17 +233,6 @@ static object_t *parse_atom (reader_t * r)
   return c_sym (str);
 }
 
-/* Consume remaining whitespace on line, including linefeed. */
-static void consume_whitespace (reader_t * r)
-{
-  int c;
-  c = reader_getc (r);
-  while (strchr (" \t\r", c) != NULL)
-    c = reader_getc (r);
-  if (c != '\n')
-    reader_putc (r, c);
-}
-
 /* Increase quote depth */
 static void up_quote (reader_t * r)
 {
@@ -256,6 +263,12 @@ static void down_quote (reader_t * r)
     (*(r->qstackp))--;
 }
 
+/* Height of qstack */
+static int qstack_height (reader_t *r)
+{
+  return r->qstackp - r->qstack;
+}
+
 /* Check if quote needs to be popped. */
 static void check_quote (reader_t * r)
 {
@@ -263,19 +276,25 @@ static void check_quote (reader_t * r)
     return;
   if (*(r->qstackp) == 0)
     {
-      add (r, pop (r));
-      r->qstackp--;
-      down_quote (r);
-      check_quote (r);
+      if (stack_height (r) <= 1)
+	read_error (r, "unbalaned parenthesis");
+      else
+	{
+	  add (r, pop (r));
+	  r->qstackp--;
+	  down_quote (r);
+	  check_quote (r);
+	}
     }
 }
 
 /* Read a single sexp from the reader. */
 object_t *read_sexp (reader_t * r)
 {
+  r->error = 0;
   push (r);
   print_prompt (r);
-  while (!r->eof && (list_empty (r) || stack_height (r) > 1))
+  while (!r->eof && !r->error && (list_empty (r) || stack_height (r) > 1))
     {
       int c = reader_getc (r);
       switch (c)
@@ -299,9 +318,14 @@ object_t *read_sexp (reader_t * r)
 	  up_quote (r);
 	  break;
 	case ')':
-	  add (r, pop (r));
-	  down_quote (r);
-	  check_quote (r);
+	  if (stack_height (r) <= 1 || *(r->qstackp) == 0)
+	    read_error (r, "unbalaned parenthesis");
+	  else
+	    {
+	      add (r, pop (r));
+	      down_quote (r);
+	      check_quote (r);
+	    }
 	  break;
 
 	  /* Quoting */
@@ -326,21 +350,24 @@ object_t *read_sexp (reader_t * r)
 	  break;
 	}
     }
-  if (!r->eof)
+  if (!r->eof && !r->error)
     consume_whitespace (r);
+  if (r->error)
+    return err_symbol;
 
   /* Check state */
-  if (stack_height (r) > 1)
+  if (stack_height (r) > 1 || qstack_height (r) > 1)
     {
       read_error (r, "premature end of file");
-      reset (r);
       return err_symbol;
     }
   if (list_empty (r))
     return NIL;
 
-  /* TODO: fox single cons object leak */
-  return CAR (pop (r));
+  object_t *wrap = pop (r);
+  object_t *sexp = UPREF (CAR (wrap));
+  obj_destroy (wrap);
+  return sexp;
 }
 
 /* Use the core functions above to eval each sexp in a file. */
