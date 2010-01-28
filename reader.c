@@ -480,6 +480,7 @@ int load_file (FILE * fid, char *filename, int interactive)
 	  object_t *ret = top_eval (sexp);
 	  if (r->interactive && ret != err_symbol)
 	    obj_print (ret, 1);
+	  obj_destroy (sexp);
 	  obj_destroy (ret);
 	}
     }
