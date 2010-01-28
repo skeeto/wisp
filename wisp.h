@@ -12,5 +12,6 @@
 #include "common.h"
 #include "lisp.h"
 #include "reader.h"
+#include "number.h"
 
 #endif /* LIST_H */
