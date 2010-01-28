@@ -1,4 +1,5 @@
 CFLAGS = -W -Wall -g -O2 --std=c99 -fshort-enums
+LDFLAGS = -lgmp
 
 all : wisp_tests
 test : all
