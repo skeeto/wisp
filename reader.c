@@ -142,7 +142,7 @@ static void reset (reader_t * r)
 static void read_error (reader_t * r, char *str)
 {
   fprintf (stderr, "%s:%d: %s\n", r->name, r->linecnt, str);
-  consume_whitespace (r);
+  consume_line (r);
   reset (r);
   r->error = 1;
 }
