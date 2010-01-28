@@ -43,6 +43,9 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
 
 void reader_destroy (reader_t * r)
 {
+  free (r->buf);
+  free (r->readbuf);
+  free (r->qstack);
   free (r->base);
   free (r);
 }
