@@ -15,7 +15,6 @@
  * more advanced let binding
  * interrupt catching
  - hashtable type
- - arbitrary precision
  - closures
  - symbol aliasing
  - undefined variables. all are defined to nil atm
