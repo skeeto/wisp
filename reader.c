@@ -218,9 +218,9 @@ static int buf_read (reader_t * r, char *halt)
 /* Turn string in buffer into string object. */
 static object_t *parse_str (reader_t * r)
 {
-  /* process_str? */
+  size_t size = r->bufp - r->buf;
   r->bufp = r->buf;
-  return c_strs ( xstrdup (r->buf));
+  return c_str (xstrdup (r->buf), size);
 }
 
 /* Turn string in buffer into atom object. */
