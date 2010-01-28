@@ -177,6 +177,41 @@ object_t *division (object_t * lst)
   return arith (DIV, lst);
 }
 
+object_t *num_equal (object_t * lst)
+{
+  REQM (lst, 2, c_sym ("="));
+  object_t *a = CAR (lst);
+  object_t *b = CAR (CDR (lst));
+  if (INTP (a) && INTP (b))
+    {
+      if (mpz_cmp (DINT (a), DINT (b)) == 0)
+	return T;
+      else
+	return NIL;
+    }
+  else if (FLOATP (a) && FLOATP (b))
+    {
+      if (mpf_cmp (DFLOAT (a), DFLOAT (b)) == 0)
+	return T;
+      else
+	return NIL;
+    }
+  else if (INTP (a) && FLOATP (b))
+    {
+      object_t *c = b;
+      b = a;
+      a = c;
+    }
+  /* Convert down. */
+  object_t *convf = c_float (0);
+  mpf_set_z (DFLOAT (convf), DINT (b));
+  int r = mpf_cmp (DFLOAT (a), DFLOAT (convf));
+  obj_destroy (convf);
+  if (r == 0)
+    return T;
+  return NIL;
+}
+
 /* Install all the math functions */
 void lisp_math_init ()
 {
@@ -184,4 +219,5 @@ void lisp_math_init ()
   SSET (c_sym ("*"), c_cfunc (&multiplication));
   SSET (c_sym ("-"), c_cfunc (&subtraction));
   SSET (c_sym ("/"), c_cfunc (&division));
+  SSET (c_sym ("="), c_cfunc (&num_equal));
 }
