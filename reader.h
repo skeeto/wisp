@@ -29,6 +29,7 @@ typedef struct reader
   int qstacklen;
   int eof;
   int error;
+  int shebang;
 
   /* sexp stack */
   size_t ssize;

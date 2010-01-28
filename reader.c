@@ -10,7 +10,7 @@
 
 char *atom_chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  "0123456789!#$%^&*-_=+|\\/?.;~";
+  "0123456789!#$%^&*-_=+|\\/?.~";
 char *prompt = "wisp> ";
 
 reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
@@ -18,12 +18,13 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
   reader_t *r = xmalloc (sizeof (reader_t));
   r->fid = fid;
   r->strp = r->str = str;
-  r->name = name ? name : "unknown";
+  r->name = name ? name : "<unknown>";
   r->interactive = interactive;
   r->prompt = prompt;
   r->linecnt = 1;
   r->eof = 0;
   r->error = 0;
+  r->shebang = -1 + interactive;
 
   r->buflen = 1024;
   r->bufp = r->buf = xmalloc (r->buflen + 1);
@@ -87,6 +88,16 @@ static void consume_whitespace (reader_t * r)
 {
   int c = reader_getc (r);
   while (strchr (" \t\r", c) != NULL)
+    c = reader_getc (r);
+  if (c != '\n')
+    reader_putc (r, c);
+}
+
+/* Consume remaining characters on line, including linefeed. */
+static void consume_line (reader_t * r)
+{
+  int c = reader_getc (r);
+  while (c != '\n')
     c = reader_getc (r);
   if (c != '\n')
     reader_putc (r, c);
@@ -307,6 +318,26 @@ static void check_quote (reader_t * r)
 /* Read a single sexp from the reader. */
 object_t *read_sexp (reader_t * r)
 {
+  /* Check for a shebang line. */
+  if (r->shebang == -1)
+    {
+      char str[2];
+      str[0] = reader_getc (r);
+      str[1] = reader_getc (r);
+      if (str[0] == '#' && str[1] == '!')
+	{
+	  /* Looks like a she-bang line. */
+	  r->shebang = 1;
+	  consume_line (r);
+	}
+      else
+	{
+	  r->shebang = 0;
+	  reader_putc (r, str[1]);
+	  reader_putc (r, str[0]);
+	}
+    }
+
   r->error = 0;
   push (r);
   print_prompt (r);
@@ -317,6 +348,11 @@ object_t *read_sexp (reader_t * r)
 	{
 	case EOF:
 	  r->eof = 1;
+	  break;
+
+	  /* Comments */
+	case ';':
+	  consume_line (r);
 	  break;
 
 	  /* Whitespace */
@@ -360,7 +396,7 @@ object_t *read_sexp (reader_t * r)
 	  /* numbers and symbols */
 	default:
 	  buf_append (r, c);
-	  buf_read (r, " \t\r\n()");
+	  buf_read (r, " \t\r\n();");
 	  object_t *o = parse_atom (r);
 	  if (!r->error)
 	    {
