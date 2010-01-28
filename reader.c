@@ -43,7 +43,7 @@ void reader_destroy (reader_t * r)
   free (r);
 }
 
-/* Read mext character in the stream. */
+/* Read next character in the stream. */
 static int reader_getc (reader_t * r)
 {
   int c;
@@ -264,7 +264,7 @@ static void down_quote (reader_t * r)
 }
 
 /* Height of qstack */
-static int qstack_height (reader_t *r)
+static int qstack_height (reader_t * r)
 {
   return r->qstackp - r->qstack;
 }
@@ -277,7 +277,7 @@ static void check_quote (reader_t * r)
   if (*(r->qstackp) == 0)
     {
       if (stack_height (r) <= 1)
-	read_error (r, "unbalaned parenthesis");
+	read_error (r, "unbalanced parenthesis");
       else
 	{
 	  add (r, pop (r));
@@ -319,7 +319,7 @@ object_t *read_sexp (reader_t * r)
 	  break;
 	case ')':
 	  if (stack_height (r) <= 1 || *(r->qstackp) == 0)
-	    read_error (r, "unbalaned parenthesis");
+	    read_error (r, "unbalanced parenthesis");
 	  else
 	    {
 	      add (r, pop (r));
@@ -383,10 +383,13 @@ int load_file (FILE * fid, char *filename, int interactive)
   while (!r->eof)
     {
       object_t *sexp = read_sexp (r);
-      object_t *ret = top_eval (sexp);
-      if (r->interactive)
-	obj_print (ret, 1);
-      obj_destroy (ret);
+      if (sexp != err_symbol)
+	{
+	  object_t *ret = top_eval (sexp);
+	  if (r->interactive)
+	    obj_print (ret, 1);
+	  obj_destroy (ret);
+	}
     }
   return 1;
 }
