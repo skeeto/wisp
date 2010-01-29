@@ -76,7 +76,7 @@ char *unprocess_str (char *cleanstr)
 
   /* Two extra for quotes and one for each character that needs
      escaping. */
-  char *str = xmalloc (strlen (cleanstr) + cnt + 2);
+  char *str = xmalloc (strlen (cleanstr) + cnt + 2 + 1);
   strcpy (str + 1, cleanstr);
 
   /* Place backquotes. */
