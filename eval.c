@@ -139,7 +139,7 @@ object_t *top_eval (object_t * o)
   if (r == err_symbol)
     {
       printf ("Wisp error: ");
-      object_t *c = c_cons (err_thrown, err_attach);
+      object_t *c = c_cons (err_thrown, c_cons (err_attach, NIL));
       obj_print (c, 1);
       obj_destroy (c);
       return err_symbol;
