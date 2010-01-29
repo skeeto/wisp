@@ -38,8 +38,7 @@ object_t *arith (arith_t op, object_t * lst)
 	}
       else if (INTP (num))
 	{
-	  mpf_set_z (DFLOAT (convf), DINT (num));
-	  mpf_set (DFLOAT (accumf), DFLOAT (convf));
+	  mpf_set_z (DFLOAT (accumf), DINT (num));
 	  mpz_set (DINT (accumz), DINT (num));
 	}
       else
@@ -132,16 +131,16 @@ object_t *arith (arith_t op, object_t * lst)
 	      switch (op)
 		{
 		case ADD:
-		  mpf_add (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (num));
+		  mpf_add (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (convf));
 		  break;
 		case MUL:
-		  mpf_mul (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (num));
+		  mpf_mul (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (convf));
 		  break;
 		case SUB:
-		  mpf_sub (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (num));
+		  mpf_sub (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (convf));
 		  break;
 		case DIV:
-		  mpf_div (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (num));
+		  mpf_div (DFLOAT (accumf), DFLOAT (accumf), DFLOAT (convf));
 		  break;
 		}
 	    }
