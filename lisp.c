@@ -18,6 +18,39 @@ object_t *num_eq (object_t * lst);
 
 /* Various basic stuff */
 
+object_t *lisp_and (object_t * lst)
+{
+  object_t *r = T, *p = lst;
+  while (CONSP (p))
+    {
+      obj_destroy (r);
+      r = eval (CAR (p));
+      CHECK (r);
+      if (r == NIL)
+	return NIL;
+      p = CDR (p);
+    }
+  if (p != NIL)
+    THROW (improper_list, UPREF (lst));
+  return UPREF (r);
+}
+
+object_t *lisp_or (object_t * lst)
+{
+  object_t *r = NIL, *p = lst;
+  while (CONSP (p))
+    {
+      r = eval (CAR (p));
+      CHECK (r);
+      if (r != NIL)
+	return UPREF (r);
+      p = CDR (p);
+    }
+  if (p != NIL)
+    THROW (improper_list, UPREF (lst));
+  return r;
+}
+
 object_t *lisp_cons (object_t * lst)
 {
   REQ (lst, 2, c_sym ("cons"));
@@ -469,6 +502,8 @@ void lisp_init ()
   lisp_math_init ();
 
   /* Various */
+  SSET (c_sym ("and"), c_special (&lisp_and));
+  SSET (c_sym ("or"), c_special (&lisp_or));
   SSET (c_sym ("quote"), c_special (&lisp_quote));
   SSET (c_sym ("lambda"), c_special (&lambda_f));
   SSET (c_sym ("defun"), c_special (&defun));
