@@ -17,8 +17,6 @@
 ;; Load up other default libraries
 (require 'list)
 (require 'math)
-(require 'memoize)
-(require 'examples)
 
 (defmacro setq (var val)
   (list 'set (list 'quote var) val))
