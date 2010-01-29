@@ -161,13 +161,19 @@ static object_t *pop (reader_t * r)
   return p;
 }
 
+static void reset_buf (reader_t * r)
+{
+  r->bufp = r->buf;
+  *(r->bufp) = '\0';
+}
+
 /* Remove top object from the sexp stack. */
 static void reset (reader_t * r)
 {
   r->done = 1;
   while (r->state != r->base)
     obj_destroy (pop (r));
-  r->bufp = r->buf;
+  reset_buf (r);
   r->readbufp = r->readbuf;
   r->done = 0;
 }
@@ -271,8 +277,9 @@ static int buf_read (reader_t * r, char *halt)
 static object_t *parse_str (reader_t * r)
 {
   size_t size = r->bufp - r->buf;
-  r->bufp = r->buf;
-  return c_str (xstrdup (r->buf), size);
+  char *str = xstrdup (r->buf);
+  reset_buf (r);
+  return c_str (str, size);
 }
 
 /* Turn string in buffer into atom object. */
@@ -286,8 +293,9 @@ static object_t *parse_atom (reader_t * r)
   (void) i;
   if (end != str && *end == '\0')
     {
-      r->bufp = r->buf;
-      return c_ints (str);
+      object_t *o = c_ints (str);
+      reset_buf (r);
+      return o;
     }
 
   /* Detect float */
@@ -295,8 +303,9 @@ static object_t *parse_atom (reader_t * r)
   (void) d;
   if (end != str && *end == '\0')
     {
-      r->bufp = r->buf;
-      return c_floats (str);
+      object_t *o = c_floats (str);
+      reset_buf (r);
+      return o;
     }
 
   /* Might be a symbol then */
@@ -313,8 +322,9 @@ static object_t *parse_atom (reader_t * r)
 	}
       p++;
     }
-  r->bufp = r->buf;
-  return c_sym (r->buf);
+  object_t *o = c_sym (r->buf);
+  reset_buf (r);
+  return o;
 }
 
 /* Read a single sexp from the reader. */
