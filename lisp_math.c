@@ -253,6 +253,20 @@ object_t *num_gte (object_t * lst)
   return num_cmp (GTE, lst);
 }
 
+object_t *modulus (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("%"));
+  object_t *a = CAR (lst);
+  object_t *b = CAR (CDR (lst));
+  if (!INTP (a))
+    THROW (wrong_type, UPREF (a));
+  if (!INTP (b))
+    THROW (wrong_type, UPREF (b));
+  object_t *m = c_int (0);
+  mpz_mod (DINT (m), DINT (a), DINT (b));
+  return m;
+}
+
 /* Install all the math functions */
 void lisp_math_init ()
 {
@@ -265,4 +279,5 @@ void lisp_math_init ()
   SSET (c_sym ("<="), c_cfunc (&num_lte));
   SSET (c_sym (">"), c_cfunc (&num_gt));
   SSET (c_sym (">="), c_cfunc (&num_gte));
+  SSET (c_sym ("%"), c_cfunc (&modulus));
 }
