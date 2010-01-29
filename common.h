@@ -7,6 +7,7 @@
 /* Wrapper for malloc() and realloc(). Will exit() the program on error. */
 void *xmalloc (size_t size);
 void *xrealloc (void *p, size_t size);
+void xfree (void *p);
 
 /* Define a strdup() since it's not always there. */
 char *xstrdup (char *str);

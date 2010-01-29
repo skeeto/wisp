@@ -97,12 +97,12 @@ void obj_destroy (object_t * o)
     case FLOAT:
       f = OFLOAT (o);
       mpf_clear (*f);
-      free (o->val);
+      xfree (o->val);
       break;
     case INT:
       z = OINT (o);
       mpz_clear (*z);
-      free (o->val);
+      xfree (o->val);
       break;
     case STRING:
       str_destroy (o->val);

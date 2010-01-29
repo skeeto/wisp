@@ -27,9 +27,9 @@ str_t *str_create ()
 
 void str_destroy (str_t * str)
 {
-  free (str->raw);
+  xfree (str->raw);
   if (str->print != NULL)
-    free (str->print);
+    xfree (str->print);
   mm_free (mm, (void *) str);
 }
 

@@ -32,7 +32,7 @@ void vector_destroy (vector_t * v)
 {
   for (size_t i = 0; i < v->len; i++)
     obj_destroy (v->v[i]);
-  free (v->v);
+  xfree (v->v);
   mm_free (mm, (void *) v);
 }
 

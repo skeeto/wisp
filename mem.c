@@ -33,8 +33,8 @@ mmanager_t *mm_create (size_t osize, void (*clear_func) (void *o))
 
 void mm_destroy (mmanager_t * mm)
 {
-  free (mm->stack);
-  free (mm);
+  xfree (mm->stack);
+  xfree (mm);
 }
 
 void *mm_alloc (mmanager_t * mm)

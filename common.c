@@ -26,6 +26,11 @@ void *xrealloc (void *p, size_t size)
   return np;
 }
 
+void xfree (void *p)
+{
+  free (p);
+}
+
 char *xstrdup (char *str)
 {
   char *newstr = xmalloc (strlen (str) + 1);

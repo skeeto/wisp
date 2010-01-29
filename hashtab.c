@@ -109,7 +109,7 @@ void ht_remove (hashtab_t * hashtable, void *key, size_t keylen)
 		hashtable->arr[index] = next_node->next;
 
 	      /* free the node */
-	      free (next_node);
+	      xfree (next_node);
 	      break;
 	    }
 	}
@@ -153,12 +153,12 @@ void ht_destroy (hashtab_t * hashtable)
 	  /* destroy node */
 	  last_node = next_node;
 	  next_node = next_node->next;
-	  free (last_node);
+	  xfree (last_node);
 	}
     }
 
-  free (hashtable->arr);
-  free (hashtable);
+  xfree (hashtable->arr);
+  xfree (hashtable);
 }
 
 /* iterator initilaize */

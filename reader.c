@@ -49,10 +49,10 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
 
 void reader_destroy (reader_t * r)
 {
-  free (r->buf);
-  free (r->readbuf);
-  free (r->base);
-  free (r);
+  xfree (r->buf);
+  xfree (r->readbuf);
+  xfree (r->base);
+  xfree (r);
 }
 
 /* Read next character in the stream. */
@@ -317,7 +317,7 @@ static object_t *parse_atom (reader_t * r)
 	  char *errstr = xstrdup ("invalid symbol character: X");
 	  errstr[strlen (errstr) - 1] = *p;
 	  read_error (r, errstr);
-	  free (errstr);
+	  xfree (errstr);
 	  return NIL;
 	}
       p++;
