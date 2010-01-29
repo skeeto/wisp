@@ -7,12 +7,10 @@
  * start using a real bug tracker
 
 + Core
- * array type
  * loop detection needed in places
  * advanced quoting
  * more advanced let binding
  * interrupt catching
- - hashtable type
  - closures
  - symbol aliasing
  - undefined variables. all are defined to nil atm
