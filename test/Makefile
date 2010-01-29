@@ -7,7 +7,7 @@ test : all
 
 OBJ = ../symtab.o ../object.o ../cons.o ../common.o ../number.o \
       ../lisp_math.o ../eval.o ../hashtab.o ../mem.o ../lisp.o \
-      ../reader.o ../str.o
+      ../reader.o ../str.o ../vector.o
 
 wisp_tests : wisp_tests.o $(OBJ)
 
