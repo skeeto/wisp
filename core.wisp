@@ -17,6 +17,15 @@
 ;; Load up other default libraries
 (require 'list)
 (require 'math)
+(require 'memoize)
+(require 'examples)
 
 (defmacro setq (var val)
   (list 'set (list 'quote var) val))
+
+(defun equal (a b)
+  (or (eql a b)
+      (and (listp a)
+	   (listp b)
+	   (equal (car a) (car b))
+	   (equal (cdr a) (cdr b)))))
