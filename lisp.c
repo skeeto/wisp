@@ -414,6 +414,18 @@ object_t *make_vector (object_t * lst)
   return c_vec (into2int (len), o);
 }
 
+object_t *lisp_vconcat (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("vconcat"));
+  object_t *a = CAR (lst);
+  object_t *b = CAR (CDR (lst));
+  if (!VECTORP (a))
+    THROW (wrong_type, UPREF (a));
+  if (!VECTORP (b))
+    THROW (wrong_type, UPREF (b));
+  return vector_concat (a, b);
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -469,4 +481,5 @@ void lisp_init ()
   SSET (c_sym ("vget"), c_cfunc (&lisp_vget));
   SSET (c_sym ("vlength"), c_cfunc (&lisp_vlength));
   SSET (c_sym ("make-vector"), c_cfunc (&make_vector));
+  SSET (c_sym ("vconcat"), c_cfunc (&lisp_vconcat));
 }

@@ -115,3 +115,14 @@ void vec_print (object_t * vo)
   obj_print (v->v[v->len - 1], 0);
   printf ("]");
 }
+
+object_t *vector_concat (object_t * a, object_t * b)
+{
+  size_t al = VLENGTH (a), bl = VLENGTH (b);
+  object_t *c = c_vec (al + bl, NIL);
+  for (size_t i = 0; i < al; i++)
+    vset (c, i, UPREF (vget (a, i)));
+  for (size_t i = 0; i < bl; i++)
+    vset (c, i + al, UPREF (vget (b, i)));
+  return UPREF (c);
+}

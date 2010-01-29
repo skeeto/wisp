@@ -27,6 +27,9 @@ object_t *vget (object_t * vo, size_t i);
 object_t *vset_check (object_t *vo, object_t *io, object_t *val);
 object_t *vget_check (object_t *vo, object_t *io);
 
+/* Vector concatenation, creating a new vector. */
+object_t *vector_concat (object_t * a, object_t * b);
+
 /* Print a vector */
 void vec_print (object_t * vo);
 
