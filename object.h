@@ -2,6 +2,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <stdint.h>
+
 typedef enum types
 { INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL } type_t;
 
@@ -24,6 +26,10 @@ object_t *c_cons (object_t * car, object_t * cdr);
 object_t *c_cfunc (object_t * (*f) (object_t * o));
 object_t *c_special (object_t * (*f) (object_t * o));
 void obj_destroy (object_t * o);
+
+/* object hash functions */
+uint32_t obj_hash (object_t *o);
+uint32_t hash (void *buf, size_t buflen);
 
 #define STRINGP(o) (o->type == STRING)
 #define SYMBOLP(o) (o->type == SYMBOL)

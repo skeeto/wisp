@@ -29,7 +29,7 @@ void cons_destroy (cons_t * o)
   mm_free (mm, (void *) o);
 }
 
-object_t *req_length (object_t * lst, object_t *thr, int n)
+object_t *req_length (object_t * lst, object_t * thr, int n)
 {
   /* TODO detect loops? */
   int cnt = 0;
@@ -41,17 +41,17 @@ object_t *req_length (object_t * lst, object_t *thr, int n)
       if (!LISTP (p))
 	{
 	  obj_destroy (thr);
-	  THROW(improper_list, lst);
+	  THROW (improper_list, lst);
 	}
       if (cnt > n)
-	THROW(wrong_number_of_arguments, thr);
+	THROW (wrong_number_of_arguments, thr);
     }
   if (cnt != n)
-    THROW(wrong_number_of_arguments, thr);
+    THROW (wrong_number_of_arguments, thr);
   return T;
 }
 
-object_t *reqm_length (object_t * lst, object_t *thr, int n)
+object_t *reqm_length (object_t * lst, object_t * thr, int n)
 {
   /* TODO detect loops? */
   int cnt = 0;
@@ -63,13 +63,13 @@ object_t *reqm_length (object_t * lst, object_t *thr, int n)
       if (!LISTP (p))
 	{
 	  obj_destroy (thr);
-	  THROW(improper_list, lst);
+	  THROW (improper_list, lst);
 	}
       if (cnt >= n)
 	return T;
     }
   if (cnt < n)
-    THROW(wrong_number_of_arguments, thr);
+    THROW (wrong_number_of_arguments, thr);
   return T;
 }
 
@@ -116,4 +116,9 @@ object_t *properlistp (object_t * lst)
   if (!CONSP (lst))
     return NIL;
   return properlistp (CDR (lst));
+}
+
+uint32_t cons_hash (object_t * o)
+{
+  return obj_hash (CAR (o)) ^ obj_hash (CDR (o));
 }

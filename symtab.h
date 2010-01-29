@@ -45,4 +45,6 @@ extern object_t *T;
 #define CONSTANTP(o) (SYMPROPS(o) & SYM_CONSTANT)
 #define INTERNP(o) (SYMPROPS(o) & SYM_INTERNED)
 
+uint32_t symbol_hash (object_t * o);
+
 #endif /* SYMTAB_H */

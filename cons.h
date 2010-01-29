@@ -32,4 +32,6 @@ int is_var_list (object_t * lst);
 /* Determine if list is proper. */
 object_t *properlistp (object_t * t);
 
+uint32_t cons_hash (object_t * o);
+
 #endif /* CONS_H */

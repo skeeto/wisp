@@ -126,3 +126,12 @@ object_t *vector_concat (object_t * a, object_t * b)
     vset (c, i + al, UPREF (vget (b, i)));
   return UPREF (c);
 }
+
+uint32_t vector_hash (object_t * o)
+{
+  uint32_t accum = 0;
+  vector_t *v = o->val;
+  for (size_t i = 0; i < v->len; i++)
+    accum ^= obj_hash (v->v[i]);
+  return accum;
+}

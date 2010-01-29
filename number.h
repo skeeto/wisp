@@ -22,4 +22,7 @@ double floato2int (object_t * floato);
 #define FLOATP(o) (o->type == FLOAT)
 #define NUMP(o) (INTP (o) || FLOATP (o))
 
+uint32_t int_hash (object_t * o);
+uint32_t float_hash (object_t * o);
+
 #endif /* NUMBER_H */

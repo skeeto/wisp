@@ -64,3 +64,8 @@ object_t *c_strs (char *str)
 {
   return c_str (str, strlen (str));
 }
+
+uint32_t str_hash (object_t * o)
+{
+  return hash (OSTR (o), OSTRLEN (o));
+}

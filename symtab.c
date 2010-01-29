@@ -16,9 +16,9 @@ void symtab_init ()
   /* Set up t and nil constants. The SET macro won't work until NIL is set. */
   NIL = c_sym ("nil");
   *((symbol_t *) NIL->val)->vals = NIL;
-  SYMPROPS(NIL) |= SYM_CONSTANT;
+  SYMPROPS (NIL) |= SYM_CONSTANT;
   T = c_sym ("t");
-  SYMPROPS(T) |= SYM_CONSTANT;
+  SYMPROPS (T) |= SYM_CONSTANT;
   SET (T, T);
 }
 
@@ -69,7 +69,7 @@ void intern (object_t * sym)
 {
   ht_insert (symbol_table, SYMNAME (sym), strlen (SYMNAME (sym)), sym,
 	     sizeof (object_t *));
-  SYMPROPS(sym) |= SYM_INTERNED;
+  SYMPROPS (sym) |= SYM_INTERNED;
 }
 
 object_t *c_sym (char *name)
@@ -81,4 +81,9 @@ object_t *c_sym (char *name)
       intern (o);
     }
   return o;
+}
+
+uint32_t symbol_hash (object_t * o)
+{
+  return hash (SYMNAME (o), strlen (SYMNAME (o)));
 }

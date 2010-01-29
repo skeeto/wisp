@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "object.h"
 #include "number.h"
 
 object_t *c_ints (char *nstr)
@@ -44,4 +48,20 @@ int into2int (object_t * into)
 double floato2float (object_t * floato)
 {
   return mpf_get_d (DFLOAT (floato));
+}
+
+uint32_t int_hash (object_t * o)
+{
+  char *str = mpz_get_str (NULL, 16, DINT (o));
+  uint32_t h = hash (str, strlen (str));
+  free (str);
+  return h;
+}
+
+uint32_t float_hash (object_t * o)
+{
+  char *str = mpf_get_str (NULL, NULL, 16, 0, DFLOAT (o));
+  uint32_t h = hash (str, strlen (str));
+  free (str);
+  return h;
 }

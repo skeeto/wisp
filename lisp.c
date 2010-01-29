@@ -195,7 +195,7 @@ object_t *eql (object_t * lst)
 	  return T;
       break;
     case VECTOR:
-      return T;
+      return NIL;
       break;
     case CFUNC:
     case SPECIAL:
@@ -204,6 +204,12 @@ object_t *eql (object_t * lst)
       break;
     }
   return NIL;
+}
+
+object_t *lisp_hash (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("hash"));
+  return c_int (obj_hash (CAR (lst)));
 }
 
 object_t *lisp_print (object_t * lst)
@@ -464,6 +470,7 @@ void lisp_init ()
   /* Equality */
   SSET (c_sym ("eq"), c_cfunc (&eq));
   SSET (c_sym ("eql"), c_cfunc (&eql));
+  SSET (c_sym ("hash"), c_cfunc (&lisp_hash));
 
   /* Predicates */
   SSET (c_sym ("nullp"), c_cfunc (&nullp));

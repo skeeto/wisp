@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <gmp.h>
 #include "common.h"
 #include "mem.h"
@@ -169,4 +170,51 @@ void obj_print (object_t * o, int newline)
 
   if (newline)
     printf ("\n");
+}
+
+uint32_t obj_hash (object_t *o)
+{
+  switch (o->type)
+    {
+    case CONS:
+      return cons_hash (o);
+    case INT:
+      return int_hash (o);
+      break;
+    case FLOAT:
+      return float_hash (o);
+      break;
+    case STRING:
+      return str_hash (o);
+      break;
+    case SYMBOL:
+      return symbol_hash (o);
+      break;
+    case VECTOR:
+      return vector_hash (o);
+      break;
+    case CFUNC:
+      return hash (o->val, sizeof (void *));
+      break;
+    case SPECIAL:
+      return hash (o->val, sizeof (void *));
+      break;
+    }
+  return 0;
+}
+
+uint32_t hash (void *key, size_t keylen)
+{
+  /* One-at-a-time hash */
+  uint32_t hash, i;
+  for (hash = 0, i = 0; i < keylen; ++i)
+    {
+      hash += ((char *) key)[i];
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+    }
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+  return hash;
 }
