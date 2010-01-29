@@ -48,7 +48,7 @@ object_t *lisp_or (object_t * lst)
     }
   if (p != NIL)
     THROW (improper_list, UPREF (lst));
-  return r;
+  return NIL;
 }
 
 object_t *lisp_cons (object_t * lst)
