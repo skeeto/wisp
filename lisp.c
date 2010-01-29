@@ -426,6 +426,14 @@ object_t *lisp_vconcat (object_t * lst)
   return vector_concat (a, b);
 }
 
+/* Internals */
+
+object_t *lisp_refcount (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("refcount"));
+  return c_int (CAR (lst)->refs);
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -482,4 +490,7 @@ void lisp_init ()
   SSET (c_sym ("vlength"), c_cfunc (&lisp_vlength));
   SSET (c_sym ("make-vector"), c_cfunc (&make_vector));
   SSET (c_sym ("vconcat"), c_cfunc (&lisp_vconcat));
+
+  /* Internals */
+  SSET (c_sym ("refcount"), c_cfunc (&lisp_refcount));
 }
