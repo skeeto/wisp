@@ -91,6 +91,8 @@ object_t *defmacro (object_t * lst)
 object_t *lisp_cdr (object_t * lst)
 {
   REQ (lst, 1, c_sym ("cdr"));
+  if (CAR (lst) == NIL)
+    return NIL;
   if (!LISTP (CAR (lst)))
     THROW (wrong_type, CAR (lst));
   return UPREF (CDR (CAR (lst)));
@@ -99,6 +101,8 @@ object_t *lisp_cdr (object_t * lst)
 object_t *lisp_car (object_t * lst)
 {
   REQ (lst, 1, c_sym ("car"));
+  if (CAR (lst) == NIL)
+    return NIL;
   if (!LISTP (CAR (lst)))
     THROW (wrong_type, CAR (lst));
   return UPREF (CAR (CAR (lst)));
