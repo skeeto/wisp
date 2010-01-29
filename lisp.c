@@ -220,9 +220,9 @@ object_t *lisp_set (object_t * lst)
   if (!SYMBOLP (CAR (lst)))
     THROW (wrong_type, c_cons (c_sym ("set"), CAR (lst)));
   if (CONSTANTP (CAR (lst)))
-    THROW (c_sym("setting-constant"), CAR (lst));
+    THROW (c_sym ("setting-constant"), CAR (lst));
 
-  SET (CAR (lst), CAR (CDR (lst)));
+  SET (CAR (lst), UPREF (CAR (CDR (lst))));
   return UPREF (CAR (CDR (lst)));
 }
 
