@@ -53,8 +53,8 @@ int main (int argc, char **argv)
   /* set up wisproot */
   wisproot = getenv ("WISPROOT");
   if (wisproot == NULL)
-    wisproot = "";
-  SET (c_sym ("wisproot"), c_strs (wisproot));
+    wisproot = ".";
+  SET (c_sym ("wisproot"), c_strs (xstrdup (wisproot)));
 
   /* parse arguments */
   int c;
@@ -85,7 +85,7 @@ int main (int argc, char **argv)
     {
       fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
 	       core_file, strerror (errno));
-      if (strlen (wisproot) == 0)
+      if (strlen (wisproot) == 1)
 	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
       exit (EXIT_FAILURE);
     }
@@ -110,7 +110,7 @@ int main (int argc, char **argv)
       object_t *args = NIL;
       while (argc > optind)
 	{
-	  args = c_cons (c_strs (argv[argc - 1]), args);
+	  args = c_cons (c_strs (xstrdup (argv[argc - 1])), args);
 	  argc--;
 	}
       SET (c_sym ("ARGS"), args);
