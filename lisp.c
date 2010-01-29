@@ -10,6 +10,7 @@
 #include "str.h"
 #include "reader.h"
 #include "number.h"
+#include "vector.h"
 
 /* From lisp_math.c */
 void lisp_math_init ();
@@ -301,6 +302,14 @@ object_t *floatp (object_t * lst)
   return NIL;
 }
 
+object_t *vectorp (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("vectorp"));
+  if (VECTORP (CAR (lst)))
+    return T;
+  return NIL;
+}
+
 /* Input/Output */
 
 object_t *lisp_load (object_t * lst)
@@ -359,6 +368,52 @@ object_t *catch (object_t * lst)
   return r;
 }
 
+/* Vectors */
+
+object_t *lisp_vset (object_t * lst)
+{
+  REQ (lst, 3, c_sym ("vset"));
+  object_t *vec = CAR (lst);
+  object_t *ind = CAR (CDR (lst));
+  object_t *val = CAR (CDR (CDR (lst)));
+  if (!VECTORP (vec))
+    THROW (wrong_type, UPREF (vec));
+  if (!INTP (ind))
+    THROW (wrong_type, UPREF (ind));
+  return vset_check (vec, ind, val);
+}
+
+object_t *lisp_vget (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("vget"));
+  object_t *vec = CAR (lst);
+  object_t *ind = CAR (CDR (lst));
+  if (!VECTORP (vec))
+    THROW (wrong_type, UPREF (vec));
+  if (!INTP (ind))
+    THROW (wrong_type, UPREF (ind));
+  return vget_check (vec, ind);
+}
+
+object_t *lisp_vlength (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("vlength"));
+  object_t *vec = CAR (lst);
+  if (!VECTORP (vec))
+    THROW (wrong_type, UPREF (vec));
+  return c_int (VLENGTH (vec));
+}
+
+object_t *make_vector (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("make-vector"));
+  object_t *len = CAR (lst);
+  object_t *o = CAR (CDR (lst));
+  if (!INTP (len))
+    THROW (wrong_type, UPREF (len));
+  return c_vec (into2int (len), o);
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -399,6 +454,7 @@ void lisp_init ()
   SSET (c_sym ("numberp"), c_cfunc (&numberp));
   SSET (c_sym ("integerp"), c_cfunc (&integerp));
   SSET (c_sym ("floatp"), c_cfunc (&floatp));
+  SSET (c_sym ("vectorp"), c_cfunc (&vectorp));
 
   /* Input/Output */
   SSET (c_sym ("load"), c_cfunc (&lisp_load));
@@ -407,4 +463,10 @@ void lisp_init ()
   /* Error handling */
   SSET (c_sym ("throw"), c_cfunc (&throw));
   SSET (c_sym ("catch"), c_special (&catch));
+
+  /* Vectors */
+  SSET (c_sym ("vset"), c_cfunc (&lisp_vset));
+  SSET (c_sym ("vget"), c_cfunc (&lisp_vget));
+  SSET (c_sym ("vlength"), c_cfunc (&lisp_vlength));
+  SSET (c_sym ("make-vector"), c_cfunc (&make_vector));
 }

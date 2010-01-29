@@ -9,6 +9,10 @@ object_t *c_int (int n);
 object_t *c_floats (char *f);
 object_t *c_float (double f);
 
+/* get native numbers from number objects */
+int into2int (object_t * into);
+double floato2int (object_t * floato);
+
 #define OINT(o) ((mpz_t *) (o)->val)
 #define OFLOAT(o) ((mpf_t *) (o)->val)
 #define DINT(o) (*((mpz_t *) (o)->val))

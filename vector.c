@@ -3,9 +3,12 @@
 #include "common.h"
 #include "symtab.h"
 #include "cons.h"
+#include "number.h"
 #include "mem.h"
+#include "eval.h"
 
 static mmanager_t *mm;
+static object_t *out_of_bounds;
 
 static void vector_clear (void *o)
 {
@@ -17,6 +20,7 @@ static void vector_clear (void *o)
 void vector_init ()
 {
   mm = mm_create (sizeof (vector_t), &vector_clear);
+  out_of_bounds = c_sym ("index-out-of-bounds");
 }
 
 vector_t *vector_create ()
@@ -32,7 +36,7 @@ void vector_destroy (vector_t * v)
   mm_free (mm, (void *) v);
 }
 
-object_t *c_vec (size_t len)
+object_t *c_vec (size_t len, object_t * init)
 {
   object_t *o = obj_create (VECTOR);
   vector_t *v = o->val;
@@ -41,7 +45,7 @@ object_t *c_vec (size_t len)
     v->len = 1;
   v->v = xmalloc (sizeof (object_t **) * v->len);
   for (size_t i = 0; i < v->len; i++)
-    v->v[i] = NIL;
+    v->v[i] = UPREF (init);
   return o;
 }
 
@@ -54,7 +58,7 @@ object_t *list2vector (object_t * lst)
       cnt++;
       p = CDR (p);
     }
-  object_t *v = c_vec (cnt);
+  object_t *v = c_vec (cnt, NIL);
   p = lst;
   size_t i = 0;
   while (p != NIL)
@@ -74,10 +78,29 @@ void vset (object_t * vo, size_t i, object_t * val)
   obj_destroy (o);
 }
 
+object_t *vset_check (object_t * vo, object_t * io, object_t * val)
+{
+  int i = into2int (io);
+  vector_t *v = vo->val;
+  if (i < 0 || i >= (int) v->len)
+    THROW (out_of_bounds, UPREF (io));
+  vset (vo, i, UPREF (val));
+  return UPREF (val);
+}
+
 object_t *vget (object_t * vo, size_t i)
 {
   vector_t *v = vo->val;
   return v->v[i];
+}
+
+object_t *vget_check (object_t * vo, object_t * io)
+{
+  int i = into2int (io);
+  vector_t *v = vo->val;
+  if (i < 0 || i >= (int) v->len)
+    THROW (out_of_bounds, UPREF (io));
+  return UPREF (vget (vo, i));
 }
 
 void vec_print (object_t * vo)

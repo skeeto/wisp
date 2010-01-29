@@ -35,3 +35,13 @@ object_t *c_float (double d)
   mpf_set_d (*f, d);
   return o;
 }
+
+int into2int (object_t * into)
+{
+  return mpz_get_si (DINT (into));
+}
+
+double floato2float (object_t * floato)
+{
+  return mpf_get_d (DFLOAT (floato));
+}
