@@ -247,7 +247,7 @@ object_t *symbol_name (object_t * lst)
   REQ (lst, 1, c_sym ("symbol-name"));
   if (!SYMBOLP (CAR (lst)))
     THROW (wrong_type, UPREF (CAR (lst)));
-  return c_strs (SYMNAME (CAR (lst)));
+  return c_strs (xstrdup (SYMNAME (CAR (lst))));
 }
 
 /* String */
