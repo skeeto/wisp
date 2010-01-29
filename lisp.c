@@ -242,6 +242,28 @@ object_t *lisp_value (object_t * lst)
   return UPREF (GET (CAR (lst)));
 }
 
+object_t *symbol_name (object_t * lst)
+{
+  REQ (lst, 1, c_sym ("symbol-name"));
+  if (!SYMBOLP (CAR (lst)))
+    THROW (wrong_type, UPREF (CAR (lst)));
+  return c_strs (SYMNAME (CAR (lst)));
+}
+
+/* String */
+
+object_t *lisp_concat (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("concat"));
+  object_t *a = CAR (lst);
+  object_t *b = CAR (CDR (lst));
+  if (!STRINGP (a))
+    THROW (wrong_type, UPREF (a));
+  if (!STRINGP (b))
+    THROW (wrong_type, UPREF (b));
+  return str_cat (a, b);
+}
+
 /* Predicates */
 
 object_t *nullp (object_t * lst)
@@ -466,6 +488,10 @@ void lisp_init ()
   /* Symbol table */
   SSET (c_sym ("set"), c_cfunc (&lisp_set));
   SSET (c_sym ("value"), c_cfunc (&lisp_value));
+  SSET (c_sym ("symbol-name"), c_cfunc (&symbol_name));
+
+  /* Strings */
+  SSET (c_sym ("concat2"), c_cfunc (&lisp_concat));
 
   /* Equality */
   SSET (c_sym ("eq"), c_cfunc (&eq));

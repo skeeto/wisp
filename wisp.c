@@ -12,7 +12,6 @@ char *progname;
 int force_interaction = 0;
 int print_help = 0;
 char *core_file = "core.wisp";
-char *root = NULL;
 
 void print_usage (int ret)
 {
@@ -51,6 +50,12 @@ int main (int argc, char **argv)
   progname = argv[0];
   init ();
 
+  /* set up wisproot */
+  wisproot = getenv ("WISPROOT");
+  if (wisproot == NULL)
+    wisproot = "";
+  SET (c_sym ("wisproot"), c_strs (wisproot));
+
   /* parse arguments */
   int c;
   while ((c = getopt (argc, argv, "+ihv")) != -1)
@@ -73,15 +78,14 @@ int main (int argc, char **argv)
     print_usage (EXIT_SUCCESS);
 
   /* Load core lisp code. */
-  root = getenv ("WISPROOT");
-  if (root != NULL)
-    core_file = pathcat (root, core_file);
+  if (strlen (wisproot) != 0)
+    core_file = pathcat (wisproot, core_file);
   int r = load_file (NULL, core_file, 0);
   if (!r)
     {
       fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
 	       core_file, strerror (errno));
-      if (root == NULL)
+      if (strlen (wisproot) == 0)
 	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
       exit (EXIT_FAILURE);
     }

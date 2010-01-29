@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "object.h"
 #include "symtab.h"
 #include "common.h"
@@ -12,6 +13,8 @@
 
 static void read_error (reader_t * r, char *str);
 static void addpop (reader_t * r);
+
+char *wisproot = NULL;
 
 char *atom_chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

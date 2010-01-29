@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "object.h"
 
+extern char *wisproot;
+
 /* stack-dependant reader state */
 typedef struct reader_state
 {
@@ -55,6 +57,9 @@ object_t *read_sexp (reader_t * r);
 
 /* Use the core functions above to eval each sexp in a file. */
 int load_file (FILE * fid, char *filename, int interactive);
+
+/* Load a library file from the Wisp root */
+int require (char *libname);
 
 extern char *prompt;
 

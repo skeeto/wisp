@@ -1,21 +1,22 @@
-(defun 1+ (n)
-  (+ 1 n))
+;;; Core definitions for Wisp
 
-(defun length (lst)
-  (if (nullp lst)
-      0
-    (1+ (length (cdr lst)))))
-
-(defmacro setq (var val)
-  (list 'set (list 'quote var) val))
-
-;; The provided function should be able to accept a single argument
-(defun reduce (f lst)
-  (if (= (length lst) 1)
-      (f (car lst))
-    (f (car lst) (reduce f (cdr lst)))))
-
+;; Set up require
 (defun apply (f lst)
   (if (not (listp lst))
       (throw 'wrong-type-argument lst)
     (eval (cons f lst))))
+
+(defun concat (str &rest strs)
+  (if (nullp strs)
+      str
+    (concat2 str (apply concat strs))))
+
+(defun require (lib)
+  (load (concat wisproot "/wisplib/" (symbol-name lib) ".wisp")))
+
+;; Load up other default libraries
+(require 'list)
+(require 'math)
+
+(defmacro setq (var val)
+  (list 'set (list 'quote var) val))
