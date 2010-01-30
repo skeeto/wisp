@@ -5,9 +5,9 @@ default : wisp
 
 all : wisp test doc
 test : wisp
-	make -C test test
+	$(MAKE) -C test test
 doc :
-	make -C doc
+	$(MAKE) -C doc
 
 OBJ = wisp.o cons.o common.o object.o symtab.o eval.o hashtab.o mem.o \
       lisp.o str.o reader.o number.o lisp_math.o vector.o
@@ -35,5 +35,5 @@ hashtab.o : hashtab.c hashtab.h
 
 clean :
 	$(RM) $(OBJ) wisp y.tab.h
-	make -C test clean
-	make -C doc clean
+	$(MAKE) -C test clean
+	$(MAKE) -C doc clean
