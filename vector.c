@@ -30,7 +30,8 @@ vector_t *vector_create ()
 
 void vector_destroy (vector_t * v)
 {
-  for (size_t i = 0; i < v->len; i++)
+  size_t i;
+  for (i = 0; i < v->len; i++)
     obj_destroy (v->v[i]);
   xfree (v->v);
   mm_free (mm, (void *) v);
@@ -44,7 +45,8 @@ object_t *c_vec (size_t len, object_t * init)
   if (v->len == 0)
     v->len = 1;
   v->v = xmalloc (sizeof (object_t **) * v->len);
-  for (size_t i = 0; i < v->len; i++)
+  size_t i;
+  for (i = 0; i < v->len; i++)
     v->v[i] = UPREF (init);
   return o;
 }
@@ -107,7 +109,8 @@ void vec_print (object_t * vo)
 {
   vector_t *v = vo->val;
   printf ("[");
-  for (size_t i = 0; i < v->len - 1; i++)
+  size_t i;
+  for (i = 0; i < v->len - 1; i++)
     {
       obj_print (v->v[i], 0);
       printf (" ");
@@ -120,9 +123,10 @@ object_t *vector_concat (object_t * a, object_t * b)
 {
   size_t al = VLENGTH (a), bl = VLENGTH (b);
   object_t *c = c_vec (al + bl, NIL);
-  for (size_t i = 0; i < al; i++)
+  size_t i;
+  for (i = 0; i < al; i++)
     vset (c, i, UPREF (vget (a, i)));
-  for (size_t i = 0; i < bl; i++)
+  for (i = 0; i < bl; i++)
     vset (c, i + al, UPREF (vget (b, i)));
   return c;
 }
@@ -131,7 +135,8 @@ uint32_t vector_hash (object_t * o)
 {
   uint32_t accum = 0;
   vector_t *v = o->val;
-  for (size_t i = 0; i < v->len; i++)
+  size_t i;
+  for (i = 0; i < v->len; i++)
     accum ^= obj_hash (v->v[i]);
   return accum;
 }
