@@ -13,10 +13,10 @@ Wisp is meant to be a lightweight, simple, experimental lisp
 implementation.
 
 This document is not a general lisp tutorial. Rather, it is meant to
-highlight Wisp's features and its differences from other lisps. To
-fully understand the Wisp programming language, the reader should
-already be familiar with lisp programming. In particular, users of
-Emacs lisp should find Wisp fairly comfortable.
+highlight Wisp's features, document its functions, and its differences
+from other lisps. To fully understand the Wisp programming language,
+the reader should already be familiar with lisp programming. In
+particular, users of Emacs lisp should find Wisp fairly comfortable.
 
 Getting Started
 ~~~~~~~~~~~~~~~
@@ -36,7 +36,7 @@ There are four make targets: +wisp+, +test+, +doc+, +all+. +wisp+ is
 the default target, and +all+ will run all the other targets. To
 verify your build, you can run the +test+ target.
 
-Compiling stuff on Windows is so difficult, you're on your own for
+Compiling stuff on Windows is so difficult, so you're on your own for
 that.
 
 Environment
@@ -160,18 +160,20 @@ each. The +car+ and +cdr+ functions will return each cell
 respectively. Wisp functions and macros are not a special type of
 their own, but are just lists made of cons cells.
 
+Vectors
++++++++
+
+Unlike lists, vectors have O(1) access time. However, once created
+they have a fixed size. Any type of lisp object can be stored in an
+vector, including other vectors, allowing for multi-demensional
+structures.
+
 CFUNCs and special forms
 ++++++++++++++++++++++++
 
 CFUNCs and special forms are actually pointers into the C code, which
 allow C space to be exposed to the lisp space. You can't create or
 modify these without modifying the Wisp C source code.
-
-Other types
-+++++++++++
-
-Wisp does not yet have arrays/vectors or hashtable types, but it is
-planned for the future.
 
 Syntax
 ^^^^^^
@@ -232,9 +234,9 @@ wisp> (cdr '(a))
 nil
 -------
 
-All possible symbols are automatically defined, usually to +nil+, by
-default. This sets Wisp apart from other lisps. All symbols are also
-interned, so there is only one instance of any given symbol.
+All possible symbols are automatically binded globally, usually to
++nil+, by default. This sets Wisp apart from other lisps. All symbols
+are also interned, so there is only one instance of any given symbol.
 
 All symbols with beginning with a colon are defined to
 themselves. This is useful in making property lists.
@@ -255,7 +257,7 @@ return it). For example,
 -------------------------------
 wisp> (defun square (x)
         (* x x))
-(lambda (x) (* x x))
+square
 wisp> square
 (lambda (x) (* x x))
 wisp> (square 6) 
@@ -282,7 +284,7 @@ defined to +nil+ when not provided.
 ------------------------------------
 wisp> (defun args (a &optional b)
         b)
-(lambda (a &optional b) b)
+args
 wisp> (args 1)
 nil
 wisp> (args 1 2)
@@ -295,7 +297,7 @@ symbol after +&rest+.
 ----------------------
 wisp> (defun args (a &rest b)
         b)
-(lambda (a &rest b) b)
+args
 wisp> (args 1 2)
 (2)
 wisp> (args 1 2 3 4)
@@ -371,6 +373,220 @@ a
 
 The error catching and throwing the facilities will be improved, but
 will still rely on this basic principle.
+
+Functions and Macros
+--------------------
+
+General purpose
+~~~~~~~~~~~~~~~
+
+Special form: +(quote _object_)+::
+
+Returns _object_ unevaluated.
+
+Special form: +(and _conditions..._)+::
+Special form: +(or _conditions..._)+::
+
+These are your basic +and+ and +or+ special forms. They evaluate their
+conditions only as far as they need to.
+
+C function: +(not _object_)+::
+
+Inverts the condition value of _object_.
+
+Special form: +(lambda _args_ _body..._)+::
+
+Creates and returns an anonymous function.
+
+Special form: +(defun _name_ _args_ _body..._)+::
+
+Defines and new function with name _name_.
+
+Special form: +(defmacro _name_ _args_ _body..._)+::
+
+Defines a new macro with name _name_.
+
+C function: +(car _list_)+::
+C function: +(cdr _list_)+::
+
+Returns car and cdr components of cons cell, respectively. All
+combinations of +c_XXX_r+ are defined up to three center characters as
+well. So is +first+, +second+, etc. up to +tenth+.
+
+C function: +(list _objects_)+::
+
+Returns arguments as a list.
+
+Special form: +(if _conditional_ _true-sexp_ _ false-body..._)+::
+
+Special form: +(progn _body..._)+::
+
+Executes body, returning final value.
+
+Special form: +(let _vars_ _body..._)+::
+
+Binds variables and executes _body_. Like any other lisp.
+
+Special form: +(while _condition_ _body..._)+::
+
+Continually execute body while _condition_ is true.
+
+C function: +(eval _object_)+::
+
+Evaluate _object_.
+
+C function: +(print _object_)+::
+
+Print object to standard output in parse-able form.
+
+C function: +(cons _car _cdr_)+::
+
+Construct a new cons cell.
+
+Symbols
+~~~~~~~
+
+C function: +(set _symbol_ _object_)+::
+
+Set value of _symbol_ to _object_. Notice this is not a macro, so you
+will likely want to quote the symbol. See +setq+.
+
+Macro: +(setq _symbol_ _object_)+::
+
+Like set, but the symbol is quoted for you.
+
+C function: +(value _symbol_)+::
+
+Return the object stored in the symbol.
+
+C function: +(symbol-name _symbol_)+::
+
+Return symbol name as a string.
+
+Strings
+~~~~~~~
+
+Function: +(concat _strings..._)+::
+
+Concatenate _strings_ into a single string.
+
+Equality
+~~~~~~~~
+
+C function: +(eq _a_ _b_)+::
+
+Return true if _a_ and _b_ are the exact same lisp object.
+
+C function: +(eql _a_ _b_)+::
+
+Return true if _a_ and _b_ represent similar objects (i.e. strings
+storing the same content). Always returns false for lists.
+
+Function: +(equals _a_ _b_)+::
+
+Return true if two lists have similar (+eql+) contents and structure.
+
+C function: +(hash _object_)+::
+
+Return hash of given lisp object. Fits inside of an unsigned, 4-byte
+integer.
+
+Predicates
+~~~~~~~~~~
+
+C function: +(nullp _object_)+::
+C function: +(funcp _object_)+::
+C function: +(listp _object_)+::
+C function: +(symbolp _object_)+::
+C function: +(stringp _object_)+::
+C function: +(numberp _object_)+::
+C function: +(integerp _object_)+::
+C function: +(floatp _object_)+::
+C function: +(vectorp _object_)+::
+
+Return true if _object_ is of the type matching the function name.
+
+Input / Output
+~~~~~~~~~~~~~~
+
+C function: +(load _string_)+::
+
+Evaluate contents in file _str_.
+
+C function: +(eval-string _string_)+::
+
+Evaluate contents of string.
+
+Error handling
+~~~~~~~~~~~~~~
+
+C function: +(throw _thrown_ _attach_)+::
+
+Throw an object as an error, with attachment.
+
+Special form: +(catch _object_ _body..._)+::
+
+Evaluate body, catching _object_ if it is thrown, returning _object_.
+
+Vectors
+~~~~~~~
+
+C function: +(vset _vector_ _index_ _object_)+::
+
+Put _object_ in _vector_ at position _index_.
+
+C function: +(vget _vector_ _index_)+::
+
+Get object in _vector_ at position _index_.
+
+C function: +(vlength _vector_)+::
+
+Length of the vector.
+
+C function: +(make-vector _size_ _init_)+::
+
+Create a new vector of size _size_ with all positions set to _init_.
+
+C function: +(vconcat _vector_ _vector_)+::
+
+Concatenate two vectors, creating a new vector object.
+
+Internals
+~~~~~~~~~
+
+C function: +(refcount _object_)+::
+
+Return number reference count of _object_. This number is meaningless
+for symbols.
+
+C function: +(eval-depth)+::
+
+Return current evaluation depth.
+
+C function: +(max-eval-depth _&optional_ _new-depth_)+::
+
+Return the maximum evaluation depth. If an argument is provided, set
+the maximum depth to the given value.
+
+Libraries
+---------
+
+hash
+~~~~
+
+Provides hash table functions.
+
+memoize
+~~~~~~~
+
+Provides a +memoize+ function to install memoization wrappers on any
+function.
+
+sandbox
+~~~~~~~
+
+Undefines "dangerous" funtions so that untrusted code can safely be
+executed.
 
 Internals
 ---------
