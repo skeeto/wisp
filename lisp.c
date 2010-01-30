@@ -499,6 +499,27 @@ object_t *lisp_refcount (object_t * lst)
   return c_int (CAR (lst)->refs);
 }
 
+object_t *lisp_eval_depth (object_t * lst)
+{
+  REQ (lst, 0, c_sym ("eval-depth"));
+  return c_int (stack_depth);
+}
+
+object_t *lisp_max_eval_depth (object_t * lst)
+{
+  REQX (lst, 1, c_sym ("max-eval-depth"));
+  if (lst == NIL)
+    return c_int (max_stack_depth);
+  object_t *arg = CAR (lst);
+  if (!INTP (arg))
+    THROW (wrong_type, UPREF (arg));
+  int new_depth = into2int (arg);
+  if (new_depth < 10)
+    return NIL;
+  max_stack_depth = new_depth;
+  return UPREF (arg);
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -565,4 +586,6 @@ void lisp_init ()
 
   /* Internals */
   SSET (c_sym ("refcount"), c_cfunc (&lisp_refcount));
+  SSET (c_sym ("eval-depth"), c_cfunc (&lisp_eval_depth));
+  SSET (c_sym ("max-eval-depth"), c_cfunc (&lisp_max_eval_depth));
 }

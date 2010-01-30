@@ -14,7 +14,7 @@ object_t *eval_body (object_t * body);
 object_t *assign_args (object_t * vars, object_t * vals);
 void unassign_args (object_t * vars);
 
-extern unsigned int max_stack_depth;
+extern unsigned int stack_depth, max_stack_depth;
 extern int interactive_mode;
 
 /* Frequently used symbols */
@@ -36,6 +36,8 @@ extern object_t *void_function, *wrong_number_of_arguments, *wrong_type,
 #define REQ(lst, n, so) if (req_length (lst, so, n) == err_symbol) \
                           return err_symbol;
 #define REQM(lst, n, so) if (reqm_length (lst, so, n) == err_symbol) \
+                         return err_symbol;
+#define REQX(lst, n, so) if (reqx_length (lst, so, n) == err_symbol) \
                          return err_symbol;
 #define REQPROP(lst) if (properlistp(lst) == NIL) \
                          THROW (improper_list, lst);

@@ -18,8 +18,9 @@ cons_t *cons_create ();
 void cons_destroy (cons_t * c);
 
 /* list operators */
-object_t *req_length (object_t * lst, object_t * thr, int n);
-object_t *reqm_length (object_t * lst, object_t * thr, int n);
+object_t *req_length (object_t * lst, object_t * thr, int n);	/* exact */
+object_t *reqm_length (object_t * lst, object_t * thr, int n);	/* min */
+object_t *reqx_length (object_t * lst, object_t * thr, int n);	/* max */
 int is_func_form (object_t * lst);
 int is_var_list (object_t * lst);
 

@@ -196,7 +196,7 @@ object_t *eval (object_t * o)
 
   /* Check the stack */
   if (++stack_depth >= max_stack_depth)
-    THROW (c_sym ("max-stack-depth"), c_int (stack_depth--));
+    THROW (c_sym ("max-eval-depth"), c_int (stack_depth--));
 
   if (f->type == CFUNC || (f->type == CONS && (CAR (f) == lambda)))
     {

@@ -73,6 +73,26 @@ object_t *reqm_length (object_t * lst, object_t * thr, int n)
   return T;
 }
 
+object_t *reqx_length (object_t * lst, object_t * thr, int n)
+{
+  /* TODO detect loops? */
+  int cnt = 0;
+  object_t *p = lst;
+  while (p != NIL)
+    {
+      cnt++;
+      p = CDR (p);
+      if (!LISTP (p))
+	{
+	  obj_destroy (thr);
+	  THROW (improper_list, lst);
+	}
+      if (cnt > n)
+	THROW (wrong_number_of_arguments, thr);
+    }
+  return T;
+}
+
 /* Verifies that list has form of a function. */
 int is_func_form (object_t * lst)
 {
