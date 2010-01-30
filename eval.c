@@ -1,22 +1,45 @@
 #include <stdio.h>
+#include <signal.h>
 #include "cons.h"
 #include "object.h"
 #include "symtab.h"
 #include "eval.h"
 #include "number.h"
+#include "str.h"
+#include "common.h"
 
 object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
 object_t *rest, *optional;
 /* Commonly used thrown error symbols */
 object_t *void_function, *wrong_number_of_arguments, *wrong_type,
-  *improper_list, *improper_list_ending;
+  *improper_list, *improper_list_ending, *err_interrupt;
 
 /* Stack counting */
 unsigned int stack_depth = 0, max_stack_depth = 20000;
 
+int interrupt = 0;
+int interactive_mode = 0;
+void handle_iterrupt (int sig)
+{
+  (void) sig;
+  if (interactive_mode)
+    {
+      interrupt = 1;
+      signal (SIGINT, &handle_iterrupt);
+    }
+  else
+    {
+      signal (SIGINT, SIG_DFL);
+      raise (SIGINT);
+    }
+}
+
 void eval_init ()
 {
+  /* install interrupt handler */
+  signal (SIGINT, &handle_iterrupt);
+
   /* regular evaluation symbols */
   lambda = c_sym ("lambda");
   macro = c_sym ("macro");
@@ -33,6 +56,7 @@ void eval_init ()
   wrong_type = c_sym ("wrong-type-argument");
   improper_list = c_sym ("improper-list");
   improper_list_ending = c_sym ("improper-list-ending");
+  err_interrupt = c_sym ("caught-interrupt");
 }
 
 object_t *eval_list (object_t * lst)
@@ -149,6 +173,13 @@ object_t *top_eval (object_t * o)
 
 object_t *eval (object_t * o)
 {
+  /* Check for interrupts. */
+  if (interrupt)
+    {
+      interrupt = 0;
+      THROW (err_interrupt, c_strs (xstrdup ("interrupted")));
+    }
+
   if (o->type != CONS && o->type != SYMBOL)
     return UPREF (o);
   else if (o->type == SYMBOL)

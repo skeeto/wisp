@@ -15,6 +15,7 @@ object_t *assign_args (object_t * vars, object_t * vals);
 void unassign_args (object_t * vars);
 
 extern unsigned int max_stack_depth;
+extern int interactive_mode;
 
 /* Frequently used symbols */
 extern object_t *lambda, *macro, *rest, *optional, *quote;
@@ -27,7 +28,7 @@ extern object_t *lambda, *macro, *rest, *optional, *quote;
 /* Error handling */
 extern object_t *err_symbol, *err_thrown, *err_attach;
 extern object_t *void_function, *wrong_number_of_arguments, *wrong_type,
-  *improper_list, *improper_list_ending;
+  *improper_list, *improper_list_ending, *err_interrupt;
 
 #define THROW(to, ao) {err_thrown = to; err_attach = ao; return err_symbol;}
 #define CHECK(o) if ((o) == err_symbol) return err_symbol;

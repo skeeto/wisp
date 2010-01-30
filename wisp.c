@@ -93,6 +93,7 @@ int main (int argc, char **argv)
   if (argc - optind < 1)
     {
       /* Run interaction. */
+      interactive_mode = 1;
       load_file (stdin, "<stdin>", 1);
     }
   else

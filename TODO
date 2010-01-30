@@ -10,7 +10,6 @@
  * loop detection needed in places
  * advanced quoting
  * more advanced let binding
- * interrupt catching
  - closures
  - symbol aliasing
  - undefined variables. all are defined to nil atm
