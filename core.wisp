@@ -27,3 +27,8 @@
 	   (listp b)
 	   (equal (car a) (car b))
 	   (equal (cdr a) (cdr b)))))
+
+(defun make-symbol (str)
+  (if (not (stringp str))
+      (throw 'wrong-type-argument str)
+    (eval-string (concat "(quote " str ")"))))
