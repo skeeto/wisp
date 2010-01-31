@@ -210,7 +210,7 @@ object_t *eval (object_t * o)
       else if (f->type == CFUNC)
 	{
 	  /* c function */
-	  object_t *(*cf) (object_t * o) = f->val;
+	  cfunc_t cf = f->fval;
 	  object_t *r = cf (args);
 	  obj_destroy (args);
 	  stack_depth--;
@@ -242,7 +242,7 @@ object_t *eval (object_t * o)
       if (f->type == SPECIAL)
 	{
 	  /* special form */
-	  object_t *(*cf) (object_t * o) = f->val;
+	  cfunc_t cf = f->fval;
 	  object_t *r = cf (args);
 	  stack_depth--;
 	  return r;

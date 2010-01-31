@@ -12,7 +12,10 @@ typedef struct object
   type_t type;
   unsigned int refs;
   void *val;
+  struct object *(*fval) (struct object *);
 } object_t;
+
+typedef object_t *(*cfunc_t) (object_t *);
 
 /* Must be called before any other functions. */
 void object_init ();
@@ -23,12 +26,12 @@ void obj_print (object_t * o, int newline);
 /* Object creation */
 object_t *obj_create (type_t type);
 object_t *c_cons (object_t * car, object_t * cdr);
-object_t *c_cfunc (object_t * (*f) (object_t * o));
-object_t *c_special (object_t * (*f) (object_t * o));
+object_t *c_cfunc (cfunc_t f);
+object_t *c_special (cfunc_t f);
 void obj_destroy (object_t * o);
 
 /* object hash functions */
-uint32_t obj_hash (object_t *o);
+uint32_t obj_hash (object_t * o);
 uint32_t hash (void *buf, size_t buflen);
 
 #define STRINGP(o) (o->type == STRING)

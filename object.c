@@ -18,6 +18,7 @@ static void object_clear (void *o)
   obj->type = SYMBOL;
   obj->refs = 0;
   obj->val = NIL;
+  obj->fval = NULL;
 }
 
 void object_init ()
@@ -65,17 +66,17 @@ object_t *c_cons (object_t * car, object_t * cdr)
   return o;
 }
 
-object_t *c_cfunc (object_t * (*f) (object_t *))
+object_t *c_cfunc (cfunc_t f)
 {
   object_t *o = obj_create (CFUNC);
-  o->val = (void *) f;
+  o->fval = f;
   return o;
 }
 
-object_t *c_special (object_t * (*f) (object_t * o))
+object_t *c_special (cfunc_t f)
 {
   object_t *o = obj_create (SPECIAL);
-  o->val = (void *) f;
+  o->fval = f;
   return o;
 }
 
@@ -159,10 +160,12 @@ void obj_print (object_t * o, int newline)
       vec_print (o);
       break;
     case CFUNC:
-      printf ("<CFUNC %p>", o->val);
+      /* It's not possible to print a function pointer. */
+      printf ("<CFUNC>");
       break;
     case SPECIAL:
-      printf ("<SPECIAL %p>", o->val);
+      /* It's not possible to print a function pointer. */
+      printf ("<SPECIAL>");
       break;
     default:
       printf ("ERROR");
@@ -172,7 +175,7 @@ void obj_print (object_t * o, int newline)
     printf ("\n");
 }
 
-uint32_t obj_hash (object_t *o)
+uint32_t obj_hash (object_t * o)
 {
   switch (o->type)
     {
