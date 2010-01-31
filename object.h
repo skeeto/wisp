@@ -7,15 +7,22 @@
 typedef enum types
 { INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL } type_t;
 
+typedef union obval {
+  void *val;
+  struct object *(*fval) (struct object *);
+} obval_t;
+
 typedef struct object
 {
   type_t type;
   unsigned int refs;
-  void *val;
-  struct object *(*fval) (struct object *);
+  obval_t uval;
 } object_t;
 
 typedef object_t *(*cfunc_t) (object_t *);
+
+#define OVAL(o) ((o)->uval.val)
+#define FVAL(o) ((o)->uval.fval)
 
 /* Must be called before any other functions. */
 void object_init ();

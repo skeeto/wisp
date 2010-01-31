@@ -24,9 +24,9 @@ void str_genp (object_t *o);
 /* String operators */
 object_t *str_cat (object_t *ao, object_t *bo);
 
-#define OSTR(o) (((str_t *) (o)->val)->raw)
-#define OSTRLEN(o) (((str_t *) (o)->val)->len)
-#define OSTRP(o) (str_genp (o), ((str_t *) (o)->val)->print)
+#define OSTR(o) (((str_t *) OVAL(o))->raw)
+#define OSTRLEN(o) (((str_t *) OVAL(o))->len)
+#define OSTRP(o) (str_genp (o), ((str_t *) OVAL(o))->print)
 
 uint32_t str_hash (object_t *o);
 

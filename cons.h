@@ -24,8 +24,8 @@ object_t *reqx_length (object_t * lst, object_t * thr, int n);	/* max */
 int is_func_form (object_t * lst);
 int is_var_list (object_t * lst);
 
-#define CAR(o) ((cons_t *) ((o)->val))->car
-#define CDR(o) ((cons_t *) ((o)->val))->cdr
+#define CAR(o) ((cons_t *) OVAL(o))->car
+#define CDR(o) ((cons_t *) OVAL(o))->cdr
 
 #define LISTP(o) (o->type == CONS || o == NIL)
 #define PAIRP(o) (o->type == CONS && !LISTP(CDR(o)))

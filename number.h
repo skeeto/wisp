@@ -13,10 +13,10 @@ object_t *c_float (double f);
 int into2int (object_t * into);
 double floato2int (object_t * floato);
 
-#define OINT(o) ((mpz_t *) (o)->val)
-#define OFLOAT(o) ((mpf_t *) (o)->val)
-#define DINT(o) (*((mpz_t *) (o)->val))
-#define DFLOAT(o) (*((mpf_t *) (o)->val))
+#define OINT(o) ((mpz_t *) OVAL(o))
+#define OFLOAT(o) ((mpf_t *) OVAL(o))
+#define DINT(o) (*((mpz_t *) OVAL(o)))
+#define DFLOAT(o) (*((mpf_t *) OVAL(o)))
 
 #define INTP(o) (o->type == INT)
 #define FLOATP(o) (o->type == FLOAT)

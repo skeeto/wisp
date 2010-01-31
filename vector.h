@@ -35,7 +35,7 @@ void vec_print (object_t * vo);
 
 #define VECTORP(o) ((o)->type == VECTOR)
 
-#define VLENGTH(o) (((vector_t *)(o)->val)->len)
+#define VLENGTH(o) (((vector_t *) OVAL(o))->len)
 
 uint32_t vector_hash (object_t * o);
 

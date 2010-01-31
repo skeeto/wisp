@@ -27,11 +27,11 @@ void sympop (object_t * so);
 void sympush (object_t * so, object_t * o);
 
 /* Useful macros for accessing the symbol's fields */
-#define SYMNAME(so) (((symbol_t *) so->val)->name)
-#define GET(so) (*((symbol_t *) so->val)->vals)
+#define SYMNAME(so) (((symbol_t *) OVAL(so))->name)
+#define GET(so) (*((symbol_t *) OVAL(so))->vals)
 #define SET(so, o) (obj_destroy (GET (so)), (void) UPREF (o), \
-		    *((symbol_t *) so->val)->vals = o)
-#define SSET(so, o) (obj_destroy (GET (so)), *((symbol_t *) so->val)->vals = o)
+		    *((symbol_t *) OVAL(so))->vals = o)
+#define SSET(so, o) (obj_destroy (GET (so)), *((symbol_t *) OVAL(so))->vals = o)
 
 /* Constants */
 extern object_t *NIL;
@@ -41,7 +41,7 @@ extern object_t *T;
 #define SYM_CONSTANT 1
 #define SYM_INTERNED 2
 
-#define SYMPROPS(o) ((((symbol_t *)(o)->val))->props)
+#define SYMPROPS(o) (((symbol_t *) OVAL(o))->props)
 #define CONSTANTP(o) (SYMPROPS(o) & SYM_CONSTANT)
 #define INTERNP(o) (SYMPROPS(o) & SYM_INTERNED)
 

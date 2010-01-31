@@ -40,7 +40,7 @@ void vector_destroy (vector_t * v)
 object_t *c_vec (size_t len, object_t * init)
 {
   object_t *o = obj_create (VECTOR);
-  vector_t *v = o->val;
+  vector_t *v = OVAL(o);
   v->len = len;
   if (v->len == 0)
     v->len = 1;
@@ -74,7 +74,7 @@ object_t *list2vector (object_t * lst)
 
 void vset (object_t * vo, size_t i, object_t * val)
 {
-  vector_t *v = vo->val;
+  vector_t *v = OVAL(vo);
   object_t *o = v->v[i];
   v->v[i] = val;
   obj_destroy (o);
@@ -83,7 +83,7 @@ void vset (object_t * vo, size_t i, object_t * val)
 object_t *vset_check (object_t * vo, object_t * io, object_t * val)
 {
   int i = into2int (io);
-  vector_t *v = vo->val;
+  vector_t *v = OVAL(vo);
   if (i < 0 || i >= (int) v->len)
     THROW (out_of_bounds, UPREF (io));
   vset (vo, i, UPREF (val));
@@ -92,14 +92,14 @@ object_t *vset_check (object_t * vo, object_t * io, object_t * val)
 
 object_t *vget (object_t * vo, size_t i)
 {
-  vector_t *v = vo->val;
+  vector_t *v = OVAL(vo);
   return v->v[i];
 }
 
 object_t *vget_check (object_t * vo, object_t * io)
 {
   int i = into2int (io);
-  vector_t *v = vo->val;
+  vector_t *v = OVAL(vo);
   if (i < 0 || i >= (int) v->len)
     THROW (out_of_bounds, UPREF (io));
   return UPREF (vget (vo, i));
@@ -107,7 +107,7 @@ object_t *vget_check (object_t * vo, object_t * io)
 
 void vec_print (object_t * vo)
 {
-  vector_t *v = vo->val;
+  vector_t *v = OVAL(vo);
   printf ("[");
   size_t i;
   for (i = 0; i < v->len - 1; i++)
@@ -134,7 +134,7 @@ object_t *vector_concat (object_t * a, object_t * b)
 uint32_t vector_hash (object_t * o)
 {
   uint32_t accum = 0;
-  vector_t *v = o->val;
+  vector_t *v = OVAL(o);
   size_t i;
   for (i = 0; i < v->len; i++)
     accum ^= obj_hash (v->v[i]);
