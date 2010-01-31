@@ -35,15 +35,15 @@ void str_destroy (str_t * str)
 
 void str_genp (object_t * o)
 {
-  str_t *str = (str_t *) OVAL(o);
+  str_t *str = (str_t *) OVAL (o);
   if (str->print == NULL)
     str->print = unprocess_str (str->raw);
 }
 
 object_t *str_cat (object_t * ao, object_t * bo)
 {
-  str_t *a = (str_t *) OVAL(ao);
-  str_t *b = (str_t *) OVAL(bo);
+  str_t *a = (str_t *) OVAL (ao);
+  str_t *b = (str_t *) OVAL (bo);
   size_t nlen = a->len + b->len;
   char *nraw = xmalloc (nlen + 1);
   memcpy (nraw, a->raw, a->len);

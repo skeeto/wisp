@@ -17,8 +17,8 @@ static void object_clear (void *o)
   object_t *obj = (object_t *) o;
   obj->type = SYMBOL;
   obj->refs = 0;
-  FVAL(obj) = NULL;
-  OVAL(obj) = NIL;
+  FVAL (obj) = NULL;
+  OVAL (obj) = NIL;
 }
 
 void object_init ()
@@ -34,22 +34,22 @@ object_t *obj_create (type_t type)
   switch (type)
     {
     case INT:
-      OVAL(o) = xmalloc (sizeof (mpz_t));
+      OVAL (o) = xmalloc (sizeof (mpz_t));
       break;
     case FLOAT:
-      OVAL(o) = xmalloc (sizeof (mpf_t));
+      OVAL (o) = xmalloc (sizeof (mpf_t));
       break;
     case CONS:
-      OVAL(o) = cons_create ();
+      OVAL (o) = cons_create ();
       break;
     case SYMBOL:
-      OVAL(o) = symbol_create ();
+      OVAL (o) = symbol_create ();
       break;
     case STRING:
-      OVAL(o) = str_create ();
+      OVAL (o) = str_create ();
       break;
     case VECTOR:
-      OVAL(o) = vector_create ();
+      OVAL (o) = vector_create ();
       break;
     case CFUNC:
     case SPECIAL:
@@ -69,14 +69,14 @@ object_t *c_cons (object_t * car, object_t * cdr)
 object_t *c_cfunc (cfunc_t f)
 {
   object_t *o = obj_create (CFUNC);
-  FVAL(o) = f;
+  FVAL (o) = f;
   return o;
 }
 
 object_t *c_special (cfunc_t f)
 {
   object_t *o = obj_create (SPECIAL);
-  FVAL(o) = f;
+  FVAL (o) = f;
   return o;
 }
 
@@ -98,23 +98,23 @@ void obj_destroy (object_t * o)
     case FLOAT:
       f = OFLOAT (o);
       mpf_clear (*f);
-      xfree (OVAL(o));
+      xfree (OVAL (o));
       break;
     case INT:
       z = OINT (o);
       mpz_clear (*z);
-      xfree (OVAL(o));
+      xfree (OVAL (o));
       break;
     case STRING:
-      str_destroy (OVAL(o));
+      str_destroy (OVAL (o));
       break;
     case CONS:
       obj_destroy (CAR (o));
       obj_destroy (CDR (o));
-      cons_destroy (OVAL(o));
+      cons_destroy (OVAL (o));
       break;
     case VECTOR:
-      vector_destroy (OVAL(o));
+      vector_destroy (OVAL (o));
       break;
     case CFUNC:
     case SPECIAL:
@@ -154,7 +154,7 @@ void obj_print (object_t * o, int newline)
       printf ("%s", OSTRP (o));
       break;
     case SYMBOL:
-      printf ("%s", ((symbol_t *) OVAL(o))->name);
+      printf ("%s", ((symbol_t *) OVAL (o))->name);
       break;
     case VECTOR:
       vec_print (o);
@@ -199,7 +199,7 @@ uint32_t obj_hash (object_t * o)
     case CFUNC:
     case SPECIAL:
       /* Imprecise, but close enough */
-      return hash (OVAL(o), sizeof (void *));
+      return hash (OVAL (o), sizeof (void *));
       break;
     }
   return 0;

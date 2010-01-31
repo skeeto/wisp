@@ -15,7 +15,7 @@ void symtab_init ()
 
   /* Set up t and nil constants. The SET macro won't work until NIL is set. */
   NIL = c_sym ("nil");
-  *((symbol_t *) OVAL(NIL))->vals = NIL;
+  *((symbol_t *) OVAL (NIL))->vals = NIL;
   SYMPROPS (NIL) |= SYM_CONSTANT;
   T = c_sym ("t");
   SYMPROPS (T) |= SYM_CONSTANT;
@@ -33,7 +33,7 @@ symbol_t *symbol_create ()
 
 void sympush (object_t * so, object_t * o)
 {
-  symbol_t *s = (symbol_t *) OVAL(so);
+  symbol_t *s = (symbol_t *) OVAL (so);
   s->vals++;
   if (s->vals == s->cnt + s->stack)
     {
@@ -49,7 +49,7 @@ void sympush (object_t * so, object_t * o)
 void sympop (object_t * so)
 {
   obj_destroy (GET (so));
-  symbol_t *s = (symbol_t *) OVAL(so);
+  symbol_t *s = (symbol_t *) OVAL (so);
   s->vals--;
 }
 
@@ -59,7 +59,7 @@ object_t *c_usym (char *name)
   char *newname = xstrdup (name);
   o = obj_create (SYMBOL);
   SYMNAME (o) = newname;
-  *((symbol_t *) OVAL(o))->vals = NIL;
+  *((symbol_t *) OVAL (o))->vals = NIL;
   if (name[0] == ':')
     SET (o, o);
   return o;

@@ -236,7 +236,7 @@ object_t *eql (object_t * lst)
       break;
     case CFUNC:
     case SPECIAL:
-      if (FVAL(a) == FVAL(b))
+      if (FVAL (a) == FVAL (b))
 	return T;
       break;
     }

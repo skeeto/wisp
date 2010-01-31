@@ -7,7 +7,8 @@
 typedef enum types
 { INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL } type_t;
 
-typedef union obval {
+typedef union obval
+{
   void *val;
   struct object *(*fval) (struct object *);
 } obval_t;
