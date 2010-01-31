@@ -34,14 +34,14 @@ symbol_t *symbol_create ()
 void sympush (object_t * so, object_t * o)
 {
   symbol_t *s = (symbol_t *) so->val;
-  if (s->vals >= s->cnt + s->stack)
+  s->vals++;
+  if (s->vals == s->cnt + s->stack)
     {
       size_t n = s->vals - s->stack;
       s->cnt *= 2;
       s->stack = xrealloc (s->stack, s->cnt * sizeof (object_t *));
       s->vals = s->stack + n;
     }
-  s->vals++;
   *s->vals = o;
   UPREF (o);
 }
