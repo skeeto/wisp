@@ -1,13 +1,14 @@
+#include <stdint.h>
 #include "common.h"
 #include "mem.h"
 
 void mm_fill_stack (mmanager_t * mm)
 {
-  void *p = xmalloc ((mm->size - (mm->stack - mm->base)) * mm->osize);
+  uint8_t *p = xmalloc ((mm->size - (mm->stack - mm->base)) * mm->osize);
   for (; mm->stack < mm->base + mm->size; mm->stack++, p += mm->osize)
     {
       mm->clearf (p);
-      *(mm->stack) = p;
+      *(mm->stack) = (void *) p;
     }
   mm->stack--;
 }
