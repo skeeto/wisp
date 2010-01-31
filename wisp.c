@@ -11,7 +11,6 @@ char *version = "alpha";
 char *progname;
 int force_interaction = 0;
 int print_help = 0;
-char *core_file = "core.wisp";
 
 void print_usage (int ret)
 {
@@ -32,29 +31,10 @@ void print_version ()
   printf ("MERCHANTIBILITY or\nFITNESS FOR A PARTICULAR PURPOSE.\n\n");
 }
 
-/* Initilize all the systems. */
-void init ()
-{
-  /* These *must* be called in this order. */
-  object_init ();
-  symtab_init ();
-  cons_init ();
-  str_init ();
-  eval_init ();
-  lisp_init ();
-  vector_init ();
-}
-
 int main (int argc, char **argv)
 {
   progname = argv[0];
   init ();
-
-  /* set up wisproot */
-  wisproot = getenv ("WISPROOT");
-  if (wisproot == NULL)
-    wisproot = ".";
-  SET (c_sym ("wisproot"), c_strs (xstrdup (wisproot)));
 
   /* parse arguments */
   int c;
@@ -76,19 +56,6 @@ int main (int argc, char **argv)
       }
   if (print_help)
     print_usage (EXIT_SUCCESS);
-
-  /* Load core lisp code. */
-  if (strlen (wisproot) != 0)
-    core_file = pathcat (wisproot, core_file);
-  int r = load_file (NULL, core_file, 0);
-  if (!r)
-    {
-      fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
-	       core_file, strerror (errno));
-      if (strlen (wisproot) == 1)
-	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
-      exit (EXIT_FAILURE);
-    }
 
   if (argc - optind < 1)
     {

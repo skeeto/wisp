@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
+#include <errno.h>
 #include "cons.h"
 #include "object.h"
 #include "symtab.h"
 #include "eval.h"
 #include "number.h"
 #include "str.h"
+#include "reader.h"
 #include "common.h"
+#include "lisp.h"
+#include "vector.h"
 
 object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
@@ -17,6 +22,8 @@ object_t *void_function, *wrong_number_of_arguments, *wrong_type,
 
 /* Stack counting */
 unsigned int stack_depth = 0, max_stack_depth = 20000;
+
+char *core_file = "core.wisp";
 
 int interrupt = 0;
 int interactive_mode = 0;
@@ -57,6 +64,38 @@ void eval_init ()
   improper_list = c_sym ("improper-list");
   improper_list_ending = c_sym ("improper-list-ending");
   err_interrupt = c_sym ("caught-interrupt");
+
+  /* set up wisproot */
+  wisproot = getenv ("WISPROOT");
+  if (wisproot == NULL)
+    wisproot = ".";
+  SET (c_sym ("wisproot"), c_strs (xstrdup (wisproot)));
+
+  /* Load core lisp code. */
+  if (strlen (wisproot) != 0)
+    core_file = pathcat (wisproot, core_file);
+  int r = load_file (NULL, core_file, 0);
+  if (!r)
+    {
+      fprintf (stderr, "error: could not load core lisp \"%s\": %s\n",
+	       core_file, strerror (errno));
+      if (strlen (wisproot) == 1)
+	fprintf (stderr, "warning: perhaps you should set WISPROOT\n");
+      exit (EXIT_FAILURE);
+    }
+}
+
+/* Initilize all the systems. */
+void init ()
+{
+  /* These *must* be called in this order. */
+  object_init ();
+  symtab_init ();
+  cons_init ();
+  str_init ();
+  lisp_init ();
+  vector_init ();
+  eval_init ();
 }
 
 object_t *eval_list (object_t * lst)

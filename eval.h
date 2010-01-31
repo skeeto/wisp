@@ -5,6 +5,9 @@
 #include "cons.h"
 #include "object.h"
 
+/* Initializes everything. */
+void init ();
+
 /* Must be called before calling any other functions. */
 void eval_init ();
 
