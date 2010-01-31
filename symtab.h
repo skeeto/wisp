@@ -23,7 +23,7 @@ object_t *c_usym (char *name);	/* Uinterned symbol. */
 void intern (object_t * sym);
 
 /* Dynamic scoping */
-void sympop (object_t * so);;
+void sympop (object_t * so);
 void sympush (object_t * so, object_t * o);
 
 /* Useful macros for accessing the symbol's fields */
