@@ -1,4 +1,4 @@
-CFLAGS = -W -Wall -g -O2 --std=c99 -fshort-enums
+CFLAGS = -W -Wall -g -O3 --std=c99 -pedantic -fshort-enums
 LDFLAGS = -lgmp
 
 default : wisp
