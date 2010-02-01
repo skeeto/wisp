@@ -227,6 +227,11 @@ object_t *eval (object_t * o)
   /* Find the function. */
   object_t *f = eval (CAR (o));
   CHECK (f);
+  if (VECTORP (f))
+    {
+      o = c_cons (f, o);
+      f = eval (c_sym ("vfunc"));
+    }
   if (!FUNCP (f))
     {
       obj_destroy (f);
