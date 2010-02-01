@@ -2,8 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
-#include "wisp.h"
-#include "lisp.h"
+#include "lib/wisp.h"
 
 char *version = "alpha";
 

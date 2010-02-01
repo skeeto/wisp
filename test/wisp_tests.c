@@ -1,22 +1,14 @@
 #include <stdio.h>
 #include <string.h>
-#include "../wisp.h"
+#include "../lib/wisp.h"
 
+/* Error testing */
+void assert (int b, char *msg);
 int err_cnt = 0, test_cnt = 0;
 
-void assert (int b, char *msg);
+/* Tests */
 void symbol_tests ();
 void string_tests ();
-
-void init ()
-{
-  /* These *must* be called in this order. */
-  object_init ();
-  symtab_init ();
-  cons_init ();
-  eval_init ();
-  lisp_init ();
-}
 
 int main ()
 {

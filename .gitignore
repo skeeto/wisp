@@ -1,4 +1,9 @@
 *.o
+*.a
 wisp
 wisp_tests
-y.tab.h
+
+# SCons stuff
+.sconsign.dblite
+config.log
+.sconf_temp/

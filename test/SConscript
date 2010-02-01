@@ -1,0 +1,6 @@
+Import('normal')
+
+normal.Program(target  = 'wisp_tests',
+               source  = 'wisp_tests.c',
+               LIBS = ['gmp', 'wisp'],
+               LIBPATH = ['/usr/lib', '/usr/local/lib', '../lib'])

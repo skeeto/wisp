@@ -1,0 +1,4 @@
+Import('normal')
+
+if not normal.has_key('noasciidoc'):
+    normal.AsciiDoc('wisp-guide.html', 'wisp-guide.txt')
