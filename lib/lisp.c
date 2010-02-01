@@ -417,7 +417,7 @@ object_t *lisp_load (object_t * lst)
   return T;
 }
 
-object_t *lisp_eval_string (object_t * lst)
+object_t *lisp_read_string (object_t * lst)
 {
   REQ (lst, 1, c_sym ("eval-string"));
   object_t *stro = CAR (lst);
@@ -426,11 +426,10 @@ object_t *lisp_eval_string (object_t * lst)
   char *str = OSTR (stro);
   reader_t *r = reader_create (NULL, str, "eval-string", 0);
   object_t *sexp = read_sexp (r);
+  reader_destroy (r);
   if (sexp == err_symbol)
     THROW (c_sym ("parse-error"), UPREF (stro));
-  object_t *ret = eval (sexp);
-  obj_destroy (sexp);
-  return ret;
+  return sexp;
 }
 
 /* Error handling */
@@ -641,7 +640,7 @@ void lisp_init ()
 
   /* Input/Output */
   SSET (c_sym ("load"), c_cfunc (&lisp_load));
-  SSET (c_sym ("eval-string"), c_cfunc (&lisp_eval_string));
+  SSET (c_sym ("read-string"), c_cfunc (&lisp_read_string));
 
   /* Error handling */
   SSET (c_sym ("throw"), c_cfunc (&throw));
