@@ -42,9 +42,9 @@ object_t *c_vec (size_t len, object_t * init)
   object_t *o = obj_create (VECTOR);
   vector_t *v = OVAL (o);
   v->len = len;
-  if (v->len == 0)
-    v->len = 1;
-  v->v = xmalloc (sizeof (object_t **) * v->len);
+  if (len == 0)
+    len = 1;
+  v->v = xmalloc (sizeof (object_t **) * len);
   size_t i;
   for (i = 0; i < v->len; i++)
     v->v[i] = UPREF (init);
@@ -108,6 +108,11 @@ object_t *vget_check (object_t * vo, object_t * io)
 void vec_print (object_t * vo)
 {
   vector_t *v = OVAL (vo);
+  if (v->len == 0)
+    {
+      printf ("[]");
+      return;
+    }
   printf ("[");
   size_t i;
   for (i = 0; i < v->len - 1; i++)
