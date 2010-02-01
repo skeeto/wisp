@@ -181,9 +181,13 @@ object_t *division (object_t * lst)
 
 object_t *num_cmp (cmp_t cmp, object_t * lst)
 {
-  REQM (lst, 2, c_sym ("="));
+  REQM (lst, 2, c_sym ("compare-func"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
+  if (!NUMP (a))
+    THROW (wrong_type, UPREF (a));
+  if (!NUMP (b))
+    THROW (wrong_type, UPREF (b));
   int r = 0, invr = 1;
   if (INTP (a) && INTP (b))
     r = mpz_cmp (DINT (a), DINT (b));
