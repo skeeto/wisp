@@ -37,3 +37,6 @@
   (if (nullp vecs)
       vec
     (vconcat2 vec (apply vconcat vecs))))
+
+(defun vsplice (vmain start end vins)
+  (vconcat (vsub vmain 0 (1- start )) vins (vsub vmain (1+ end))))
