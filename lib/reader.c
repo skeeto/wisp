@@ -497,5 +497,6 @@ int load_file (FILE * fid, char *filename, int interactive)
 	  obj_destroy (ret);
 	}
     }
+  reader_destroy (r);
   return 1;
 }
