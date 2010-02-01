@@ -24,19 +24,14 @@ Getting Started
 Building Wisp
 ^^^^^^^^^^^^^
 
-To build Wisp, all you need is a C99 compiler, make, and the GNU
+To build Wisp, all you need is a C99 compiler, SCons, and the GNU
 Multiple Precision library (GMP). The compiler switches in the
-Makefiles are geared towards gcc, so if you aren't using gcc you may
-need to adjust the +CFLAGS+ variable. There is currently no
-configuration script. Running +make+ directly will compile Wisp.
+SConstruct file are geared towards gcc, so if you aren't using gcc you
+may need to set the +CC+ and +CFLAGS+ environmental variables.
 
 If you wish to build the documentation, you will also need AsciiDoc.
 
-There are four make targets: +wisp+, +test+, +doc+, +all+. +wisp+ is
-the default target, and +all+ will run all the other targets. To
-verify your build, you can run the +test+ target.
-
-Compiling stuff on Windows is so difficult, so you're on your own for
+Compiling stuff on Windows is so difficult you're on your own for
 that.
 
 Environment

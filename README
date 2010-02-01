@@ -1,8 +1,9 @@
-See the user guide in doc/ for complete information on Wisp. You can
-buil it with "make doc".
+See the user guide in doc/ for complete information on Wisp. If
+AsciiDoc and SCons is installed, you can build it with "scons". Or you
+can just look at the very readable documentation source text.
 
 If you just want to see it without poking around documentation, you
-can build it right now by running make here. Then simply execute
+can build it right now by running "scons" here. Then simply execute
 wisp. Try it with rlwrap for better command line editing.
 
 See INSTALL for quick info on installing Wisp.
