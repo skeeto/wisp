@@ -530,6 +530,8 @@ object_t *lisp_vsub (object_t * lst)
   int start = into2int (starto);
   if (start >= (int) VLENGTH (v))
     THROW (c_sym ("bad-index"), UPREF (starto));
+  if (start < 0)
+    THROW (c_sym ("bad-index"), UPREF (starto));
   if (CDR (CDR (lst)) == NIL)
     {
       /* to the end */
