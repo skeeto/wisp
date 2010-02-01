@@ -93,4 +93,5 @@ int run_wisp_test (char *file)
 void wisp_tests ()
 {
   assert (run_wisp_test ("test/stress.wisp"), "Wisp stress test");
+  assert (run_wisp_test ("test/eq-test.wisp"), "Wisp equality");
 }
