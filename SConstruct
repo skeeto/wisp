@@ -1,3 +1,10 @@
+# SConstruct - Wisp build system
+#
+# Documentation and test suite will be built automatically. To run the
+# test suite, use the "check" target.
+#
+#   scons check
+#
 import os
 
 # Documentation building
