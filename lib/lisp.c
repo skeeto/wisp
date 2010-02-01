@@ -520,6 +520,18 @@ object_t *lisp_max_eval_depth (object_t * lst)
   return UPREF (arg);
 }
 
+/* System */
+
+object_t *lisp_exit (object_t * lst)
+{
+  REQX (lst, 1, c_sym ("exit"));
+  if (lst == NIL)
+    exit (EXIT_SUCCESS);
+  if (!INTP (CAR (lst)))
+    THROW (wrong_type, UPREF (CAR (lst)));
+  exit (into2int (CAR (lst)));
+}
+
 /* Installs all of the above functions. */
 void lisp_init ()
 {
@@ -588,4 +600,7 @@ void lisp_init ()
   SSET (c_sym ("refcount"), c_cfunc (&lisp_refcount));
   SSET (c_sym ("eval-depth"), c_cfunc (&lisp_eval_depth));
   SSET (c_sym ("max-eval-depth"), c_cfunc (&lisp_max_eval_depth));
+
+  /* System */
+  SSET (c_sym ("exit"), c_cfunc (&lisp_exit));
 }
