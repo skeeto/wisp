@@ -9,10 +9,10 @@
   (cdr (car lst)))
 
 (defun caar (lst)
-  (cdr (car lst)))
+  (car (car lst)))
 
 (defun cddr (lst)
-  (cdr (car lst)))
+  (cdr (cdr lst)))
 
 ;; Three letters
 
