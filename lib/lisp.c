@@ -126,6 +126,33 @@ object_t *lisp_if (object_t * lst)
   return eval_body (CDR (CDR (lst)));
 }
 
+object_t *lisp_cond (object_t * lst)
+{
+  object_t *p = lst;
+  while (p != NIL)
+    {
+      if (!CONSP (p))
+	THROW (improper_list, UPREF (lst));
+      object_t *pair = CAR (p);
+      if (!CONSP (pair))
+	THROW (wrong_type, UPREF (pair));
+      if (!LISTP (CDR (pair)))
+	THROW (improper_list, UPREF (pair));
+      if (CDR (pair) == NIL)
+	return UPREF (CAR (pair));
+      if (CDR (CDR (pair)) != NIL)
+	THROW (c_sym ("bad-form"), UPREF (pair));
+      object_t *r = eval (CAR (pair));
+      if (r != NIL)
+	{
+	  obj_destroy (r);
+	  return eval (CAR (CDR (pair)));
+	}
+      p = CDR (p);
+    }
+  return NIL;
+}
+
 object_t *progn (object_t * lst)
 {
   return eval_body (lst);
@@ -556,6 +583,7 @@ void lisp_init ()
   SSET (c_sym ("eval"), c_cfunc (&eval_body));
   SSET (c_sym ("print"), c_cfunc (&lisp_print));
   SSET (c_sym ("cons"), c_cfunc (&lisp_cons));
+  SSET (c_sym ("cond"), c_special (&lisp_cond));
 
   /* Symbol table */
   SSET (c_sym ("set"), c_cfunc (&lisp_set));
