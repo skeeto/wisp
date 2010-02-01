@@ -39,12 +39,17 @@
     (vconcat2 vec (apply vconcat vecs))))
 
 (defun vsplice (vmain start end vins)
-  (vconcat (vsub vmain 0 (1- start )) vins (vsub vmain (1+ end))))
+  (vconcat
+   (if (= start 0) []
+     (vsub vmain 0 (1- start)))
+   vins
+   (if (= end (vlength vmain)) []
+     (vsub vmain (1+ end)))))
 
 (defun vfunc (vec &rest args)
   (let ((narg (length args)))
     (cond
-     ((>= 3 narg) (throw 'wrong-number-of-arguments args))
+     ((>= narg 3) (throw 'wrong-number-of-arguments args))
      ((= 0 narg) vec)
      ; vget
      ((and (= 1 narg) (listp (car args)))
