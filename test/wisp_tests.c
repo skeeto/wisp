@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "../lib/wisp.h"
 
 /* Error testing */
@@ -9,6 +12,7 @@ int err_cnt = 0, test_cnt = 0;
 /* Tests */
 void symbol_tests ();
 void string_tests ();
+void wisp_tests ();
 
 int main ()
 {
@@ -18,7 +22,10 @@ int main ()
   symbol_tests ();
   printf ("Running string tests ...\n");
   string_tests ();
+  printf ("Running Wisp code tests ...\n");
+  wisp_tests ();
 
+  /* Count up errors and exit */
   if (err_cnt == 0)
     {
       printf ("All %d tests passed.\n", test_cnt);
@@ -36,12 +43,8 @@ void assert (int b, char *msg)
   test_cnt++;
   if (!b)
     {
-      fprintf (stderr, "assert failed: %s\n", msg);
+      fprintf (stderr, "failed: %s\n", msg);
       err_cnt++;
-    }
-  else
-    {
-      printf ("assert passed: %s\n", msg);
     }
 }
 
@@ -71,4 +74,23 @@ void symbol_tests ()
   assert (GET (so) == b, "symbol push/pop 2");
   sympop (so);
   assert (GET (so) == a, "symbol push/pop 3");
+}
+
+int run_wisp_test (char *file)
+{
+  /* fork() so that failures don't kill this process */
+  if (fork () == 0)
+    {
+      execl ("wisp", "wisp", file, NULL);
+      fprintf (stderr, "%s\n", strerror (errno));
+      exit (1);
+    }
+  int r;
+  wait (&r);
+  return r == 0;
+}
+
+void wisp_tests ()
+{
+  assert (run_wisp_test ("test/stress.wisp"), "Wisp stress test");
 }
