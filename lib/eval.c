@@ -227,10 +227,16 @@ object_t *eval (object_t * o)
   /* Find the function. */
   object_t *f = eval (CAR (o));
   CHECK (f);
+  object_t *extrao = NIL;
   if (VECTORP (f))
     {
-      o = c_cons (f, o);
+      extrao = o = c_cons (UPREF (f), UPREF (o));
       f = eval (c_sym ("vfunc"));
+      if (f == err_symbol)
+	{
+	  obj_destroy (extrao);
+	  return err_symbol;
+	}
     }
   if (!FUNCP (f))
     {
@@ -249,6 +255,7 @@ object_t *eval (object_t * o)
       if (args == err_symbol)
 	{
 	  stack_depth--;
+	  obj_destroy (f);
 	  return err_symbol;
 	}
       else if (f->type == CFUNC)
@@ -258,6 +265,7 @@ object_t *eval (object_t * o)
 	  object_t *r = cf (args);
 	  obj_destroy (args);
 	  stack_depth--;
+	  obj_destroy (f);
 	  return r;
 	}
       else
@@ -270,12 +278,15 @@ object_t *eval (object_t * o)
 	      obj_destroy (args);
 	      err_attach = UPREF (CAR (o));
 	      stack_depth--;
+	      obj_destroy (f);
 	      return err_symbol;
 	    }
 	  object_t *r = eval_body (CDR (CDR (f)));
 	  unassign_args (vars);
 	  obj_destroy (args);
 	  stack_depth--;
+	  obj_destroy (f);
+	  obj_destroy (extrao);	/* vector as function */
 	  return r;
 	}
     }
@@ -289,6 +300,7 @@ object_t *eval (object_t * o)
 	  cfunc_t cf = FVAL (f);
 	  object_t *r = cf (args);
 	  stack_depth--;
+	  obj_destroy (f);
 	  return r;
 	}
       else if (f->type == CONS)
@@ -301,6 +313,7 @@ object_t *eval (object_t * o)
 	      err_attach = UPREF (CAR (o));
 	      obj_destroy (args);
 	      stack_depth--;
+	      obj_destroy (f);
 	      return err_symbol;
 	    }
 	  object_t *body = eval_body (CDR (CDR (f)));
@@ -308,9 +321,11 @@ object_t *eval (object_t * o)
 	  unassign_args (vars);
 	  obj_destroy (body);
 	  stack_depth--;
+	  obj_destroy (f);
 	  return r;
 	}
     }
   stack_depth--;
+  obj_destroy (f);
   return NIL;
 }
