@@ -184,7 +184,7 @@ object_t *num_cmp (cmp_t cmp, object_t * lst)
   REQM (lst, 2, c_sym ("="));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
-  int r = 0;
+  int r = 0, invr = 1;
   if (INTP (a) && INTP (b))
     r = mpz_cmp (DINT (a), DINT (b));
   else if (FLOATP (a) && FLOATP (b))
@@ -195,6 +195,7 @@ object_t *num_cmp (cmp_t cmp, object_t * lst)
       object_t *c = b;
       b = a;
       a = c;
+      invr = -1;
     }
   if (FLOATP (a) && INTP (b))
     {
@@ -204,22 +205,23 @@ object_t *num_cmp (cmp_t cmp, object_t * lst)
       r = mpf_cmp (DFLOAT (a), DFLOAT (convf));
       obj_destroy (convf);
     }
+  r *= invr;
   switch (cmp)
     {
     case EQ:
       r = (0 == r);
       break;
     case LT:
-      r = (0 < r);
+      r = (r < 0);
       break;
     case LTE:
-      r = (0 <= r);
+      r = (r <= 0);
       break;
     case GT:
-      r = (0 > r);
+      r = (r > 0);
       break;
     case GTE:
-      r = (0 >= r);
+      r = (r >= 0);
       break;
     }
   if (r)
