@@ -32,3 +32,8 @@
   (if (not (stringp str))
       (throw 'wrong-type-argument str)
     (eval-string (concat "(quote " str ")"))))
+
+(defun vconcat (vec &rest vecs)
+  (if (nullp vecs)
+      vec
+    (vconcat2 vec (apply vconcat vecs))))
