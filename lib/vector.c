@@ -131,6 +131,18 @@ object_t *vector_concat (object_t * a, object_t * b)
   return c;
 }
 
+object_t *vector_sub (object_t * vo, int start, int end)
+{
+  vector_t *v = OVAL (vo);
+  if (end == -1)
+    end = v->len - 1;
+  object_t *newv = c_vec (1 + end - start, NIL);
+  int i;
+  for (i = start; i <= end; i++)
+    vset (newv, i - start, UPREF (vget (vo, i)));
+  return newv;
+}
+
 uint32_t vector_hash (object_t * o)
 {
   uint32_t accum = 0;

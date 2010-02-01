@@ -30,6 +30,9 @@ object_t *vget_check (object_t * vo, object_t * io);
 /* Vector concatenation, creating a new vector. */
 object_t *vector_concat (object_t * a, object_t * b);
 
+/* Subsection of vector, returning a new vector. */
+object_t *vector_sub (object_t * vo, int start, int end);
+
 /* Print a vector */
 void vec_print (object_t * vo);
 

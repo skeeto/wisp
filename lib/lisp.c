@@ -518,6 +518,35 @@ object_t *lisp_vconcat (object_t * lst)
   return vector_concat (a, b);
 }
 
+object_t *lisp_vsub (object_t * lst)
+{
+  REQM (lst, 2, c_sym ("subv"));
+  object_t *v = CAR (lst);
+  object_t *starto = CAR (CDR (lst));
+  if (!VECTORP (v))
+    THROW (wrong_type, UPREF (v));
+  if (!INTP (starto))
+    THROW (wrong_type, UPREF (starto));
+  int start = into2int (starto);
+  if (start >= (int) VLENGTH (v))
+    THROW (c_sym ("bad-index"), UPREF (starto));
+  if (CDR (CDR (lst)) == NIL)
+    {
+      /* to the end */
+      return vector_sub (v, start, -1);
+    }
+  object_t *endo = CAR (CDR (CDR (lst)));
+  if (!INTP (endo))
+    THROW (wrong_type, UPREF (endo));
+  int end = into2int (endo);
+  if (end >= (int) VLENGTH (v))
+    THROW (c_sym ("bad-index"), UPREF (endo));
+  printf ("%d %d\n", start, end);
+  if (end < start)
+    THROW (c_sym ("bad-index"), UPREF (endo));
+  return vector_sub (v, start, end);
+}
+
 /* Internals */
 
 object_t *lisp_refcount (object_t * lst)
@@ -623,6 +652,7 @@ void lisp_init ()
   SSET (c_sym ("vlength"), c_cfunc (&lisp_vlength));
   SSET (c_sym ("make-vector"), c_cfunc (&make_vector));
   SSET (c_sym ("vconcat2"), c_cfunc (&lisp_vconcat));
+  SSET (c_sym ("vsub"), c_cfunc (&lisp_vsub));
 
   /* Internals */
   SSET (c_sym ("refcount"), c_cfunc (&lisp_refcount));
