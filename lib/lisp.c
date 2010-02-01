@@ -541,7 +541,6 @@ object_t *lisp_vsub (object_t * lst)
   int end = into2int (endo);
   if (end >= (int) VLENGTH (v))
     THROW (c_sym ("bad-index"), UPREF (endo));
-  printf ("%d %d\n", start, end);
   if (end < start)
     THROW (c_sym ("bad-index"), UPREF (endo));
   return vector_sub (v, start, end);
