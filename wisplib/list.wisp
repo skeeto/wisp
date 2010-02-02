@@ -46,31 +46,31 @@
   (car lst))
 
 (defun second (lst)
-  (car (first lst)))
+  (first (cdr lst)))
 
 (defun third (lst)
-  (car (second lst)))
+  (second (cdr lst)))
 
 (defun fourth (lst)
-  (car (third lst)))
+  (third (cdr lst)))
 
 (defun fifth (lst)
-  (car (fourth lst)))
+  (fourth (cdr lst)))
 
 (defun sixth (lst)
-  (car (fifth lst)))
+  (fifth (cdr lst)))
 
 (defun seventh (lst)
-  (car (sixth lst)))
+  (sixth (cdr lst)))
 
 (defun eighth (lst)
-  (car (seventh lst)))
+  (seventh (cdr lst)))
 
 (defun ninth (lst)
-  (car (eighth lst)))
+  (eighth (cdr lst)))
 
 (defun tenth (lst)
-  (car (ninth lst)))
+  (ninth (cdr lst)))
 
 ;; General functions
 
