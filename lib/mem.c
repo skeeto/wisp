@@ -49,9 +49,9 @@ void *mm_alloc (mmanager_t * mm)
 
 void mm_free (mmanager_t * mm, void *o)
 {
+  mm->stack++;
   if (mm->stack == mm->base + mm->size)
     mm_resize_stack (mm);
-  mm->stack++;
   *(mm->stack) = o;
   mm->clearf (o);
 }
