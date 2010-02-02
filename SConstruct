@@ -14,6 +14,8 @@ docbld = Builder(action = 'asciidoc -o $TARGET $SOURCE')
 normal = Environment(
            CC = 'gcc',
            CFLAGS = ['-W', '-Wall', '-g', '-O2', '--std=c99', '-pedantic'],
+           LIBPATH = ['/usr/lib', '/usr/local/lib'],
+           CPATH = ['/usr/include', '/usr/local/include'],
            BUILDERS = {'AsciiDoc' : docbld})
 
 # Configure the environment
@@ -50,5 +52,5 @@ SConscript('doc/SConscript')
 # Main program
 normal.Program(target  = 'wisp',
                LIBS = ['wisp', 'gmp'],
-               LIBPATH = ['/usr/lib', '/usr/local/lib', 'lib'],
+               LIBPATH = ['lib'],
                source = 'wisp.c')
