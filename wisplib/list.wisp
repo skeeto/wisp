@@ -89,3 +89,10 @@
   (if (= (length lst) 1)
       (f (car lst))
     (f (car lst) (reduce f (cdr lst)))))
+
+(defun append (lst &rest lsts)
+  (cond
+   ((nullp lsts) lst)
+   ((= 1 (length lst)) (cons (car lst) (apply append lsts)))
+   (t (cons (car lst)
+	    (append (cdr lst) (apply append lsts))))))
