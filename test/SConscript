@@ -3,7 +3,7 @@ Import('normal')
 check = normal.Program(target  = 'wisp_tests',
                        source  = 'wisp_tests.c',
                        LIBS = ['gmp', 'wisp'],
-                       LIBPATH = ['../lib'])
+                       LIBPATH = normal['LIBPATH'] + ['../lib'])
 
 check_alias = normal.Alias('check', check, check[0].path)
 normal.AlwaysBuild(check_alias)
