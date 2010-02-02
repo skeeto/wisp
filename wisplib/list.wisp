@@ -75,22 +75,25 @@
 ;; General functions
 
 (defun nth (n lst)
+  "Return nth element of list."
   (if (= n 0)
       (car lst)
     (nth (- n 1) lst)))
 
 (defun length (lst)
+  "Return length of list."
   (if (nullp lst)
       0
     (1+ (length (cdr lst)))))
 
-; the provided function should be able to accept a single argument
 (defun reduce (f lst)
+  "Reduce two-argument function across list."
   (if (= (length lst) 1)
       (f (car lst))
     (f (car lst) (reduce f (cdr lst)))))
 
 (defun append (lst &rest lsts)
+  "Concatenate any number of lists."
   (cond
    ((nullp lsts) lst)
    ((= 1 (length lst)) (cons (car lst) (apply append lsts)))

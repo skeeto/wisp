@@ -1,11 +1,13 @@
 ;;; Vector functions
 
 (defun vconcat (vec &rest vecs)
+  "Concatentate any number of vectors."
   (if (nullp vecs)
       vec
     (vconcat2 vec (apply vconcat vecs))))
 
 (defun vsplice (vmain start end vins)
+  "Insert vector over subsection of vector, returning new vector."
   (vconcat
    (if (= start 0) []
      (vsub vmain 0 (1- start)))
@@ -14,6 +16,7 @@
      (vsub vmain (1+ end)))))
 
 (defun vfunc (vec &rest args)
+  "General vector function that does it all-in-one."
   (let ((narg (length args)))
     (cond
      ((>= narg 3) (throw 'wrong-number-of-arguments args))

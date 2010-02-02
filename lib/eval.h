@@ -16,13 +16,14 @@ object_t *top_eval (object_t * o);
 object_t *eval_body (object_t * body);
 object_t *assign_args (object_t * vars, object_t * vals);
 void unassign_args (object_t * vars);
-object_t *apply (object_t *f, object_t * rawargs);
+object_t *apply (object_t * f, object_t * rawargs);
 
 extern unsigned int stack_depth, max_stack_depth;
 extern int interactive_mode;
 
 /* Frequently used symbols */
 extern object_t *lambda, *macro, *rest, *optional, *quote;
+extern object_t *doc_string;
 
 #define FUNCP(o) \
   ((o->type == CONS && CAR(o)->type == SYMBOL \
@@ -45,5 +46,6 @@ extern object_t *void_function, *wrong_number_of_arguments, *wrong_type,
                          return err_symbol;
 #define REQPROP(lst) if (properlistp(lst) == NIL) \
                          THROW (improper_list, lst);
+#define DOC(str) if (lst == doc_string) return c_strs (xstrdup (str));
 
 #endif /* EVAL_H */

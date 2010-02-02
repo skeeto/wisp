@@ -161,21 +161,25 @@ object_t *arith (arith_t op, object_t * lst)
 
 object_t *addition (object_t * lst)
 {
+  DOC ("Perform addition operation.");
   return arith (ADD, lst);
 }
 
 object_t *multiplication (object_t * lst)
 {
+  DOC ("Perform multiplication operation.");
   return arith (MUL, lst);
 }
 
 object_t *subtraction (object_t * lst)
 {
+  DOC ("Perform subtraction operation.");
   return arith (SUB, lst);
 }
 
 object_t *division (object_t * lst)
 {
+  DOC ("Perform division operation.");
   return arith (DIV, lst);
 }
 
@@ -235,31 +239,37 @@ object_t *num_cmp (cmp_t cmp, object_t * lst)
 
 object_t *num_eq (object_t * lst)
 {
+  DOC ("Compare two numbers by =.");
   return num_cmp (EQ, lst);
 }
 
 object_t *num_lt (object_t * lst)
 {
+  DOC ("Compare two numbers by <.");
   return num_cmp (LT, lst);
 }
 
 object_t *num_lte (object_t * lst)
 {
+  DOC ("Compare two numbers by <=.");
   return num_cmp (LTE, lst);
 }
 
 object_t *num_gt (object_t * lst)
 {
+  DOC ("Compare two numbers by >.");
   return num_cmp (GT, lst);
 }
 
 object_t *num_gte (object_t * lst)
 {
+  DOC ("Compare two numbers by >=.");
   return num_cmp (GTE, lst);
 }
 
 object_t *modulus (object_t * lst)
 {
+  DOC ("Return modulo of arguments.");
   REQ (lst, 2, c_sym ("%"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));

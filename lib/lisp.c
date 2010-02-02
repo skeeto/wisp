@@ -18,8 +18,33 @@ object_t *num_eq (object_t * lst);
 
 /* Various basic stuff */
 
+object_t *cdoc_string (object_t * lst)
+{
+  DOC ("Return doc-string for CFUNC or SPECIAL.");
+  REQ (lst, 1, c_sym ("cdoc-string"));
+  object_t *fo = CAR (lst);
+  int evaled = 0;
+  if (SYMBOLP (fo))
+    {
+      evaled = 1;
+      fo = eval (fo);
+    }
+  if (fo->type != CFUNC && fo->type != SPECIAL)
+    {
+      if (evaled)
+	obj_destroy (fo);
+      THROW (wrong_type, UPREF (fo));
+    }
+  cfunc_t f = FVAL (fo);
+  object_t *str = f (doc_string);
+  if (evaled)
+    obj_destroy (fo);
+  return str;
+}
+
 object_t *lisp_apply (object_t * lst)
 {
+  DOC ("Apply function to a list.");
   REQ (lst, 2, c_sym ("apply"));
   object_t *f = CAR (lst);
   object_t *args = CAR (CDR (lst));
@@ -30,6 +55,7 @@ object_t *lisp_apply (object_t * lst)
 
 object_t *lisp_and (object_t * lst)
 {
+  DOC ("Evaluate each argument until one returns nil.");
   object_t *r = T, *p = lst;
   while (CONSP (p))
     {
@@ -47,6 +73,7 @@ object_t *lisp_and (object_t * lst)
 
 object_t *lisp_or (object_t * lst)
 {
+  DOC ("Evaluate each argument until one doesn't return nil.");
   object_t *r = NIL, *p = lst;
   while (CONSP (p))
     {
@@ -63,18 +90,21 @@ object_t *lisp_or (object_t * lst)
 
 object_t *lisp_cons (object_t * lst)
 {
+  DOC ("Construct a new cons cell, given car and cdr.");
   REQ (lst, 2, c_sym ("cons"));
   return c_cons (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
 }
 
 object_t *lisp_quote (object_t * lst)
 {
+  DOC ("Return argument unevaluated.");
   REQ (lst, 1, c_sym ("quote"));
   return UPREF (CAR (lst));
 }
 
 object_t *lambda_f (object_t * lst)
 {
+  DOC ("Create an anonymous function.");
   if (!is_func_form (lst))
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   return c_cons (lambda, UPREF (lst));
@@ -82,6 +112,7 @@ object_t *lambda_f (object_t * lst)
 
 object_t *defun (object_t * lst)
 {
+  DOC ("Define a new function.");
   if (!SYMBOLP (CAR (lst)) || !is_func_form (CDR (lst)))
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (lambda, UPREF (CDR (lst)));
@@ -91,6 +122,7 @@ object_t *defun (object_t * lst)
 
 object_t *defmacro (object_t * lst)
 {
+  DOC ("Define a new macro.");
   if (!SYMBOLP (CAR (lst)) || !is_func_form (CDR (lst)))
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (macro, UPREF (CDR (lst)));
@@ -100,6 +132,7 @@ object_t *defmacro (object_t * lst)
 
 object_t *lisp_cdr (object_t * lst)
 {
+  DOC ("Return cdr element of cons cell.");
   REQ (lst, 1, c_sym ("cdr"));
   if (CAR (lst) == NIL)
     return NIL;
@@ -110,6 +143,7 @@ object_t *lisp_cdr (object_t * lst)
 
 object_t *lisp_car (object_t * lst)
 {
+  DOC ("Return car element of cons cell.");
   REQ (lst, 1, c_sym ("car"));
   if (CAR (lst) == NIL)
     return NIL;
@@ -120,11 +154,13 @@ object_t *lisp_car (object_t * lst)
 
 object_t *lisp_list (object_t * lst)
 {
+  DOC ("Return arguments as a list.");
   return UPREF (lst);
 }
 
 object_t *lisp_if (object_t * lst)
 {
+  DOC ("If conditional special form.");
   REQM (lst, 2, wrong_number_of_arguments);
   object_t *r = eval (CAR (lst));
   CHECK (r);
@@ -138,6 +174,8 @@ object_t *lisp_if (object_t * lst)
 
 object_t *lisp_cond (object_t * lst)
 {
+  DOC ("Eval car of each argument until one is true. Then eval cdr of\n"
+       "that argument.");
   object_t *p = lst;
   while (p != NIL)
     {
@@ -165,11 +203,14 @@ object_t *lisp_cond (object_t * lst)
 
 object_t *progn (object_t * lst)
 {
+  DOC ("Eval each argument and return the eval of the last.");
   return eval_body (lst);
 }
 
 object_t *let (object_t * lst)
 {
+  DOC ("Create variable bindings in a new scope, and eval "
+       "body in that scope.");
   /* verify structure */
   if (!LISTP (CAR (lst)))
     THROW (c_sym ("bad-let-form"), UPREF (lst));
@@ -221,6 +262,7 @@ object_t *let (object_t * lst)
 
 object_t *lisp_while (object_t * lst)
 {
+  DOC ("Continually evaluate body until first argument evals nil.");
   REQM (lst, 1, c_sym ("while"));
   object_t *r = NIL, *cond = CAR (lst), *body = CDR (lst);
   object_t *condr;
@@ -237,6 +279,7 @@ object_t *lisp_while (object_t * lst)
 
 object_t *eq (object_t * lst)
 {
+  DOC ("Return t if both arguments are the same lisp object.");
   REQ (lst, 2, c_sym ("eq"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
@@ -247,6 +290,7 @@ object_t *eq (object_t * lst)
 
 object_t *eql (object_t * lst)
 {
+  DOC ("Return t if both arguments are similar.");
   REQ (lst, 2, c_sym ("eql"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
@@ -282,12 +326,14 @@ object_t *eql (object_t * lst)
 
 object_t *lisp_hash (object_t * lst)
 {
+  DOC ("Return integer hash of object.");
   REQ (lst, 1, c_sym ("hash"));
   return c_int (obj_hash (CAR (lst)));
 }
 
 object_t *lisp_print (object_t * lst)
 {
+  DOC ("Print object or sexp in parse-able form.");
   REQ (lst, 1, c_sym ("print"));
   obj_print (CAR (lst), 1);
   return NIL;
@@ -297,6 +343,7 @@ object_t *lisp_print (object_t * lst)
 
 object_t *lisp_set (object_t * lst)
 {
+  DOC ("Store object in symbol.");
   REQ (lst, 2, c_sym ("set"));
   if (!SYMBOLP (CAR (lst)))
     THROW (wrong_type, c_cons (c_sym ("set"), CAR (lst)));
@@ -309,6 +356,7 @@ object_t *lisp_set (object_t * lst)
 
 object_t *lisp_value (object_t * lst)
 {
+  DOC ("Get value stored in symbol.");
   REQ (lst, 1, c_sym ("value"));
   if (!SYMBOLP (CAR (lst)))
     THROW (wrong_type, c_cons (c_sym ("value"), CAR (lst)));
@@ -318,6 +366,7 @@ object_t *lisp_value (object_t * lst)
 
 object_t *symbol_name (object_t * lst)
 {
+  DOC ("Return symbol name as string.");
   REQ (lst, 1, c_sym ("symbol-name"));
   if (!SYMBOLP (CAR (lst)))
     THROW (wrong_type, UPREF (CAR (lst)));
@@ -328,6 +377,7 @@ object_t *symbol_name (object_t * lst)
 
 object_t *lisp_concat (object_t * lst)
 {
+  DOC ("Concatenate two strings.");
   REQ (lst, 2, c_sym ("concat"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
@@ -342,6 +392,7 @@ object_t *lisp_concat (object_t * lst)
 
 object_t *nullp (object_t * lst)
 {
+  DOC ("Return t if object is nil.");
   REQ (lst, 1, c_sym ("nullp"));
   if (CAR (lst) == NIL)
     return T;
@@ -350,6 +401,7 @@ object_t *nullp (object_t * lst)
 
 object_t *funcp (object_t * lst)
 {
+  DOC ("Return t if object is a function.");
   REQ (lst, 1, c_sym ("funcp"));
   if (FUNCP (CAR (lst)))
     return T;
@@ -358,6 +410,7 @@ object_t *funcp (object_t * lst)
 
 object_t *listp (object_t * lst)
 {
+  DOC ("Return t if object is a list.");
   REQ (lst, 1, c_sym ("listp"));
   if (LISTP (CAR (lst)))
     return T;
@@ -366,6 +419,7 @@ object_t *listp (object_t * lst)
 
 object_t *symbolp (object_t * lst)
 {
+  DOC ("Return t if object is a symbol.");
   REQ (lst, 1, c_sym ("symbolp"));
   if (SYMBOLP (CAR (lst)))
     return T;
@@ -374,6 +428,7 @@ object_t *symbolp (object_t * lst)
 
 object_t *numberp (object_t * lst)
 {
+  DOC ("Return t if object is a number.");
   REQ (lst, 1, c_sym ("numberp"));
   if (NUMP (CAR (lst)))
     return T;
@@ -382,6 +437,7 @@ object_t *numberp (object_t * lst)
 
 object_t *stringp (object_t * lst)
 {
+  DOC ("Return t if object is a string.");
   REQ (lst, 1, c_sym ("stringp"));
   if (STRINGP (CAR (lst)))
     return T;
@@ -390,6 +446,7 @@ object_t *stringp (object_t * lst)
 
 object_t *integerp (object_t * lst)
 {
+  DOC ("Return t if object is an integer.");
   REQ (lst, 1, c_sym ("integerp"));
   if (INTP (CAR (lst)))
     return T;
@@ -398,6 +455,7 @@ object_t *integerp (object_t * lst)
 
 object_t *floatp (object_t * lst)
 {
+  DOC ("Return t if object is a floating-point number.");
   REQ (lst, 1, c_sym ("floatp"));
   if (FLOATP (CAR (lst)))
     return T;
@@ -406,6 +464,7 @@ object_t *floatp (object_t * lst)
 
 object_t *vectorp (object_t * lst)
 {
+  DOC ("Return t if object is a vector.");
   REQ (lst, 1, c_sym ("vectorp"));
   if (VECTORP (CAR (lst)))
     return T;
@@ -416,6 +475,7 @@ object_t *vectorp (object_t * lst)
 
 object_t *lisp_load (object_t * lst)
 {
+  DOC ("Evaluate contents of a file.");
   REQ (lst, 1, c_sym ("load"));
   object_t *str = CAR (lst);
   if (!STRINGP (str))
@@ -429,6 +489,7 @@ object_t *lisp_load (object_t * lst)
 
 object_t *lisp_read_string (object_t * lst)
 {
+  DOC ("Parse a string into a sexp or list object.");
   REQ (lst, 1, c_sym ("eval-string"));
   object_t *stro = CAR (lst);
   if (!STRINGP (stro))
@@ -446,11 +507,13 @@ object_t *lisp_read_string (object_t * lst)
 
 object_t *throw (object_t * lst)
 {
+  DOC ("Throw an object, and attachment, as an exception.");
   THROW (UPREF (CAR (lst)), UPREF (CAR (CDR (lst))));
 }
 
 object_t *catch (object_t * lst)
 {
+  DOC ("Catch an exception and return attachment.");
   object_t *csym = eval (CAR (lst));
   CHECK (csym);
   object_t *body = CDR (lst);
@@ -473,6 +536,7 @@ object_t *catch (object_t * lst)
 
 object_t *lisp_vset (object_t * lst)
 {
+  DOC ("Set slot in a vector to object.");
   REQ (lst, 3, c_sym ("vset"));
   object_t *vec = CAR (lst);
   object_t *ind = CAR (CDR (lst));
@@ -486,6 +550,7 @@ object_t *lisp_vset (object_t * lst)
 
 object_t *lisp_vget (object_t * lst)
 {
+  DOC ("Get object stored in vector slot.");
   REQ (lst, 2, c_sym ("vget"));
   object_t *vec = CAR (lst);
   object_t *ind = CAR (CDR (lst));
@@ -498,6 +563,7 @@ object_t *lisp_vget (object_t * lst)
 
 object_t *lisp_vlength (object_t * lst)
 {
+  DOC ("Return length of the vector.");
   REQ (lst, 1, c_sym ("vlength"));
   object_t *vec = CAR (lst);
   if (!VECTORP (vec))
@@ -507,6 +573,7 @@ object_t *lisp_vlength (object_t * lst)
 
 object_t *make_vector (object_t * lst)
 {
+  DOC ("Make a new vector of given length, initialized to given object.");
   REQ (lst, 2, c_sym ("make-vector"));
   object_t *len = CAR (lst);
   object_t *o = CAR (CDR (lst));
@@ -517,6 +584,7 @@ object_t *make_vector (object_t * lst)
 
 object_t *lisp_vconcat (object_t * lst)
 {
+  DOC ("Concatenate two vectors.");
   REQ (lst, 2, c_sym ("vconcat2"));
   object_t *a = CAR (lst);
   object_t *b = CAR (CDR (lst));
@@ -529,6 +597,7 @@ object_t *lisp_vconcat (object_t * lst)
 
 object_t *lisp_vsub (object_t * lst)
 {
+  DOC ("Return subsection of vector.");
   REQM (lst, 2, c_sym ("subv"));
   object_t *v = CAR (lst);
   object_t *starto = CAR (CDR (lst));
@@ -561,18 +630,21 @@ object_t *lisp_vsub (object_t * lst)
 
 object_t *lisp_refcount (object_t * lst)
 {
+  DOC ("Return number of reference counts to object.");
   REQ (lst, 1, c_sym ("refcount"));
   return c_int (CAR (lst)->refs);
 }
 
 object_t *lisp_eval_depth (object_t * lst)
 {
+  DOC ("Return the current evaluation depth.");
   REQ (lst, 0, c_sym ("eval-depth"));
   return c_int (stack_depth);
 }
 
 object_t *lisp_max_eval_depth (object_t * lst)
 {
+  DOC ("Return or set the maximum evaluation depth.");
   REQX (lst, 1, c_sym ("max-eval-depth"));
   if (lst == NIL)
     return c_int (max_stack_depth);
@@ -590,6 +662,7 @@ object_t *lisp_max_eval_depth (object_t * lst)
 
 object_t *lisp_exit (object_t * lst)
 {
+  DOC ("Halt the interpreter and return given integer.");
   REQX (lst, 1, c_sym ("exit"));
   if (lst == NIL)
     exit (EXIT_SUCCESS);
@@ -605,6 +678,7 @@ void lisp_init ()
   lisp_math_init ();
 
   /* Various */
+  SSET (c_sym ("cdoc-string"), c_cfunc (&cdoc_string));
   SSET (c_sym ("apply"), c_cfunc (&lisp_apply));
   SSET (c_sym ("and"), c_special (&lisp_and));
   SSET (c_sym ("or"), c_special (&lisp_or));

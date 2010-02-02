@@ -16,6 +16,7 @@
 object_t *lambda, *macro, *quote;
 object_t *err_symbol, *err_thrown, *err_attach;
 object_t *rest, *optional;
+object_t *doc_string;
 /* Commonly used thrown error symbols */
 object_t *void_function, *wrong_number_of_arguments, *wrong_type,
   *improper_list, *improper_list_ending, *err_interrupt;
@@ -53,6 +54,7 @@ void eval_init ()
   quote = c_sym ("quote");
   rest = c_sym ("&rest");
   optional = c_sym ("&optional");
+  doc_string = c_sym ("doc-string");
 
   /* error symbols */
   err_symbol = c_usym ("wisp-error");
