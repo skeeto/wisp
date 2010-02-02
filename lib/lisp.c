@@ -18,6 +18,16 @@ object_t *num_eq (object_t * lst);
 
 /* Various basic stuff */
 
+object_t *lisp_apply (object_t * lst)
+{
+  REQ (lst, 2, c_sym ("apply"));
+  object_t *f = CAR (lst);
+  object_t *args = CAR (CDR (lst));
+  if (!LISTP (args))
+    THROW (wrong_type, UPREF (args));
+  return apply (f, args);
+}
+
 object_t *lisp_and (object_t * lst)
 {
   object_t *r = T, *p = lst;
@@ -595,6 +605,7 @@ void lisp_init ()
   lisp_math_init ();
 
   /* Various */
+  SSET (c_sym ("apply"), c_cfunc (&lisp_apply));
   SSET (c_sym ("and"), c_special (&lisp_and));
   SSET (c_sym ("or"), c_special (&lisp_or));
   SSET (c_sym ("quote"), c_special (&lisp_quote));

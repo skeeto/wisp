@@ -248,84 +248,60 @@ object_t *eval (object_t * o)
   if (++stack_depth >= max_stack_depth)
     THROW (c_sym ("max-eval-depth"), c_int (stack_depth--));
 
+  /* Handle argument list */
+  object_t *args = CDR (o);
   if (f->type == CFUNC || (f->type == CONS && (CAR (f) == lambda)))
     {
       /* c function or list function (eval args) */
-      object_t *args = eval_list (CDR (o));
+      args = eval_list (args);
       if (args == err_symbol)
 	{
-	  stack_depth--;
 	  obj_destroy (f);
+	  obj_destroy (extrao);
 	  return err_symbol;
-	}
-      else if (f->type == CFUNC)
-	{
-	  /* c function */
-	  cfunc_t cf = FVAL (f);
-	  object_t *r = cf (args);
-	  obj_destroy (args);
-	  stack_depth--;
-	  obj_destroy (f);
-	  return r;
-	}
-      else
-	{
-	  /* list form */
-	  object_t *vars = CAR (CDR (f));
-	  object_t *assr = assign_args (vars, args);
-	  if (assr == err_symbol)
-	    {
-	      obj_destroy (args);
-	      err_attach = UPREF (CAR (o));
-	      stack_depth--;
-	      obj_destroy (f);
-	      return err_symbol;
-	    }
-	  object_t *r = eval_body (CDR (CDR (f)));
-	  unassign_args (vars);
-	  obj_destroy (args);
-	  stack_depth--;
-	  obj_destroy (f);
-	  obj_destroy (extrao);	/* vector as function */
-	  return r;
 	}
     }
   else
-    {
-      /* special form or macro */
-      object_t *args = CDR (o);
-      if (f->type == SPECIAL)
-	{
-	  /* special form */
-	  cfunc_t cf = FVAL (f);
-	  object_t *r = cf (args);
-	  stack_depth--;
-	  obj_destroy (f);
-	  return r;
-	}
-      else if (f->type == CONS)
-	{
-	  /* list form macro */
-	  object_t *vars = CAR (CDR (f));
-	  object_t *assr = assign_args (vars, args);
-	  if (assr == err_symbol)
-	    {
-	      err_attach = UPREF (CAR (o));
-	      obj_destroy (args);
-	      stack_depth--;
-	      obj_destroy (f);
-	      return err_symbol;
-	    }
-	  object_t *body = eval_body (CDR (CDR (f)));
-	  object_t *r = eval (body);
-	  unassign_args (vars);
-	  obj_destroy (body);
-	  stack_depth--;
-	  obj_destroy (f);
-	  return r;
-	}
-    }
+    UPREF (args);		/* so we can destroy args no matter what */
+
+  object_t *ret = apply (f, args);
   stack_depth--;
   obj_destroy (f);
+  obj_destroy (args);
+  obj_destroy (extrao);		/* vector as function */
+  return ret;
+}
+
+object_t *apply (object_t * f, object_t * args)
+{
+  if (f->type == CFUNC || f->type == SPECIAL)
+    {
+      /* call the c function */
+      cfunc_t cf = FVAL (f);
+      object_t *r = cf (args);
+      return r;
+    }
+  else
+    {
+      /* list form */
+      object_t *vars = CAR (CDR (f));
+      object_t *assr = assign_args (vars, args);
+      if (assr == err_symbol)
+	{
+	  err_attach = UPREF (args);
+	  return err_symbol;
+	}
+      object_t *r;
+      if (CAR (f) == lambda)
+	r = eval_body (CDR (CDR (f)));
+      else
+	{
+	  object_t *body = eval_body (CDR (CDR (f)));
+	  r = eval (body);
+	  obj_destroy (body);
+	}
+      unassign_args (vars);
+      return r;
+    }
   return NIL;
 }

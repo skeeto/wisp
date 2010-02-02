@@ -1,10 +1,6 @@
 ;;; Core definitions for Wisp
 
 ;; Set up require
-(defun apply (f lst)
-  (if (not (listp lst))
-      (throw 'wrong-type-argument lst)
-    (eval (cons f lst))))
 
 (defun concat (str &rest strs)
   (if (nullp strs)

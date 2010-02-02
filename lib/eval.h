@@ -16,6 +16,7 @@ object_t *top_eval (object_t * o);
 object_t *eval_body (object_t * body);
 object_t *assign_args (object_t * vars, object_t * vals);
 void unassign_args (object_t * vars);
+object_t *apply (object_t *f, object_t * rawargs);
 
 extern unsigned int stack_depth, max_stack_depth;
 extern int interactive_mode;
