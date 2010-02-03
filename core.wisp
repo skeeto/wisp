@@ -41,6 +41,7 @@
 (require 'list)
 (require 'math)
 (require 'vector)
+(require 'set)
 
 (defmacro setq (var val)
   "Automatically quote the first argument for set."
