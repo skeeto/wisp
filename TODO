@@ -27,11 +27,8 @@
  * more ...
 
 * Documentation
- * document the defined functions
  * probably should document the undefined ones too, to plan ahead
- - doc strings in functions?
  - man page
 
 * Test suite
  * add more tests!
- * make lisp-side tests
