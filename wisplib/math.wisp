@@ -21,3 +21,5 @@
    ((nullp ns) n)
    ((= (length ns) 1) (if (> n (car ns)) n (car ns)))
    (t (max n (apply max ns)))))
+
+(provide 'math)

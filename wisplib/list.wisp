@@ -99,3 +99,5 @@
    ((= 1 (length lst)) (cons (car lst) (apply append lsts)))
    (t (cons (car lst)
 	    (append (cdr lst) (apply append lsts))))))
+
+(provide 'list)

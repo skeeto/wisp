@@ -28,3 +28,5 @@
      ; vset
      ((listp (car args)) (vsplice vec (caar args) (cadar args) (cadr args)))
      (t (vset vec (car args) (cadr args))))))
+
+(provide 'vector)

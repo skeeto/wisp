@@ -4,3 +4,5 @@
   "Return nth Fibonacci number."
   (if (<= n 2) 1
     (+ (fib (- n 1)) (fib (- n 2)))))
+
+(provide 'examples)

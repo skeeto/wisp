@@ -11,3 +11,5 @@
 		     (list 'hput '*table* 'vars
 			   (list 'apply (value f) 'vars)))
 	       '(hget *table* vars))))
+
+(provide 'memoize)

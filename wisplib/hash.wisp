@@ -25,3 +25,5 @@
 	  (setq lst nil))
       (setq ind (1+ ind)))
     (vset (car ht) ind (cons key val))))
+
+(provide 'hash)

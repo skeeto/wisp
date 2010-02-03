@@ -15,3 +15,5 @@
   "Compose a number of functions."
   (list 'lambda '(&rest args)
 	(apply comp-build fs)))
+
+(provide 'point-free)
