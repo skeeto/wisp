@@ -171,11 +171,11 @@ void obj_print (object_t * o, int newline)
       break;
     case CFUNC:
       /* It's not possible to print a function pointer. */
-      printf ("<CFUNC>");
+      printf ("<cfunc>");
       break;
     case SPECIAL:
       /* It's not possible to print a function pointer. */
-      printf ("<SPECIAL>");
+      printf ("<special form>");
       break;
     default:
       printf ("ERROR");
