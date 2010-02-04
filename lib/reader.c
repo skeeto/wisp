@@ -13,6 +13,7 @@
 
 static void read_error (reader_t * r, char *str);
 static void addpop (reader_t * r);
+static void reset (reader_t * r);
 
 char *wisproot = NULL;
 
@@ -49,6 +50,7 @@ reader_t *reader_create (FILE * fid, char *str, char *name, int interactive)
 
 void reader_destroy (reader_t * r)
 {
+  reset (r);
   xfree (r->buf);
   xfree (r->readbuf);
   xfree (r->base);
@@ -459,6 +461,7 @@ object_t *read_sexp (reader_t * r)
     return err_symbol;
 
   /* Check state */
+  r->done = 1;
   if (stack_height (r) > 1 || r->state->quote_mode
       || r->state->dotpair_mode == 1)
     {
@@ -466,9 +469,11 @@ object_t *read_sexp (reader_t * r)
       return err_symbol;
     }
   if (list_empty (r))
-    return NIL;
+    {
+      obj_destroy (pop (r));
+      return NIL;
+    }
 
-  r->done = 1;
   object_t *wrap = pop (r);
   object_t *sexp = UPREF (CAR (wrap));
   obj_destroy (wrap);
