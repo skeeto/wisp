@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include "object.h"
 #include "symtab.h"
@@ -28,8 +30,10 @@ object_t *c_detach (object_t * o)
   object_t *dob = obj_create (DETACH);
   detach_t *d = OVAL (dob);
   int pipea[2], pipeb[2];
-  pipe (pipea);
-  pipe (pipeb);
+  if (pipe (pipea) != 0)
+    THROW (c_sym ("detach-pipe-error"), c_strs (xstrdup (strerror (errno))));
+  if (pipe (pipeb) != 0)
+    THROW (c_sym ("detach-pipe-error"), c_strs (xstrdup (strerror (errno))));
   d->proc = fork ();
   if (d->proc == 0)
     {
