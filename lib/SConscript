@@ -1,7 +1,8 @@
 Import('normal')
 
 libsrc = Split("""common.c cons.c eval.c hashtab.c lisp.c lisp_math.c
-                  mem.c number.c object.c reader.c str.c symtab.c vector.c""")
+                  mem.c number.c object.c reader.c str.c symtab.c
+                  vector.c detach.c""")
 
 normal.Library(target  = 'libwisp',
                source  = libsrc)

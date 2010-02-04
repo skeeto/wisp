@@ -9,6 +9,7 @@
 #include "object.h"
 #include "number.h"
 #include "vector.h"
+#include "detach.h"
 
 static mmanager_t *mm;
 
@@ -50,6 +51,9 @@ object_t *obj_create (type_t type)
       break;
     case VECTOR:
       OVAL (o) = vector_create ();
+      break;
+    case DETACH:
+      OVAL (o) = xmalloc (sizeof (detach_t));
       break;
     case CFUNC:
     case SPECIAL:
@@ -116,6 +120,9 @@ void obj_destroy (object_t * o)
     case VECTOR:
       vector_destroy (OVAL (o));
       break;
+    case DETACH:
+      xfree (OVAL (o));
+      break;
     case CFUNC:
     case SPECIAL:
       break;
@@ -159,6 +166,9 @@ void obj_print (object_t * o, int newline)
     case VECTOR:
       vec_print (o);
       break;
+    case DETACH:
+      detach_print (o);
+      break;
     case CFUNC:
       /* It's not possible to print a function pointer. */
       printf ("<CFUNC>");
@@ -195,6 +205,9 @@ uint32_t obj_hash (object_t * o)
       break;
     case VECTOR:
       return vector_hash (o);
+      break;
+    case DETACH:
+      return detach_hash (o);
       break;
     case CFUNC:
     case SPECIAL:

@@ -11,6 +11,7 @@
 #include "reader.h"
 #include "number.h"
 #include "vector.h"
+#include "detach.h"
 
 /* From lisp_math.c */
 void lisp_math_init ();
@@ -314,6 +315,10 @@ object_t *eql (object_t * lst)
       break;
     case VECTOR:
       return NIL;
+      break;
+    case DETACH:
+      if (a == b)
+	return T;
       break;
     case CFUNC:
     case SPECIAL:
@@ -746,4 +751,9 @@ void lisp_init ()
 
   /* System */
   SSET (c_sym ("exit"), c_cfunc (&lisp_exit));
+
+  /* Detachments */
+  SSET (c_sym ("detach"), c_cfunc (&lisp_detach));
+  SSET (c_sym ("receive"), c_cfunc (&lisp_receive));
+  SSET (c_sym ("send"), c_cfunc (&lisp_send));
 }

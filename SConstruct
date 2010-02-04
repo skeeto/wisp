@@ -13,7 +13,7 @@ docbld = Builder(action = 'asciidoc -o $TARGET $SOURCE')
 # Create new environement
 normal = Environment(
            CC = 'gcc',
-           CFLAGS = ['-W', '-Wall', '-g', '-O2', '--std=c99', '-pedantic'],
+           CFLAGS = ['-W', '-Wall', '-g', '-O2'],
            LIBPATH = ['/usr/lib', '/usr/local/lib'],
            CPPPATH = ['/usr/include', '/usr/local/include'],
            BUILDERS = {'AsciiDoc' : docbld})

@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 typedef enum types
-{ INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL } type_t;
+{ INT, FLOAT, STRING, SYMBOL, CONS, VECTOR, CFUNC, SPECIAL, DETACH } type_t;
 
 typedef union obval
 {

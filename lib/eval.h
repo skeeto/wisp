@@ -4,6 +4,8 @@
 
 #include "cons.h"
 #include "object.h"
+#include "common.h"
+#include "str.h"
 
 /* Initializes everything. */
 void init ();
