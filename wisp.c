@@ -84,4 +84,5 @@ int main (int argc, char **argv)
       load_file (fid, file, 0);
       fclose (fid);
     }
+  return EXIT_SUCCESS;
 }
