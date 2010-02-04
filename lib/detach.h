@@ -12,6 +12,12 @@ typedef struct detach
   reader_t *read;
 } detach_t;
 
+/* Creation and destruction */
+object_t *c_detach (object_t * o);
+detach_t *detach_create ();
+void detach_destroy (object_t * o);
+
+/* Basic type functions */
 uint8_t detach_hash (object_t * o);
 void detach_print (object_t * o);
 

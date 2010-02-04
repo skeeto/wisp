@@ -53,7 +53,7 @@ object_t *obj_create (type_t type)
       OVAL (o) = vector_create ();
       break;
     case DETACH:
-      OVAL (o) = xmalloc (sizeof (detach_t));
+      OVAL (o) = detach_create ();
       break;
     case CFUNC:
     case SPECIAL:
@@ -121,6 +121,7 @@ void obj_destroy (object_t * o)
       vector_destroy (OVAL (o));
       break;
     case DETACH:
+      detach_destroy (o);
       xfree (OVAL (o));
       break;
     case CFUNC:

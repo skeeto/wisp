@@ -68,6 +68,19 @@ object_t *c_detach (object_t * o)
   return dob;
 }
 
+detach_t *detach_create ()
+{
+  return (detach_t *) xmalloc (sizeof (detach_t));
+}
+
+void detach_destroy (object_t * o)
+{
+  detach_t *d = OVAL (o);
+  reader_destroy (d->read);
+  close (d->in);
+  close (d->out);
+}
+
 object_t *lisp_detach (object_t * lst)
 {
   DOC ("Create process detachment.");
