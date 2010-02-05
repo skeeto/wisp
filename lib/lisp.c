@@ -128,7 +128,7 @@ object_t *defmacro (object_t * lst)
     THROW (c_sym ("bad-function-form"), UPREF (lst));
   object_t *f = c_cons (macro, UPREF (CDR (lst)));
   SET (CAR (lst), f);
-  return f;
+  return UPREF (CAR (lst));
 }
 
 object_t *lisp_cdr (object_t * lst)
