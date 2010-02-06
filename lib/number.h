@@ -11,7 +11,7 @@ object_t *c_float (double f);
 
 /* get native numbers from number objects */
 int into2int (object_t * into);
-double floato2int (object_t * floato);
+double floato2float (object_t * floato);
 
 #define OINT(o) ((mpz_t *) OVAL(o))
 #define OFLOAT(o) ((mpf_t *) OVAL(o))

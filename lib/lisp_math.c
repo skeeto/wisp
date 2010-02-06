@@ -78,6 +78,22 @@ object_t *arith (arith_t op, object_t * lst)
 	  obj_destroy (convf);
 	  THROW (wrong_type, UPREF (num));
 	}
+      /* Check divide by zero */
+      if (op == DIV)
+	{
+	  double dnum;
+	  if (FLOATP (num))
+	    dnum = floato2float (num);
+	  else
+	    dnum = into2int (num);
+	  if (dnum == 0)
+	    {
+	      obj_destroy (accumz);
+	      obj_destroy (accumf);
+	      obj_destroy (convf);
+	      THROW (c_sym ("divide-by-zero"), UPREF (num));
+	    }
+	}
 
       if (intmode)
 	{
