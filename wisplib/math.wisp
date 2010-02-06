@@ -27,18 +27,13 @@
   (if (> x 0) x
     (- x)))
 
-(defun int-expt (b p)
-  "Exponent with only integer exponent."
-  (if (= p 0) 1
-    (* b (int-expt b (1- p)))))
-
 (defun nth-root (b n)
   "Return nth root of b."
   (if (< b 0)
       (throw 'domain-error b)
     (let ((x (/ b 2.0)))
-      (while (> (abs (- (int-expt x n) b)) 0.00000001)
-	(setq x (* (/ 1.0 n) (+ (* (1- n) x) (/ b (int-expt x (1- n)))))))
+      (while (> (abs (- (expt x n) b)) 0.00000001)
+	(setq x (* (/ 1.0 n) (+ (* (1- n) x) (/ b (expt x (1- n)))))))
       x)))
 
 (defun sqrt (b)
