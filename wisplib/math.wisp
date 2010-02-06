@@ -48,7 +48,7 @@
 (defun expt (b p)
   "Return the exponential."
   (cond
-   ((< p 0) (1 / (expt b (- p))))
+   ((< p 0) (/ 1 (expt b (- p))))
    ((= p 0) 1)
    ((< p 1) (nth-root b (/ 1 p)))
    (t (* b (expt b (1- p))))))
