@@ -271,6 +271,7 @@ object_t *lisp_while (object_t * lst)
     {
       obj_destroy (r);
       obj_destroy (condr);
+      CHECK (condr);
       r = eval_body (body);
     }
   return r;

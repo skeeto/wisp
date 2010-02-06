@@ -31,7 +31,7 @@ int interactive_mode = 0;
 void handle_iterrupt (int sig)
 {
   (void) sig;
-  if (interactive_mode)
+  if (!interrupt && interactive_mode)
     {
       interrupt = 1;
       signal (SIGINT, &handle_iterrupt);
