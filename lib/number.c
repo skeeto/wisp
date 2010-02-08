@@ -26,7 +26,7 @@ object_t *c_floats (char *fstr)
 {
   object_t *o = obj_create (FLOAT);
   mpf_t *f = OVAL (o);
-  mpf_init2 (*f, 64);
+  mpf_init2 (*f, 256);
   mpf_set_str (*f, fstr, 10);
   return o;
 }

@@ -156,7 +156,7 @@ void obj_print (object_t * o, int newline)
       gmp_printf ("%Zd", OINT (o));
       break;
     case FLOAT:
-      gmp_printf ("%F.24f", OFLOAT (o));
+      gmp_printf ("%.Ff", OFLOAT (o));
       break;
     case STRING:
       printf ("%s", OSTRP (o));
