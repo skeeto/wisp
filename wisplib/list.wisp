@@ -78,7 +78,7 @@
   "Return nth element of list."
   (if (= n 0)
       (car lst)
-    (nth (- n 1) lst)))
+    (nth (- n 1) (cdr lst))))
 
 (defun length (lst)
   "Return length of list."
