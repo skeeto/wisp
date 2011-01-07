@@ -16,7 +16,7 @@ void wisp_tests ();
 
 int main ()
 {
-  init ();
+  wisp_init ();
 
   printf ("Running symbol tests ...\n");
   symbol_tests ();

@@ -88,7 +88,7 @@ void eval_init ()
 }
 
 /* Initilize all the systems. */
-void init ()
+void wisp_init ()
 {
   /* These *must* be called in this order. */
   object_init ();

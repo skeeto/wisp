@@ -8,7 +8,7 @@
 #include "str.h"
 
 /* Initializes everything. */
-void init ();
+void wisp_init ();
 
 /* Must be called before calling any other functions. */
 void eval_init ();

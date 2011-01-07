@@ -33,7 +33,7 @@ void print_version ()
 int main (int argc, char **argv)
 {
   progname = argv[0];
-  init ();
+  wisp_init ();
 
   /* parse arguments */
   int c;
