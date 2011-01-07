@@ -505,3 +505,10 @@ int load_file (FILE * fid, char *filename, int interactive)
   reader_destroy (r);
   return 1;
 }
+
+/* Convenience function for creating a REPL. */
+void repl ()
+{
+  interactive_mode = 1;
+  load_file (stdin, "<stdin>", 1);
+}
