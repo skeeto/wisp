@@ -6,3 +6,6 @@ libsrc = Split("""common.c cons.c eval.c hashtab.c lisp.c lisp_math.c
 
 normal.Library(target  = 'libwisp',
                source  = libsrc)
+
+normal.SharedLibrary(target  = 'libwisp',
+                     source  = libsrc)
