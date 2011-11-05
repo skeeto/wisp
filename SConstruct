@@ -51,6 +51,6 @@ SConscript('doc/SConscript')
 
 # Main program
 normal.Program(target  = 'wisp',
-               LIBS = ['gmp', File('lib/libwisp.a')],
+               LIBS = [File('lib/libwisp.a'), 'gmp'],
                LIBPATH = normal['LIBPATH'] + ['lib'],
                source = 'wisp.c')
