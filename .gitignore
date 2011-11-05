@@ -1,4 +1,6 @@
 *.o
+*.os
+*.so
 *.a
 wisp
 wisp_tests
