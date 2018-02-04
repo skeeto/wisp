@@ -22,12 +22,7 @@ void print_usage (int ret)
 
 void print_version ()
 {
-  printf ("wisp, version %s.\n", version);
-  printf ("Copyright (C) 2010 Chris Wellons\n");
-  printf ("This is free software; see the source code ");
-  printf ("for copying conditions.\n");
-  printf ("There is ABSOLUTELY NO WARRANTY; not even for ");
-  printf ("MERCHANTIBILITY or\nFITNESS FOR A PARTICULAR PURPOSE.\n\n");
+  printf ("wisp, version %s\n", version);
 }
 
 int main (int argc, char **argv)
